@@ -506,6 +506,8 @@ def main() -> int:
     res = summarise(tf, fr, a.label, backend, a.split)
     res["fast_path"] = fast
     res["postfix"] = postfix.enabled()
+    from app.prompt import prompt_version
+    res["prompt"] = prompt_version()
     if isinstance(backend, Throttled):
         res["throttle"] = backend.summary()
         t = res["throttle"]
