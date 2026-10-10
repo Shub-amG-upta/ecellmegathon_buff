@@ -7,6 +7,18 @@ Megathon X, Qualcomm PS1. Background and rationale: `PLAN.md`. This file is what
 files your track owns (§5). Treat §4 (contracts) as frozen. If a contract has to change, stop and tell your human,
 because the other track depends on it.
 
+### What's new (2026-10-10, evening): read this first, Track B
+
+1. **The form is the problem statement's 10 fields** (§3, `schema/incident_form.json` version 2). Field names,
+   keys and the spoken questions are unchanged, so the UI and `voice.py` need no change. What changed: 15 incident
+   types (`fire`, `slip_trip`, `fall_height`, …; the UI shows them with `_` → space), the ask order
+   type → location → time → severity, list limits 4, and severity is never changed by code.
+2. **The text eval set** is `eval/nlu/` (65 dialogs, 250 turns). `eval/cases.jsonl` is generated from it in the
+   §4.3 format, so `eval/wer.py` reads all 250 turns as before.
+3. **New Track B work: record the speech eval subset** (§4.3 "Speech eval", §7 "Speech eval" and "TTS check"):
+   36 turns × 3 speakers + 10 noisy, a record mode in the UI, WER on the subset. No TTS dataset: TTS is checked
+   by ear against a fixed phrase list.
+
 ---
 
 ## 1. What we are building
@@ -217,6 +229,26 @@ Audio files: `eval/audio/<case_id>_t<turn>_<speaker>.wav` (16 kHz mono). The ref
 The full form (full field names, as in `TurnResult.form`) plus `id`, `submitted_at` (laptop clock),
 `turns` (each transcript plus its tool call), and `models` (STT, LLM and TTS names and devices). Owner: A.
 
+### 4.5 Speech eval: `eval/speech_subset.jsonl`
+
+Not all 250 turns are recorded: 36 dev turns chosen by rule (`eval/speech_subset.py`, Track A) where STT is most
+likely to break extraction: numbers and times, names, Indian English and fillers, one-word meaning flips
+("not", "actually"), short answers, long narrations, and the problem statement's example. One line per turn:
+
+```json
+{"case": "wit-02", "turn": 1, "say": "There's oil spilled near the generator room entrance. ...", "why": ["name", "number"], "noisy": false}
+```
+
+- **Speakers:** 3 people (Shubham, Sarthak, one more), each reads all 36 lines naturally, not slowly.
+- **Noise:** the 10 lines with `"noisy": true` are recorded again by each speaker in a noisy room (canteen, or
+  chatter playing nearby), as speaker `<name>-noisy`.
+- **Files:** `eval/audio/<case>_t<turn>_<speaker>.wav`, 16 kHz mono 16-bit, exactly the naming `eval/wer.py`
+  already reads (turn numbers from 1). `eval/audio/` stays out of git; share it as a zip.
+- **Metrics:** B: WER and STT latency per model (`eval/wer.py`). A: extraction from the transcripts against the
+  same gold (`eval/run_eval.py --audio`, built next), next to the typed-text score: "field accuracy typed vs
+  spoken" is the evidence for judging criterion E3.
+- Test-split lines are never recorded for tuning.
+
 ---
 
 ## 5. Who builds what
@@ -241,7 +273,9 @@ The full form (full field names, as in `TurnResult.form`) plus `id`, `submitted_
 | `data/followup_catalogue.json` | A | incident type → 2–4 follow-up actions |
 | `data/vocab.txt` | **B** | room, asset and team names; used by STT and by A's gate |
 | `eval/nlu/*`, `eval/cases.jsonl` (generated), `eval/run_eval.py` | A | the text eval set; extraction accuracy per turn and per dialog, extra values, LLM latency |
-| `eval/wer.py`, `eval/audio/` | **B** | WER per STT model, STT/TTS latency |
+| `eval/wer.py`, `eval/audio/` | **B** | WER per STT model, STT/TTS latency; the recordings (§4.5) |
+| `eval/speech_subset.py`, `eval/speech_subset.jsonl` | A | the recording list (§4.5) |
+| record mode in `ui/` | **B** | shows each §4.5 line, records it, saves it under the §4.5 name |
 | `tests/test_<module>.py` | owner of the module | |
 
 Git: one repo. Each track works on its own branch (`track-a`, `track-b`) and merges to `main` at the integration
@@ -338,10 +372,29 @@ Every sentence the assistant says comes from a template in code; the model never
 - A proof panel from `GET /api/proof`: "29/29 layers on HTP0, 1,911.9 MiB" and the raw log lines.
 - A list of submitted reports, with a view of each.
 
-**Order of work:**
-1. STT + TTS on the laptop behind the §4.1 URLs, then `app/voice.py`.
-2. The UI against A's `server.py` (mock backend is fine).
-3. `data/vocab.txt`; record `eval/cases.jsonl` (3 voices if possible); `eval/wer.py`.
+**Speech eval (new).**
+- A **record mode** in the UI (e.g. `/#record`, or `ui/record.html`): pick a speaker name, then for each line of
+  `eval/speech_subset.jsonl` show the text, record with the same 16 kHz WAV path as push-to-talk, play it back,
+  re-record if needed, and save it as `<case>_t<turn>_<speaker>.wav`. Saving can be a download, or a small
+  endpoint in a dev server of yours; don't add it to `app/server.py` (Track A) without asking.
+- Record 36 lines × 3 speakers, plus the 10 noisy lines × 3 speakers.
+- `eval/wer.py` on the subset for `tiny.en` / `base.en` / `small.en`, with and without the `data/vocab.txt`
+  prompt, LAPTOP first, then BOARD. Also report errors on the words that matter: digits, names, "not".
+- Keep `data/vocab.txt` in step with the new eval set's names and places (no test-split words).
+
+**TTS check (new; by ear, no dataset).** Everything TTS says comes from a template in `app/dialog.py`, so check
+each template once with real values, for clarity and timing:
+- every question: "What kind of incident was it?", "Where did it happen?", "When did it happen?",
+  "How serious is it: low, medium, high or critical?";
+- read-backs with hard values: "Conference Room 2", "Lab 4", "10:45 AM today", "Mr Rao", "Struck by an object",
+  "Caught in machinery", and the severity warning ("Fire is usually at least high severity; you said low. ...");
+- "Sorry, I didn't catch that.", "Report IR-0001 submitted.";
+- record the TTS time per sentence (LAPTOP, then BOARD) for the latency panel.
+
+**Order of work (updated):**
+1. ✅ STT + TTS on the laptop behind the §4.1 URLs, then `app/voice.py`.
+2. ✅ The UI against A's `server.py`.
+3. Record mode → recordings (§4.5) → `eval/wer.py` on the subset; the TTS check.
 4. `board/voice_up.sh`: STT + TTS on the QIDK, then the M-board milestone.
 
 ---
@@ -354,7 +407,7 @@ Every sentence the assistant says comes from a template in code; the model never
 | M1 | text works (laptop) | the §1 example works by typing in the UI, LLM = llama-server on the Mac | A (B's UI) |
 | M2 | voice works (laptop) | the same, spoken: mic → laptop whisper → LLM → laptop TTS → audio plays | A + B |
 | M3 | **on the QIDK** | `board/up.sh` brings up all three models on the board; the §1 example works by voice; the proof panel shows 29/29 on HTP0; timings labelled BOARD | A + B |
-| M4 | measured | 40 cases: extraction accuracy, WER, latency per stage, all BOARD, each run twice | A + B |
+| M4 | measured | dev split: extraction accuracy typed and spoken, WER on the §4.5 subset, latency per stage, all BOARD, each run twice | A + B |
 | M5 | demo | 3 rehearsed scripts (happy path · missing info → follow-ups · correction + noise), backup video, slides | A + B |
 | stretch | tier 2 | UI on the QIDK's own screen; Hinglish; voice activity detection; airplane-mode demo | |
 
