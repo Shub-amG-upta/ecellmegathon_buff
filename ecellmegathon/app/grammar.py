@@ -101,7 +101,7 @@ def sample(rules: dict, rng, start: str = "root") -> str:
 _CHR = r'[^"\\\x7F\x00-\x1F]'
 
 
-def incident_gbnf(schema: dict) -> str:
+def incident_gbnf(schema: dict, compact: bool = False) -> str:
     q = _quote                                   # a GBNF string literal
     rules = {"chr": _CHR}
     members = []
@@ -120,8 +120,12 @@ def incident_gbnf(schema: dict) -> str:
             rules[f"s-{k}"] = f'{q('"')} chr{{1,{f["max_chars"]}}} {q('"')}'
             rules[f"m-{k}"] = f'{q(f'"{k}":[')} s-{k} ({q(",")} s-{k}){{0,{f["max_items"] - 1}}} {q("]")}'
     rules["member"] = " | ".join(members)
-    rules["update"] = f'{q('update_report","args":{')} member ({q(",")} member)* {q("}}")}'
-    rules["root"] = (f'{q('{"tool":"')} ( update | '
-                     + " | ".join(q(f'{t}"}}') for t in ("submit_report", "cancel_report", "no_op")) + " )")
+    if compact:                       # v6: the fields object, or "S" / "C" / "N" (form.COMPACT_CODES)
+        rules["root"] = f'{q("{")} member ({q(",")} member)* {q("}")} | ' + " | ".join(
+            q(f'"{c}"') for c in ("S", "C", "N"))
+    else:
+        rules["update"] = f'{q('update_report","args":{')} member ({q(",")} member)* {q("}}")}'
+        rules["root"] = (f'{q('{"tool":"')} ( update | '
+                         + " | ".join(q(f'{t}"}}') for t in ("submit_report", "cancel_report", "no_op")) + " )")
     order = ["root"] + sorted(k for k in rules if k != "root")
     return "\n".join(f"{k} ::= {rules[k]}" for k in order) + "\n"

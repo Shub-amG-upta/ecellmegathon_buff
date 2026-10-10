@@ -18,7 +18,7 @@ import time
 from datetime import datetime
 
 from app import fastpath, gate, postfix, report
-from app.form import FormState, llm_json_schema, load_catalogue, load_schema
+from app.form import FormState, answer_mode, llm_json_schema, load_catalogue, load_schema, to_tool_call
 from app.grammar import incident_gbnf
 from app.prompt import system_prompt, user_message
 from app.timeparse import resolve
@@ -43,21 +43,25 @@ def _now() -> datetime:
 class Dialog:
     def __init__(self, backend, schema: dict | None = None, catalogue: dict | None = None,
                  clock=_now, report_dir=None, max_tokens: int = 128, use_fast_path: bool = True,
-                 constraint: str | None = None):
+                 constraint: str | None = None, answer: str | None = None):
         self.backend = backend
         self.schema = schema or load_schema()
         self.catalogue = load_catalogue() if catalogue is None else catalogue
         self.clock = clock
         self.report_dir = report_dir or report.REPORT_DIR
         self.max_tokens = max_tokens
-        self.system = system_prompt(self.schema)
-        self.json_schema = llm_json_schema(self.schema)
+        # how the model writes its answer: "full" tool call, or "compact" (v6: fields object or S/C/N)
+        self.answer = answer or answer_mode()
+        if self.answer not in ("full", "compact"):
+            raise ValueError(f"answer must be full or compact, not {self.answer!r}")
+        self.system = system_prompt(self.schema, self.answer)
+        self.json_schema = llm_json_schema(self.schema, compact=self.answer == "compact")
         # how the answer is constrained: "schema" (llama-server compiles the JSON schema; default) or
         # "gbnf" (our own grammar, no whitespace: fewer decode tokens). LLM_CONSTRAINT picks it.
         self.constraint = constraint or os.environ.get("LLM_CONSTRAINT", "schema")
         if self.constraint not in ("schema", "gbnf"):
             raise ValueError(f"LLM_CONSTRAINT must be schema or gbnf, not {self.constraint!r}")
-        self.gbnf = incident_gbnf(self.schema)
+        self.gbnf = incident_gbnf(self.schema, compact=self.answer == "compact")
         self.type_values = next(f for f in self.schema["fields"] if f.get("key") == "t")["values"]
         self.use_fast_path = use_fast_path
         self.turn_id = 0
@@ -150,11 +154,11 @@ class Dialog:
     # ---- internals ---------------------------------------------------------
     @staticmethod
     def _parse(text: str) -> tuple[dict, str]:
-        """The schema makes this valid JSON; still never trust it blindly."""
+        """The model's answer as a tool call. Full ({"tool":...}) and compact (a fields object, or "S" / "C" /
+        "N") are both understood. The grammar makes it valid JSON; still never trust it blindly."""
         try:
-            call = json.loads(text)
-            if isinstance(call, dict) and call.get("tool") in (
-                    "update_report", "submit_report", "cancel_report", "no_op"):
+            call = to_tool_call(json.loads(text))
+            if call is not None:
                 if not isinstance(call.get("args", {}), dict):
                     call["args"] = {}
                 return call, ""

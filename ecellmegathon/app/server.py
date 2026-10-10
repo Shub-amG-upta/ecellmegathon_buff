@@ -14,6 +14,8 @@ Environment:
   STT_TRIM   on | off   cut silence at both ends of a clip before STT (default on)
   TTS_SPLIT  on | off   also serve the reply sentence by sentence (audio_parts); off until the UI plays them
   POSTFIX    on | off   the v4 post-model fixes (app/postfix.py; default on)
+  PROMPT     1 | 2      system prompt version (2 from v5)
+  ANSWER     full | compact   compact (v6): the model writes only the fields object or S/C/N
   LLM_CONSTRAINT  schema | gbnf   how the answer is constrained (gbnf: no whitespace; compare on the board)
 
 Speech is Track B's `app/voice.py` (§4.1). Until it exists, the server runs

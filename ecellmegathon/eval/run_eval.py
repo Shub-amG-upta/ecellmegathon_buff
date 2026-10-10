@@ -508,6 +508,7 @@ def main() -> int:
     res["postfix"] = postfix.enabled()
     from app.prompt import prompt_version
     res["prompt"] = prompt_version()
+    res["answer"] = Dialog(backend).answer
     if isinstance(backend, Throttled):
         res["throttle"] = backend.summary()
         t = res["throttle"]

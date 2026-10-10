@@ -11,6 +11,7 @@ Stdlib only.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -18,6 +19,39 @@ SCHEMA_PATH = ROOT / "schema" / "incident_form.json"
 CATALOGUE_PATH = ROOT / "data" / "followup_catalogue.json"
 
 TOOLS = ("update_report", "submit_report", "cancel_report", "no_op")
+
+# v6, compact answers (ANSWER=compact): the model writes only the fields object for an update, or one letter
+# for the other tools. Half of a full answer, {"tool":"update_report","args":{...}}, was boilerplate the
+# grammar forces anyway, and every forced token still costs a decode step on the NPU. Code turns a compact
+# answer back into the same tool call (to_tool_call), so everything after the model is unchanged.
+COMPACT_CODES = {"S": "submit_report", "C": "cancel_report", "N": "no_op"}
+DEFAULT_ANSWER = "compact"                               # v6 (ANSWER=full: v5 and earlier)
+
+
+def answer_mode() -> str:
+    m = os.environ.get("ANSWER", DEFAULT_ANSWER)
+    if m not in ("full", "compact"):
+        raise ValueError(f"ANSWER must be full or compact, not {m!r}")
+    return m
+
+
+def to_tool_call(answer) -> dict | None:
+    """A parsed model answer, full or compact, as a tool call {"tool", "args"?}; None if it is neither."""
+    if isinstance(answer, dict):
+        if "tool" in answer:                                     # full form
+            return answer if answer.get("tool") in TOOLS else None
+        return {"tool": "update_report", "args": answer}         # compact: the fields object
+    if isinstance(answer, str) and answer in COMPACT_CODES:
+        return {"tool": COMPACT_CODES[answer]}
+    return None
+
+
+def to_compact(call: dict) -> str:
+    """A tool call written the compact way (for prompt examples and tests)."""
+    if call.get("tool") == "update_report" and call.get("args"):
+        return json.dumps(call["args"], ensure_ascii=False, separators=(",", ":"))
+    code = {v: k for k, v in COMPACT_CODES.items()}.get(call.get("tool"), "N")
+    return json.dumps(code)
 
 
 def load_schema(path: Path = SCHEMA_PATH) -> dict:
@@ -34,7 +68,7 @@ def keyed_fields(schema: dict) -> list[dict]:
     return [f for f in schema["fields"] if f.get("key")]
 
 
-def llm_json_schema(schema: dict, only: list[str] | None = None) -> dict:
+def llm_json_schema(schema: dict, only: list[str] | None = None, compact: bool = False) -> dict:
     """JSON schema for one LLM answer: a tool name and, for update_report, any
     subset of the keyed fields. `only` limits the args to those keys (for
     narrowing a turn to the field just asked; off in the basic model).
@@ -52,6 +86,9 @@ def llm_json_schema(schema: dict, only: list[str] | None = None) -> dict:
             props[f["key"]] = {"type": "array", "minItems": 1, "maxItems": f["max_items"],
                                "items": {"type": "string", "minLength": 1,
                                          "maxLength": f["max_chars"]}}
+    if compact:                                                  # v6: the fields object, or S / C / N
+        return {"anyOf": [{"type": "object", "properties": props, "additionalProperties": False},
+                          {"type": "string", "enum": list(COMPACT_CODES)}]}
     return {"type": "object",
             "properties": {"tool": {"type": "string", "enum": list(TOOLS)},
                            "args": {"type": "object", "properties": props,

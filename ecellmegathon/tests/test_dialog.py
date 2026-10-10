@@ -73,7 +73,9 @@ def test_problem_statement_example_end_to_end(make, tmp_path):
     assert saved["form"]["follow_up"][0] == "Find and repair the source of the leak"
     assert [t["transcript"] for t in saved["turns"]] == [EXAMPLE, "Medium.", "Submit."]
     # every call carried the system prompt and the JSON schema
-    assert all(c["system"] and c["json_schema"]["required"] == ["tool"] for c in b.calls)
+    assert all(c["system"] and (c.get("grammar")                                 # LLM_CONSTRAINT=gbnf
+                                or c["json_schema"].get("required") == ["tool"]     # full answers
+                                or "anyOf" in c["json_schema"]) for c in b.calls)  # compact (ANSWER=compact)
 
 
 def test_submit_is_refused_while_a_mandatory_field_is_missing(make, tmp_path):

@@ -57,10 +57,30 @@ def prompt_version() -> str:
     return v
 
 
-def system_prompt(schema: dict) -> str:
-    if prompt_version() == "2":
-        return system_prompt_v2(schema)
-    return system_prompt_v1(schema)
+def system_prompt(schema: dict, answer: str | None = None) -> str:
+    from app.form import answer_mode
+    text = system_prompt_v2(schema) if prompt_version() == "2" else system_prompt_v1(schema)
+    return compact_prompt(text) if (answer or answer_mode()) == "compact" else text
+
+
+_COMPACT_TOOLS = """Answers:
+- an object with only the fields the user stated in this message: this updates the report
+- "S": the user confirms the report or asks to submit it
+- "C": the user wants to discard the report
+- "N": the message holds nothing for the report (a question, noise, small talk)
+"""
+
+
+def compact_prompt(text: str) -> str:
+    """The same prompt for compact answers (v6): the tool list becomes the four answer shapes, and every
+    example answer is written the compact way."""
+    import re
+    from app.form import to_compact, to_tool_call
+    text = text.replace("Reply with one JSON tool call and nothing else.", "Reply with one JSON value and nothing else.")
+    text = re.sub(r"Tools:\n(?:- .*\n)+", _COMPACT_TOOLS, text)
+    text = text.replace("Fields (args keys):", "Fields (keys of the object):")
+    return re.sub(r"^Answer: (.+)$", lambda m: "Answer: " + to_compact(to_tool_call(json.loads(m.group(1)))),
+                  text, flags=re.M)
 
 
 def system_prompt_v1(schema: dict) -> str:

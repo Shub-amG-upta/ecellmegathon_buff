@@ -56,7 +56,7 @@ def main() -> int:
                                  thinking=False if "qwen3" in a.model.lower() else None)
     d = Dialog(backend)
     print(f"[{a.label}] {time.strftime('%Y-%m-%dT%H:%M:%S%z')} · {a.url} · model {a.model} · "
-          f"constraint {d.constraint} (LLM_CONSTRAINT)")
+          f"constraint {d.constraint} (LLM_CONSTRAINT) · answer {d.answer} (ANSWER)")
     rows = []
     for schema_on in (True, False):
         for form, asked, text in (TURNS if schema_on else TURNS[:1]):
