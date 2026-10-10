@@ -13,6 +13,7 @@ Environment:
   VOICE      on | off   off = text only, even when app/voice.py is present
   STT_TRIM   on | off   cut silence at both ends of a clip before STT (default on)
   TTS_SPLIT  on | off   also serve the reply sentence by sentence (audio_parts); off until the UI plays them
+  POSTFIX    on | off   the v4 post-model fixes (app/postfix.py; default on)
   LLM_CONSTRAINT  schema | gbnf   how the answer is constrained (gbnf: no whitespace; compare on the board)
 
 Speech is Track B's `app/voice.py` (§4.1). Until it exists, the server runs

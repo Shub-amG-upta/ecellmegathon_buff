@@ -82,7 +82,8 @@ def test_submit_is_refused_while_a_mandatory_field_is_missing(make, tmp_path):
     d.turn(EXAMPLE)
     r = d.turn("just submit it")
     assert r["state"] == "collecting" and r["report_id"] is None
-    assert r["say"] == "I still need the time it happened. When did it happen?"   # ask order t, l, d, s
+    # the time ("around 10 AM") is filled from the user's words by the v4 fallback, so severity is what's missing
+    assert r["say"] == "I still need the severity. How serious is it: low, medium, high or critical?"
     assert list(tmp_path.glob("*.json")) == []
 
 

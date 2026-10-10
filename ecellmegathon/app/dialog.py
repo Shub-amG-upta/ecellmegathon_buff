@@ -17,7 +17,7 @@ import os
 import time
 from datetime import datetime
 
-from app import fastpath, gate, report
+from app import fastpath, gate, postfix, report
 from app.form import FormState, llm_json_schema, load_catalogue, load_schema
 from app.grammar import incident_gbnf
 from app.prompt import system_prompt, user_message
@@ -118,6 +118,7 @@ class Dialog:
         if tool == "update_report":
             kept, dropped = gate.check(args, " ".join(self.heard))
             kept = gate.fill_severity(kept, text, bool(self.form.values.get("severity")))
+            kept = postfix.apply(kept, text, self.form.compact())      # v4 fixes (POSTFIX=off: none)
             if kept:
                 if self.asked is None or not self.form.transcripts:
                     self.form.add_transcript(text)     # narration → description

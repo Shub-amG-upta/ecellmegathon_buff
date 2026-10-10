@@ -45,7 +45,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from app import fastpath, gate  # noqa: E402
+from app import fastpath, gate, postfix  # noqa: E402
 from app.audio import trim_silence  # noqa: E402
 from app.backends import LLMReply  # noqa: E402
 from app.dialog import Dialog  # noqa: E402
@@ -129,10 +129,12 @@ def score_args(pred: dict, gold: dict, accept: dict) -> dict:
             "extra": extras(pred, gold, accept)}
 
 
-def gated(call: dict, transcript: str, text: str = "", form_has_severity: bool = True) -> tuple[dict, list]:
-    """The gate, then the severity fallback exactly as app/dialog.py applies it (this turn's text only)."""
+def gated(call: dict, transcript: str, text: str = "", form_has_severity: bool = True,
+          form_before: dict | None = None) -> tuple[dict, list]:
+    """The gate, the severity fallback and the v4 post-model fixes, exactly as app/dialog.py applies them."""
     kept, dropped = gate.check(dict(call.get("args") or {}), transcript)
-    return gate.fill_severity(kept, text, form_has_severity), dropped
+    kept = gate.fill_severity(kept, text, form_has_severity)
+    return postfix.apply(kept, text, form_before or {}), dropped
 
 
 # ---- backends -----------------------------------------------------------------
@@ -181,7 +183,8 @@ def teacher_forced(cases, backend, said: dict | None = None, only: set | None = 
                     reply = backend.generate(user_message(d.form.compact(), t["asked"], text),
                                              system=d.system, max_tokens=d.max_tokens, **d.constrain())
                 call, err = d._parse(reply.text) if reply.status == "ok" else ({"tool": None}, reply.error)
-                kept, dropped = gated(call, " ".join(heard), text, bool(t["form_before"].get("s")))
+                kept, dropped = gated(call, " ".join(heard), text, bool(t["form_before"].get("s")),
+                                      t["form_before"])
                 gold = t["gold"]
                 out.append({"case": c["id"], "turn": t["i"], "user": text, "asked": t["asked"],
                             "gold_tool": gold["tool"], "pred_tool": call.get("tool"),
@@ -426,6 +429,7 @@ def main() -> int:
     fr = free_running(cases, backend, fast=fast) if a.mode in ("both", "free") else []
     res = summarise(tf, fr, a.label, backend, a.split)
     res["fast_path"] = fast
+    res["postfix"] = postfix.enabled()
     res["constraint"] = Dialog(backend).constraint
     print_summary(res)
     out = Path(a.out)
