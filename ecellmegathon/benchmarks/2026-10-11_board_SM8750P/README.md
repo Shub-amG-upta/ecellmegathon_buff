@@ -45,9 +45,32 @@ Started 00:11:08, saved 00:17:41 (laptop time), 0 errors. Routed through `ui_dev
 NPU 40.3 → **105.5 °C**, CPU 48.4 → **104.6 °C**. Free memory 8.9 GiB throughout. Run 1 ran hot for most of
 its length; whether that throttled the later calls is not separated here.
 
-**Run 2: not run yet.** The plan (M4) runs each configuration twice; temperature-0 replies drift between
+**v1 run 2: not run.** The plan (M4) runs each configuration twice; temperature-0 replies drift between
 server launches. Run 2 should start after a fresh `board.board start` with the NPU back near 40–50 °C (it was
 49.6 °C at 00:20:55).
+
+## 1b. v2 code, runs 1 and 2 (BOARD), with `benchmarks/run_bench.py`
+
+Shubham's v2 (merged at `14a4766`): server context 2048 (was 4096) and the fast path (plain answers like
+"medium" or "submit" handled by code, without the LLM). Each run: llama-server stopped, the NPU cooled to
+<= 50 °C, a fresh server started and its NPU placement confirmed (29/29 layers on HTP0), the eval routed
+through the live monitor. Table from `benchmarks/compare.py` (also in `COMPARISON.md`):
+
+| run | ctx | fast path | tool | field (turn) | field (dialog) | ended right | turns with extras | LLM calls / by code | whole eval | NPU start→peak |
+|---|---|---|---|---|---|---|---|---|---|---|
+| v1 #1 | 4096 | off | 97.5% | 65.7% | 62.9% | 27/44 | 71 | 157 / 0 | 393 s | 40→106 °C |
+| v2 #1 | 2048 | on | 97.5% | 65.7% | 63.7% | 29/44 | 51 | 68 / 89 | 264 s | 42→105 °C |
+| v2 #2 | 2048 | on | 97.5% | 65.7% | 63.7% | 29/44 | 51 | 68 / 89 | 267 s | 43→106 °C |
+
+- **v2 #1 and v2 #2 give identical results** on every metric and every field, from two separate server
+  launches: on this board the temperature-0 replies did not drift between these two launches.
+- Per-turn accuracy is the same in v1 and v2 (identical per field). v2 finishes the eval in about two thirds
+  of the time, has fewer turns with extra values (51 vs 71), and ends 2 more dialogs right.
+- v2's median LLM call (1,573–1,576 ms) is longer than v1's (918 ms) only because the short, easy turns no
+  longer reach the LLM; it is not a slower call.
+- v1 and v2 differ in two settings (ctx and fast path), so this table does not separate their effects. To do
+  that: `run_bench.py --tag v2-v1settings --ctx 4096 --no-fast-path`.
+- The NPU reaches ~105 °C in every run. No crash in any of the three runs.
 
 ## 2. Schema smoke test (BOARD): `smoke_BOARD_20261010_233957.json`
 
