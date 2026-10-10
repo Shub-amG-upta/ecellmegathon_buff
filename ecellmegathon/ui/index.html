@@ -14,6 +14,7 @@
   </div>
   <div class="top-right">
     <a class="ghost-link" href="record.html">Record mode</a>
+    <button id="reply-mode" class="ghost small" type="button" aria-label="Change how replies are given">🔊 Voice</button>
     <span id="state" class="badge" data-state="collecting">collecting</span>
     <button id="reset" class="ghost" type="button">New report</button>
   </div>
@@ -87,6 +88,18 @@
     <pre id="report-view" class="json" hidden></pre>
   </section>
 </main>
+
+<!-- Reply mode: asked when the page opens; the header button changes it later. -->
+<dialog id="mode-dialog" class="mode-dialog" aria-labelledby="mode-title">
+  <h2 id="mode-title">How should the assistant reply?</h2>
+  <p class="hint">You can talk or type either way. You can change this later with the button at the top.</p>
+  <div class="mode-choices">
+    <button type="button" data-mode="voice"><span class="mode-icon" aria-hidden="true">🔊</span>
+      <strong>Speak and show text</strong><span>Replies are read aloud (text-to-speech).</span></button>
+    <button type="button" data-mode="text"><span class="mode-icon" aria-hidden="true">💬</span>
+      <strong>Text only</strong><span>Replies appear on screen, no sound.</span></button>
+  </div>
+</dialog>
 
 <script src="audio.js"></script>
 <script src="app.js"></script>

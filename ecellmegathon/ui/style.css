@@ -136,3 +136,21 @@ input {
 .reports { list-style: none; margin: 0; padding: 0; }
 .reports li button { width: 100%; text-align: left; background: none; color: var(--ink); border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: .45rem .1rem; }
 .reports li button:hover { color: var(--accent); }
+
+/* reply mode: chosen when the page opens (voice = text-to-speech + text, text = text only) */
+body.text-only .replay { display: none; }
+.mode-dialog {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink);
+  padding: 1.2rem; width: 440px; max-width: calc(100vw - 32px);
+}
+.mode-dialog::backdrop { background: rgb(0 0 0 / .45); }
+.mode-dialog h2 { text-transform: none; letter-spacing: 0; font-size: 1.05rem; color: var(--ink); }
+.mode-choices { display: grid; gap: .6rem; margin-top: .8rem; }
+.mode-choices button {
+  display: grid; grid-template-columns: auto 1fr; column-gap: .7rem; align-items: center; text-align: left;
+  background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: .75rem .9rem;
+}
+.mode-choices button:hover, .mode-choices button:focus-visible { border-color: var(--accent); }
+.mode-choices .mode-icon { grid-row: span 2; font-size: 1.5rem; }
+.mode-choices span:not(.mode-icon) { color: var(--muted); font-size: .85rem; }
+.text-form input { min-width: 0; }
