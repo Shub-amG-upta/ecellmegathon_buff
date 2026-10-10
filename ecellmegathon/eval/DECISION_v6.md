@@ -29,3 +29,41 @@ run in the same session if possible, with `ANSWER=full`. v6 = the same with `ANS
 6. mean LLM time per call not higher than the baseline's.
 
 If it fails, `ANSWER=full` stays the default and the numbers are recorded here.
+
+## Result (BOARD, recorded after the runs)
+
+Runs by Sarthak, code `b272764` (v6), QIDK SM8750P, ctx 2048, PROMPT=1, POSTFIX=on, fast path on, dev split,
+`EVAL_HEAT_PAUSE=90:80` (0 pauses). Cooling not recorded. Baseline = v4 config (`ANSWER=full`), 2 runs, **identical
+answers on all 68 LLM turns** (this also gives v4 its second run). Reports: `ANALYSIS_v6_run1.md`,
+`ANALYSIS_v6-gemma4b_run1.md`.
+
+| | baseline (v4) ×2 | v6 compact (1 run) |
+|---|---|---|
+| fields right /242 | 190 | 192 |
+| tool right /157 | 153 | 151 |
+| ended right /44 | 41 | **43** |
+| turns with an extra value | 37 | 42 |
+| output tokens per LLM call | 33.3 | 30.1 (−9.6%) |
+| LLM call median | 1,643 ms | 1,485 ms |
+
+| rule | result |
+|---|---|
+| 1. ≥ 15% fewer output tokens | **FAIL** (−9.6%) |
+| 2. fields ≥ baseline − 2 (188) | PASS (192) |
+| 3. tool ≥ baseline − 1 turn (152) | **FAIL** (151) |
+| 4. ended right ≥ baseline − 1 (40) | PASS (43) |
+| 5. extra turns ≤ baseline + 3 (40) | **FAIL** (42) |
+| 6. LLM time per call not higher | PASS |
+
+**Verdict: DROP compact as the default; `ANSWER=full` stays (v4 config).** The format did save the expected
+~7 tokens per call where the answer was the same (20 turns: mean 7.0, 4–8), but without the "update_report"
+framing the model wrote more fields (3.85 vs 3.18 per call), which ate most of the saving and added extras. The
+two new tool errors are a filler-only turn ("um... uh...") and a cancel at the end of a sentence, both answered
+as updates. `ANSWER=compact` stays available as a switch.
+
+**Gemma 3 4B, v6 compact, 1 run** (GEMMA4B_RULE.md): fields 192/242, tool 149, ended 37/44, extras 38, LLM median
+2,409 ms. Type **39/43 vs Llama's 31** (8 wins, 0 losses: slip vs fall, struck-by, chemical vs gas, fall from
+height), persons 13 vs 10; location 34 vs 42, equipment 7 vs 10. Fails its rule 2 (tool ≥ 0.975): keep Llama.
+Its prefill was 660 ms median with 494 new tokens per call: the system prompt was **not reused**, unlike Llama
+(104 ms, 38 tokens). Likely cause, unverified: Gemma 3 uses sliding-window attention, and llama-server doesn't
+reuse a cached prefix for such models unless started with `--swa-full`.
