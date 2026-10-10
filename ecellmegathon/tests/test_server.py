@@ -162,3 +162,29 @@ def test_proof_off_the_board_says_so_with_nulls(run):
     url = run([])
     r = call(url, "/api/proof")[1]
     assert r["llm"]["offloaded"] is None and "not on the board's NPU" in r["llm"]["error"]
+
+
+def test_silence_is_trimmed_before_stt_unless_switched_off(run, monkeypatch):
+    import io
+    import math
+    import wave
+    frames = bytearray()
+    for sec, amp in ((1.0, 0), (0.8, 8000), (1.0, 0)):
+        for i in range(int(sec * 16000)):
+            frames += int(amp * math.sin(2 * math.pi * 300 * i / 16000)).to_bytes(2, "little", signed=True)
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as w:
+        w.setnchannels(1), w.setsampwidth(2), w.setframerate(16000), w.writeframes(bytes(frames))
+    clip, heard = buf.getvalue(), []
+
+    def transcribe(wav, prompt=""):
+        heard.append(len(wav))
+        return FAKE_VOICE.transcribe(wav, prompt)
+    voice = SimpleNamespace(transcribe=transcribe, speak=FAKE_VOICE.speak)
+    url = run([{"tool": "update_report", "args": {"t": "water_leak", "l": "pantry"}}] * 2, voice_mod=voice)
+    r = call(url, "/api/turn", clip, ctype="audio/wav")[1]
+    assert r["audio_trim"]["in_ms"] == 2800 and r["audio_trim"]["out_ms"] < 1500
+    assert heard[-1] < len(clip)
+    monkeypatch.setenv("STT_TRIM", "off")
+    call(url, "/api/turn", clip, ctype="audio/wav")
+    assert heard[-1] == len(clip)

@@ -11,6 +11,7 @@ Environment:
   LLM_MODEL  model file name, for the report and the proof panel
   PORT       8000
   VOICE      on | off   off = text only, even when app/voice.py is present
+  STT_TRIM   on | off   cut silence at both ends of a clip before STT (default on)
   LLM_CONSTRAINT  schema | gbnf   how the answer is constrained (gbnf: no whitespace; compare on the board)
 
 Speech is Track B's `app/voice.py` (§4.1). Until it exists, the server runs
@@ -30,6 +31,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from app import report
+from app.audio import trim_silence
 from app.backends import LlamaServerBackend, MockBackend
 from app.dialog import Dialog
 from app.form import ROOT
@@ -146,8 +148,12 @@ class App:
                 r = self.dialog.turn("")
                 r["error"] = "speech-to-text is not available (app/voice.py missing)"
                 return r
+            trim = {"skipped": "off"}
+            if os.environ.get("STT_TRIM", "on") != "off":
+                wav, trim = trim_silence(wav)
             stt = self.voice.transcribe(wav, prompt=self.vocab)
             r = self.dialog.turn(stt.text)
+            r["audio_trim"] = trim
             r["timings_ms"]["stt"] = stt.wall_ms
             if r["timings_ms"]["total"] is not None:
                 r["timings_ms"]["total"] += stt.wall_ms

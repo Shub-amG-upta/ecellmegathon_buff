@@ -46,6 +46,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from app import fastpath, gate  # noqa: E402
+from app.audio import trim_silence  # noqa: E402
 from app.backends import LLMReply  # noqa: E402
 from app.dialog import Dialog  # noqa: E402
 from app.gate import _word_in, content_words  # noqa: E402
@@ -256,7 +257,7 @@ def _acc(rows: list[dict]) -> dict:
             "field": round(sum(fields) / len(fields), 3) if fields else None}
 
 
-def audio_eval(cases, backend, audio_dir: Path, voice_mod, vocab: str = "") -> dict:
+def audio_eval(cases, backend, audio_dir: Path, voice_mod, vocab: str = "", trim: bool = True) -> dict:
     """Per speaker: transcribe each clip, score the transcripts through the same
     teacher-forced path, and set them next to the typed text of the same turns."""
     by_speaker = find_audio(audio_dir, cases)
@@ -269,7 +270,9 @@ def audio_eval(cases, backend, audio_dir: Path, voice_mod, vocab: str = "") -> d
     for spk, files in sorted(by_speaker.items()):
         said, clips = {}, []
         for key, path in sorted(files.items()):
-            r = voice_mod.transcribe(path.read_bytes(), prompt=vocab)
+            wav = path.read_bytes()
+            trimmed = trim_silence(wav)[0] if trim else wav       # as app/server.py does (STT_TRIM)
+            r = voice_mod.transcribe(trimmed, prompt=vocab)
             said[key] = r.text
             clips.append({"case": key[0], "turn": key[1], "file": path.name, "heard": r.text,
                           "stt_wall_ms": r.wall_ms, "stt_ms": r.stt_ms, "device": r.device,
@@ -389,6 +392,7 @@ def main() -> int:
                     "of typed text; STT through app/voice.py (STT_URL)")
     ap.add_argument("--no-vocab", action="store_true", help="--audio: don't pass data/vocab.txt to STT")
     ap.add_argument("--no-fast-path", action="store_true", help="send every turn to the LLM (for comparison)")
+    ap.add_argument("--no-trim", action="store_true", help="--audio: don't cut silence before STT")
     ap.add_argument("--cases", default=str(CASES))
     ap.add_argument("--out", default=str(ROOT / "results"))
     a = ap.parse_args()
@@ -405,7 +409,8 @@ def main() -> int:
         vocab_file = ROOT / "data" / "vocab.txt"
         vocab = "" if a.no_vocab or not vocab_file.exists() else vocab_file.read_text()
         res = summarise([], [], a.label, backend, a.split)
-        res["audio"] = audio_eval(cases, backend, Path(a.audio), voice, vocab)
+        res["audio"] = audio_eval(cases, backend, Path(a.audio), voice, vocab, trim=not a.no_trim)
+        res["trim"] = not a.no_trim
         res["vocab_prompt"] = bool(vocab)
         print_audio(res)
         out = Path(a.out)
