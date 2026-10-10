@@ -122,3 +122,11 @@ def test_perfect_stt_scores_like_typed_and_bad_stt_shows_its_damage(tmp_path):
     assert noisy["survival"]["rate"] < 1.0                     # STT damage, measured without the LLM
     assert noisy["spoken"]["field"] < noisy["typed"]["field"]
     assert any(x["value"] == "The guard Mahesh" for x in noisy["survival"]["lost"])
+
+
+def test_eval_uses_the_fast_path_like_the_live_dialog_and_can_switch_it_off():
+    on = summarise(teacher_forced(ALL, Oracle(ALL)), [], "ORACLE", Oracle(ALL), "all")["teacher_forced"]
+    off = summarise(teacher_forced(ALL, Oracle(ALL), fast=False), [], "ORACLE", Oracle(ALL), "all")["teacher_forced"]
+    assert on["answered_by_code"] > 100 and on["llm_calls"] + on["answered_by_code"] == 250
+    assert off["answered_by_code"] == 0 and off["llm_calls"] == 250
+    assert on["field_accuracy"] == off["field_accuracy"] == 1.0

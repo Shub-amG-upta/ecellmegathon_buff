@@ -36,7 +36,7 @@ def test_lane_command_env_offload_and_fixed_flags():
     npu, cpu = board.lane_command("npu", "m.gguf"), board.lane_command("cpu", "m.gguf", threads=6)
     for cmd in (npu, cpu):
         assert f"LD_LIBRARY_PATH={lib} " in cmd and f"ADSP_LIBRARY_PATH={lib} " in cmd
-        assert " -c 4096 -np 1 " in cmd and "-m /data/local/tmp/llm/m.gguf " in cmd
+        assert " -c 2048 -np 1 " in cmd and "-m /data/local/tmp/llm/m.gguf " in cmd
         assert cmd.endswith("-fit off --cache-ram 0 -lv 4")
     assert "--device HTP0 -ngl 99" in npu and "--port 8080" in npu
     assert "--device none -ngl 0 -t 6" in cpu and "--port 8081" in cpu
@@ -98,3 +98,33 @@ def test_lane_logs_prove_placement():
 def test_meminfo_parsing():
     m = parse_meminfo("MemTotal:       11633360 kB\nMemAvailable:    6290000 kB\nCached: 1 kB\n")
     assert m == {"MemTotal_kB": 11633360, "MemAvailable_kB": 6290000}
+
+
+def test_context_size_is_2048_unless_asked_and_bounded(monkeypatch):
+    assert " -c 2048 " in board.lane_command("npu", "m.gguf")          # human decision 2026-10-10
+    assert " -c 4096 " in board.lane_command("npu", "m.gguf", ctx=4096)
+    name = "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf"
+    fake, calls = _fake_adb(board.CANDIDATES[name])
+    monkeypatch.setattr(board, "_adb", fake)
+    assert board.start_lane("npu", name, ctx=2048)["ctx"] == 2048
+    with pytest.raises(ValueError):
+        board.start_lane("npu", name, ctx=64)
+
+
+def test_copy_ahead_decoding_is_off_unless_asked_and_checked_on_the_board(monkeypatch):
+    assert "--spec-type" not in board.lane_command("npu", "m.gguf")
+    cmd = board.lane_command("npu", "m.gguf", spec=True)
+    assert "--spec-type ngram-simple --spec-ngram-simple-size-n 3 --spec-ngram-simple-size-m 8" in cmd
+    name = "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf"
+    sha = board.CANDIDATES[name]
+
+    def fake(help_text):
+        def run(*args, serial="", timeout=60):
+            out = f"{sha}  x\n" if "sha256sum" in args[-1] else (help_text if "--help" in args[-1] else "")
+            return subprocess.CompletedProcess(args, 0, out, "")
+        return run
+    monkeypatch.setattr(board, "_adb", fake("usage ... --spec-type ... (no ngram-simple sizes)"))
+    with pytest.raises(RuntimeError):
+        board.start_lane("npu", name, spec=True)                 # older build: refuse, don't guess
+    monkeypatch.setattr(board, "_adb", fake("--spec-ngram-simple-size-n N ..."))
+    assert board.start_lane("npu", name, spec=True)["spec"] is True

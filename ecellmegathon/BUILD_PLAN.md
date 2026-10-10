@@ -204,7 +204,18 @@ Served at `http://localhost:8000`. It also serves `ui/` as static files at `/`.
 
 - `state` is one of `collecting` | `review` | `submitted` | `cancelled`.
 - A timing that was not measured is `null`, never 0.
-- `audio_url` is `null` when TTS failed or is off.
+- `audio_url` is `null` when TTS is off. **Speech is made after the reply (2026-10-10):** the turn response
+  comes back as soon as the form is updated, with `timings_ms.tts: null`; `GET audio_url` waits until the audio
+  is ready (up to 30 s; 404 if TTS failed) and carries the TTS time in an `X-TTS-Ms` header; `GET /api/state` then
+  shows `timings_ms.tts` and `devices.tts`. UI: render the form at once, then play `audio_url`, then read the TTS
+  time from the header or from `/api/state`.
+- `fast_path: true` when code answered the turn without the LLM (bare severity word, exact type name, pure time
+  answer, short plain location, submit / cancel); the `llm_*` timings are then `null`.
+- `audio_parts` (only with `TTS_SPLIT=on` and a reply of several sentences): one URL per sentence, in order, each
+  ready as soon as that sentence is made. Play them one after another to start speaking sooner; `audio_url` is
+  still the whole reply. `/api/state` then also has `timings_ms.tts_first` (time to the first sentence).
+- `audio_trim` (voice turns): `{"in_ms", "out_ms"}`, the clip length before and after cutting silence at the
+  ends (`STT_TRIM`, default on).
 
 ### 4.3 Shared eval cases: `eval/cases.jsonl`
 
@@ -437,10 +448,24 @@ Ports: **8080** llama-server (NPU) · **8082** STT · **8083** TTS · **8000** o
 | 7 | speech: typed vs spoken (E3) | same env + `.venv/bin/python eval/run_eval.py --label BOARD --audio eval/audio` | results saved |
 | 8 | chip temperature after, stop | `.venv/bin/python -m board.board temp`, then `board/voice_up.sh stop` and `.venv/bin/python -m board.board stop` | — |
 
-Step 5 is about 250 LLM calls; at the screening rates that's roughly 10–20 min per run (ESTIMATE). Leave cooling
-gaps between runs.
+Step 5 sends ~120 turns to the LLM (the fast path answers the other ~130 in code); at the screening rates that's
+roughly 5–10 min per run (ESTIMATE). Leave cooling gaps between runs.
 
-**Fixed facts:** llama-server flags `-c 4096 -np 1 -fit off --cache-ram 0 -lv 4` + `--device HTP0 -ngl 99`
+**Speed comparisons (after step 5, dev split, one change at a time; keep a change only if latency improves and
+field accuracy doesn't drop):**
+
+| switch | baseline | variant | how |
+|---|---|---|---|
+| fast path | on | off | `eval/run_eval.py --label BOARD --no-fast-path` (shows what the fast path saves) |
+| answer constraint | `LLM_CONSTRAINT=schema` | `LLM_CONSTRAINT=gbnf` (no whitespace) | same eval with the env var; first run `eval/smoke_llm.py` to check llama-server accepts the grammar |
+| context size | `-c 2048` (default, human decision) | `-c 4096` (FieldMind's value), only if 2048 shows problems | `CTX=4096 board/up.sh`, then the same eval |
+| copy-ahead decoding | off | `SPEC=1 board/up.sh` (`--spec-type ngram-simple`, lookup 3 / draft 8) | the same eval; also tune 2-4 / 6-12 |
+| TTS by sentence | `TTS_SPLIT=off` | `TTS_SPLIT=on` (needs the UI to play `audio_parts`) | time to first audio (`tts_first`) vs whole reply |
+| silence trimming | `STT_TRIM=on` | `--no-trim` | `eval/run_eval.py --audio` STT time and accuracy |
+
+Compare the eval's `decode_tokens` and `wall_ms` per LLM call, and the field accuracy.
+
+**Fixed facts:** llama-server flags `-c 2048 -np 1 -fit off --cache-ram 0 -lv 4` + `--device HTP0 -ngl 99`
 (`--cache-ram 0` is required: without it board memory ran out after ~36 calls). `LD_LIBRARY_PATH` and
 `ADSP_LIBRARY_PATH` on every launch (`board.py` does it). USB can drop: the servers keep running, rerun the step.
 Temperature-0 replies can differ between server launches, so evals run twice. Log laptop time, never board time.

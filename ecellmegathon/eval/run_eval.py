@@ -45,7 +45,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from app import gate  # noqa: E402
+from app import fastpath, gate  # noqa: E402
+from app.audio import trim_silence  # noqa: E402
 from app.backends import LLMReply  # noqa: E402
 from app.dialog import Dialog  # noqa: E402
 from app.gate import _word_in, content_words  # noqa: E402
@@ -149,7 +150,8 @@ class Oracle:
 
 
 # ---- the two modes ------------------------------------------------------------
-def teacher_forced(cases, backend, said: dict | None = None, only: set | None = None) -> list[dict]:
+def teacher_forced(cases, backend, said: dict | None = None, only: set | None = None,
+                   fast: bool = True) -> list[dict]:
     """One LLM call per turn from its gold form_before. `said` replaces what the
     user said for some turns ({(case, i): text}, e.g. STT transcripts); `only`
     limits the turns scored. Earlier turns stay as typed (teacher forcing)."""
@@ -166,9 +168,16 @@ def teacher_forced(cases, backend, said: dict | None = None, only: set | None = 
                     continue
                 d.reset()
                 d.form.apply(t["form_before"])
-                reply = backend.generate(user_message(d.form.compact(), t["asked"], text),
-                                         system=d.system, json_schema=d.json_schema,
-                                         max_tokens=d.max_tokens)
+                # complete = every mandatory LLM field filled (the description is the user's words,
+                # which the live dialog always has; this replay doesn't, so it's not counted here)
+                state = "review" if not [f for f in d.form.missing() if f.get("key")] else "collecting"
+                quick = fastpath.answer(text, t["asked"], state, d.type_values) if fast else None
+                if quick is not None:          # answered by code, as the live dialog would
+                    reply = LLMReply(text=json.dumps(quick), backend="code", model="fastpath",
+                                     prefill_tokens=None, decode_tokens=None)
+                else:
+                    reply = backend.generate(user_message(d.form.compact(), t["asked"], text),
+                                             system=d.system, max_tokens=d.max_tokens, **d.constrain())
                 call, err = d._parse(reply.text) if reply.status == "ok" else ({"tool": None}, reply.error)
                 kept, dropped = gated(call, " ".join(heard))
                 gold = t["gold"]
@@ -176,19 +185,19 @@ def teacher_forced(cases, backend, said: dict | None = None, only: set | None = 
                             "gold_tool": gold["tool"], "pred_tool": call.get("tool"),
                             **score_args(kept if call.get("tool") == "update_report" else {},
                                          gold["args"], c.get("accept", {})),
-                            "raw": call, "dropped": dropped, "error": err,
+                            "raw": call, "dropped": dropped, "error": err, "fast_path": quick is not None,
                             "llm": {"prefill_ms": reply.prefill_ms, "decode_ms": reply.decode_ms,
                                     "wall_ms": reply.latency_ms, "decode_tokens": reply.decode_tokens,
                                     "prefill_tokens": reply.prefill_tokens}})
     return out
 
 
-def free_running(cases, backend) -> list[dict]:
+def free_running(cases, backend, fast: bool = True) -> list[dict]:
     out = []
     with tempfile.TemporaryDirectory() as tmp:
         for c in cases:
             now = datetime.fromisoformat(c["ref_time"])
-            d = Dialog(backend, report_dir=Path(tmp), clock=lambda now=now: now)
+            d = Dialog(backend, report_dir=Path(tmp), clock=lambda now=now: now, use_fast_path=fast)
             for t in c["turns"]:
                 d.turn(t["user"])
             final = d.form.compact()
@@ -248,7 +257,7 @@ def _acc(rows: list[dict]) -> dict:
             "field": round(sum(fields) / len(fields), 3) if fields else None}
 
 
-def audio_eval(cases, backend, audio_dir: Path, voice_mod, vocab: str = "") -> dict:
+def audio_eval(cases, backend, audio_dir: Path, voice_mod, vocab: str = "", trim: bool = True) -> dict:
     """Per speaker: transcribe each clip, score the transcripts through the same
     teacher-forced path, and set them next to the typed text of the same turns."""
     by_speaker = find_audio(audio_dir, cases)
@@ -261,7 +270,9 @@ def audio_eval(cases, backend, audio_dir: Path, voice_mod, vocab: str = "") -> d
     for spk, files in sorted(by_speaker.items()):
         said, clips = {}, []
         for key, path in sorted(files.items()):
-            r = voice_mod.transcribe(path.read_bytes(), prompt=vocab)
+            wav = path.read_bytes()
+            trimmed = trim_silence(wav)[0] if trim else wav       # as app/server.py does (STT_TRIM)
+            r = voice_mod.transcribe(trimmed, prompt=vocab)
             said[key] = r.text
             clips.append({"case": key[0], "turn": key[1], "file": path.name, "heard": r.text,
                           "stt_wall_ms": r.wall_ms, "stt_ms": r.stt_ms, "device": r.device,
@@ -320,8 +331,12 @@ def summarise(tf, fr, label, backend, split) -> dict:
             "turns_with_extra": sum(bool(r["extra"]) for r in tf),
             "dropped_by_gate": sum(len(r["dropped"]) for r in tf),
             "errors": sum(bool(r["error"]) for r in tf),
-            "latency_ms": {k: _stat([r["llm"][k] for r in tf]) for k in ("prefill_ms", "decode_ms", "wall_ms")},
-            "tokens": {k: _stat([r["llm"][k] for r in tf]) for k in ("prefill_tokens", "decode_tokens")},
+            "answered_by_code": sum(r["fast_path"] for r in tf),
+            "llm_calls": sum(not r["fast_path"] for r in tf),
+            "latency_ms": {k: _stat([r["llm"][k] for r in tf if not r["fast_path"]])
+                           for k in ("prefill_ms", "decode_ms", "wall_ms")},
+            "tokens": {k: _stat([r["llm"][k] for r in tf if not r["fast_path"]])
+                       for k in ("prefill_tokens", "decode_tokens")},
         }
     if fr:
         fields = [f["ok"] for r in fr for f in r["fields"].values()]
@@ -346,6 +361,7 @@ def print_summary(res: dict) -> None:
         print(f"  teacher-forced  {t['turns']} turns · tool {t['tool_accuracy']} · field {t['field_accuracy']}"
               f" · turns with extra {t['turns_with_extra']} · dropped by gate {t['dropped_by_gate']}"
               f" · errors {t['errors']}")
+        print(f"                  answered by code (fast path) {t['answered_by_code']} · LLM calls {t['llm_calls']}")
         print(f"                  by field {t['by_field']}")
         for k, v in t["latency_ms"].items():
             print(f"                  {k:<11} {v}")
@@ -375,6 +391,8 @@ def main() -> int:
     ap.add_argument("--audio", metavar="DIR", help="score recordings in DIR (BUILD_PLAN §4.5) instead "
                     "of typed text; STT through app/voice.py (STT_URL)")
     ap.add_argument("--no-vocab", action="store_true", help="--audio: don't pass data/vocab.txt to STT")
+    ap.add_argument("--no-fast-path", action="store_true", help="send every turn to the LLM (for comparison)")
+    ap.add_argument("--no-trim", action="store_true", help="--audio: don't cut silence before STT")
     ap.add_argument("--cases", default=str(CASES))
     ap.add_argument("--out", default=str(ROOT / "results"))
     a = ap.parse_args()
@@ -391,7 +409,8 @@ def main() -> int:
         vocab_file = ROOT / "data" / "vocab.txt"
         vocab = "" if a.no_vocab or not vocab_file.exists() else vocab_file.read_text()
         res = summarise([], [], a.label, backend, a.split)
-        res["audio"] = audio_eval(cases, backend, Path(a.audio), voice, vocab)
+        res["audio"] = audio_eval(cases, backend, Path(a.audio), voice, vocab, trim=not a.no_trim)
+        res["trim"] = not a.no_trim
         res["vocab_prompt"] = bool(vocab)
         print_audio(res)
         out = Path(a.out)
@@ -400,9 +419,12 @@ def main() -> int:
         path.write_text(json.dumps(res, indent=1, ensure_ascii=False))
         print(f"  saved {path}")
         return 0
-    tf = teacher_forced(cases, backend) if a.mode in ("both", "teacher") else []
-    fr = free_running(cases, backend) if a.mode in ("both", "free") else []
+    fast = not a.no_fast_path
+    tf = teacher_forced(cases, backend, fast=fast) if a.mode in ("both", "teacher") else []
+    fr = free_running(cases, backend, fast=fast) if a.mode in ("both", "free") else []
     res = summarise(tf, fr, a.label, backend, a.split)
+    res["fast_path"] = fast
+    res["constraint"] = Dialog(backend).constraint
     print_summary(res)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)

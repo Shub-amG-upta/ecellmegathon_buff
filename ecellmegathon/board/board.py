@@ -4,7 +4,8 @@ QIDK helpers, host side: shells out to adb and talks HTTP to llama-server.
 Ported from FieldMind (bench/board.py), where every function here ran against
 the same board (SM8650). Dropped: the multi-lane campaign helpers.
 
-  python -m board.board start npu <model.gguf>   start llama-server on HTP0, forward :8080
+  python -m board.board start npu <model.gguf> [--ctx 2048] [--spec]   start llama-server on HTP0, forward :8080
+                                                 (--spec: copy-ahead speculative decoding, to compare)
   python -m board.board start cpu <model.gguf>   same model on the CPU, :8081 (comparison only)
   python -m board.board check npu                prove NPU placement from the startup log
   python -m board.board speed http://localhost:8080 [prompt_file]
@@ -50,12 +51,22 @@ DEVICE_PKG = "/data/local/tmp/llm/llama.cpp"
 DEVICE_MODELS = "/data/local/tmp/llm"
 DEVICE_LOGS = "/data/local/tmp/llm/logs"
 
-# FieldMind's fixed launch settings. -c 4096 is larger than this project's
-# prompts need; context size changes NPU speed, so measure -c 2048 before
-# switching rather than assuming it is faster.
-CTX_SIZE = 4096
+# HUMAN DECISION 2026-10-10: -c 2048 (FieldMind used 4096 for ~2,500-token prompts).
+# Our largest call is ~960 tokens with the answer (ESTIMATE, chars/3.5, longest eval
+# turn), so 2048 leaves ~2x headroom. 1024 was considered and left out: the worst
+# case (every field at its limit + a long sentence) is ~1,260. --ctx overrides it.
+CTX_SIZE = 2048
 N_PARALLEL = 1
 LANE_PORT = {"npu": 8080, "cpu": 8081}
+
+# Copy-ahead (prompt-lookup) speculative decoding, off by default. Most of our answer is copied from the
+# user's own words, so llama-server can draft the next tokens by matching the last N generated tokens
+# against the prompt, then check up to M drafted tokens in one batch on the NPU. N and M are starting
+# values to tune on the board (DESIGN CHOICE: our copied spans are short, 3-15 tokens). UNVERIFIED on
+# HTP0 and with grammar-constrained sampling; start_lane checks the board's llama-server has the flags
+# (they were renamed in recent llama.cpp builds), then measure decode tok/s and field accuracy.
+SPEC_FLAGS = ("--spec-type ngram-simple --spec-ngram-simple-size-n {n} --spec-ngram-simple-size-m {m}")
+SPEC_N, SPEC_M = 3, 8
 
 # The only model files a lane may load, built by board/build_candidate_gguf.sh
 # (every matrix Q4_0, token embedding and output Q8_0). start_lane() checks the
@@ -101,7 +112,7 @@ def check_model(model_file: str, serial: str = "") -> str:
 
 
 def lane_command(lane: str, model_file: str, threads: int = 6,
-                 log_level: int | None = 4) -> str:
+                 log_level: int | None = 4, ctx: int = CTX_SIZE, spec: bool = False) -> str:
     """The board-side shell command for one llama-server (no redirection, no &).
 
     -fit off      the server may not change the context or the offload itself
@@ -119,7 +130,8 @@ def lane_command(lane: str, model_file: str, threads: int = 6,
     return (f"cd {DEVICE_PKG} && LD_LIBRARY_PATH={DEVICE_PKG}/lib "
             f"ADSP_LIBRARY_PATH={DEVICE_PKG}/lib ./bin/llama-server "
             f"-m {DEVICE_MODELS}/{model_file} --host 0.0.0.0 --port {LANE_PORT[lane]} "
-            f"-c {CTX_SIZE} -np {N_PARALLEL} {offload} -fit off --cache-ram 0"
+            f"-c {ctx} -np {N_PARALLEL} {offload} -fit off --cache-ram 0"
+            + (" " + SPEC_FLAGS.format(n=SPEC_N, m=SPEC_M) if spec else "")
             + (f" -lv {log_level}" if log_level is not None else ""))
 
 
@@ -127,16 +139,28 @@ def lane_log_path(lane: str) -> str:
     return f"{DEVICE_LOGS}/lane_{lane}.log"
 
 
+def server_has_flag(flag: str, serial: str = "") -> bool:
+    """Does the board's llama-server know this flag? (reads its --help)"""
+    out = _adb("shell", f"cd {DEVICE_PKG} && LD_LIBRARY_PATH={DEVICE_PKG}/lib ./bin/llama-server --help 2>&1",
+               serial=serial, timeout=60).stdout
+    return flag in out
+
+
 def start_lane(lane: str, model_file: str, threads: int = 6, serial: str = "",
-               log_level: int | None = 4) -> dict:
+               log_level: int | None = 4, ctx: int = CTX_SIZE, spec: bool = False) -> dict:
     """Start llama-server in the background on the board and forward its port."""
     sha = check_model(model_file, serial)
-    cmd = lane_command(lane, model_file, threads, log_level)
+    if not 512 <= ctx <= 32768:
+        raise ValueError(f"context size {ctx} out of range")
+    if spec and not server_has_flag("--spec-ngram-simple-size-n", serial):
+        raise RuntimeError("the board's llama-server has no --spec-type ngram-simple flags "
+                           "(older build); start without SPEC=1")
+    cmd = lane_command(lane, model_file, threads, log_level, ctx, spec)
     port = LANE_PORT[lane]
     _adb("shell", f"mkdir -p {DEVICE_LOGS}", serial=serial)
     _adb("shell", f"nohup sh -c '{cmd}' > {lane_log_path(lane)} 2>&1 &", serial=serial)
     _adb("forward", f"tcp:{port}", f"tcp:{port}", serial=serial)
-    return {"lane": lane, "started_laptop_time": laptop_time(), "command": cmd,
+    return {"lane": lane, "started_laptop_time": laptop_time(), "command": cmd, "ctx": ctx, "spec": spec,
             "model_file": model_file, "model_sha256": sha,
             "board_log": lane_log_path(lane), "url": f"http://localhost:{port}"}
 
@@ -242,7 +266,8 @@ if __name__ == "__main__":
     drop_pythonpath()
     a = sys.argv[1:]
     if len(a) >= 3 and a[0] == "start":
-        info = start_lane(a[1], a[2])
+        ctx = int(a[a.index("--ctx") + 1]) if "--ctx" in a else CTX_SIZE
+        info = start_lane(a[1], a[2], ctx=ctx, spec="--spec" in a)
         info["ready_after_s"] = wait_health(info["url"])
         print(json.dumps(info, indent=1))
     elif len(a) >= 2 and a[0] == "check":

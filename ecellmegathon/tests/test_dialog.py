@@ -23,7 +23,7 @@ class Scripted:
         self.calls = []
 
     def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None):
-        self.calls.append({"prompt": prompt, "json_schema": json_schema, "system": system})
+        self.calls.append({"prompt": prompt, "json_schema": json_schema, "grammar": grammar, "system": system})
         r = self.replies.pop(0)
         if isinstance(r, LLMReply):
             return r
@@ -57,13 +57,15 @@ def test_problem_statement_example_end_to_end(make, tmp_path):
     assert r["timings_ms"]["stt"] is None                     # not measured here, so None
 
     r = d.turn("Medium.")
-    assert "Asked: s" in b.calls[1]["prompt"]                 # the model is told what was asked
+    assert r["fast_path"] and len(b.calls) == 1                # a bare severity word: code, no LLM call
+    assert r["timings_ms"]["llm_wall"] is None and r["tool_call"] == {"tool": "update_report", "args": {"s": "medium"}}
     assert r["state"] == "review" and r["missing"] == []
     assert r["say"] == ("Here's what I have. Water leak, medium severity. Where: near Conference "
                         "Room 2. When: around 10:00 AM today. Actions taken: area isolated by "
                         "maintenance. Say submit, or tell me what to change.")
 
     r = d.turn("Submit.")
+    assert r["fast_path"] and len(b.calls) == 1
     assert r["state"] == "submitted" and r["say"] == "Report IR-0001 submitted."
     saved = report.load("IR-0001", tmp_path)
     assert saved["form"]["incident_type"] == "water_leak" and saved["form"]["severity"] == "medium"
@@ -145,3 +147,32 @@ def test_review_screen_edit(make):
     d.turn("water leak in the pantry around 10 AM, low severity")
     r = d.edit("location", "kitchen")
     assert r["form"]["location"] == "kitchen" and "Where: kitchen." in r["say"]
+
+
+def test_a_reply_that_is_not_a_bare_answer_goes_to_the_llm_with_the_question(make):
+    d, b = make({"tool": "update_report", "args": {"t": "water_leak", "l": "pantry", "d": "around 10 AM"}},
+                {"tool": "update_report", "args": {"s": "medium"}})
+    d.turn("water leak in the pantry around 10 AM")
+    r = d.turn("medium, it could get worse")
+    assert not r["fast_path"] and len(b.calls) == 2
+    assert "Asked: s" in b.calls[1]["prompt"]                 # the model is told what was asked
+
+
+def test_fast_path_can_be_switched_off(tmp_path):
+    b = Scripted({"tool": "update_report", "args": {"t": "fire"}}, {"tool": "update_report", "args": {"s": "low"}})
+    d = Dialog(b, clock=CLOCK, report_dir=tmp_path, use_fast_path=False)
+    d.turn("there is a fire")
+    d.asked = "s"
+    assert not d.turn("low")["fast_path"] and len(b.calls) == 2
+
+
+def test_gbnf_constraint_sends_the_grammar_instead_of_the_schema(tmp_path, monkeypatch):
+    b = Scripted({"tool": "update_report", "args": {"t": "fire"}})
+    d = Dialog(b, clock=CLOCK, report_dir=tmp_path, constraint="gbnf")
+    d.turn("there is a fire")
+    assert b.calls[0]["json_schema"] is None and b.calls[0]["grammar"].startswith("root ::= ")
+    monkeypatch.setenv("LLM_CONSTRAINT", "gbnf")
+    assert Dialog(b, clock=CLOCK, report_dir=tmp_path).constraint == "gbnf"
+    monkeypatch.setenv("LLM_CONSTRAINT", "regex")
+    with pytest.raises(ValueError):
+        Dialog(b, clock=CLOCK, report_dir=tmp_path)

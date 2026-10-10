@@ -29,7 +29,7 @@ AI Incident Report Assistant for Megathon X (Qualcomm PS1). Read PLAN.md first.
 
 - llama.cpp `b11371` / `99b95488`, package at `/data/local/tmp/llm/llama.cpp`, GGUFs in `/data/local/tmp/llm/`.
 - Every launch: `LD_LIBRARY_PATH` and `ADSP_LIBRARY_PATH` = `/data/local/tmp/llm/llama.cpp/lib`.
-- llama-server flags: `-c 4096 -np 1 -fit off --cache-ram 0 -lv 4`. NPU: `--device HTP0 -ngl 99`.
+- llama-server flags: `-c 2048 -np 1 -fit off --cache-ram 0 -lv 4` (2048: human decision 2026-10-10). NPU: `--device HTP0 -ngl 99`.
 - Prove NPU placement from the startup log: `offloaded N/N layers` and a nonzero `HTP0 model buffer size`.
 - Only use pure-Q4_0 GGUFs (`board/build_candidate_gguf.sh`, checked by `board/gguf_types.py`). Published Q4_0
   files carry other tensor types; FieldMind standardised on pure Q4_0 + Q8_0 embedding/output.
