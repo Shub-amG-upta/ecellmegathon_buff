@@ -40,6 +40,8 @@ def test_what_qualifies():
     assert answer("around 10 AM.", "d", "collecting", TYPES)["args"] == {"d": "around 10 AM"}
     assert answer("yes submit it", None, "review", TYPES) == {"tool": "submit_report"}
     assert answer("cancel this report", "l", "collecting", TYPES) == {"tool": "cancel_report"}
+    assert answer("near gate 3", "l", "collecting", TYPES)["args"] == {"l": "near gate 3"}
+    assert answer("the store room on ground floor", "l", "collecting", TYPES)["args"] == {"l": "store room on ground floor"}
 
 
 def test_what_goes_to_the_llm():
@@ -53,6 +55,11 @@ def test_what_goes_to_the_llm():
         ("submit", None, "collecting"),                   # submit while incomplete: the LLM + code decide
         ("yes but the time is wrong", None, "review"),
         ("medium", "l", "collecting"),                    # severity word, but location was asked
+        ("near the lab at 3 PM", "l", "collecting"),      # a time too
+        ("not the lab, the workshop", "l", "collecting"),  # correction
+        ("in the lab, it's getting worse", "l", "collecting"),  # more than the place
+        ("the second floor, I think", "l", "collecting"),  # hedged
+        ("meter room", None, "collecting"),               # location wasn't asked
         ("", "s", "collecting"),
     ]:
         assert answer(text, asked, state, TYPES) is None, text
