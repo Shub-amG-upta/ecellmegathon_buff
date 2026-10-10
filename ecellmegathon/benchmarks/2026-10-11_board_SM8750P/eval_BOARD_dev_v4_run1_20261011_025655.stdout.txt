@@ -1,0 +1,33 @@
+  throttle: pace 0.0 s · heat pause [90.0, 80.0] · 0 pauses, 0.0 s paused · NPU peak 68.6 °C
+
+[BOARD] split dev · model Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf on npu · 2026-10-11T03:07:26+0530
+  teacher-forced  157 turns · tool 0.975 · field 0.785 · turns with extra 37 · dropped by gate 15 · errors 0
+                  answered by code (fast path) 89 · LLM calls 68
+                  by field {'a': '12/27', 'd': '39/42', 'e': '8/20', 'l': '41/44', 'p': '9/18', 's': '42/42', 't': '33/43', 'w': '6/6'}
+                  prefill_ms  {'mean': 112.2, 'median': 104.7, 'n': 68}
+                  decode_ms   {'mean': 1565.7, 'median': 1521.5, 'n': 68}
+                  wall_ms     {'mean': 1715.7, 'median': 1648.5, 'n': 68}
+                  tokens {'prefill_tokens': {'mean': 50.1, 'median': 38.5, 'n': 68}, 'decode_tokens': {'mean': 33.3, 'median': 31.5, 'n': 68}}
+   ✗ ps-01#0 tool update_report (want update_report) wrong {'a': None} extra {'e': ['maintenance has already isolated the']}
+   ✗ ps-02#0 tool update_report (want update_report) wrong {'d': '10 or so', 'a': None} extra {}
+   ✗ el-01#0 tool update_report (want update_report) wrong {'p': ['coworkers'], 'a': ['found him on the floor', 'called the ambulance', 'taken to hospital']} extra {'p': ['coworkers'], 'a': ['found him on the floor', 'taken to hospital']}
+   ✗ el-03#4 tool update_report (want update_report) wrong {'e': ['panel cover', 'live wire']} extra {'e': ['live wire'], 'a': ['closed the panel cover']}
+   ✗ sl-01#0 tool update_report (want update_report) wrong {'p': ['staff']} extra {'p': ['staff'], 'e': ['metal cabinet'], 'a': ['medical equipment being prepared']}
+   ✗ sl-03#0 tool update_report (want update_report) wrong {'t': 'fall_height'} extra {}
+   ✗ na-01#0 tool update_report (want update_report) wrong {'t': 'fall_height', 'p': ['nursing aide', 'resident']} extra {'p': ['resident'], 'e': ['metal strip'], 'a': ['tripled over the metal strip', 'showered a resident at the time']}
+   ✗ na-01#2 tool update_report (want no_op) wrong {} extra {}
+   ✗ na-02#0 tool update_report (want update_report) wrong {'a': None} extra {'p': ['nearly slipped']}
+   ✗ fk-01#0 tool update_report (want update_report) wrong {'t': 'fall_height', 'e': ['stacked material']} extra {'e': ['stacked material']}
+   ✗ fk-03#0 tool update_report (want update_report) wrong {'t': 'equipment_failure', 'e': ['rack', 'forklift']} extra {'e': ['rack']}
+   ✗ fk-03#3 tool update_report (want no_op) wrong {} extra {'e': ['forklift mast']}
+   ✗ lw-01#0 tool update_report (want update_report) wrong {'t': 'water_leak', 'e': ['valve'], 'p': None} extra {'a': ['maintenance mechanic went up the extension ladder at 11:30', 'ladder slipped in the water', 'he fell onto the concrete', 'Both his arms look broken']}
+   ✗ lw-01#2 tool update_report (want update_report) wrong {'a': None} extra {}
+   ✗ ld-01#0 tool update_report (want update_report) wrong {'e': ['extension ladder', 'tie wires'], 'a': ['someone moved the base', 'the top was tied', 'the carpenter cut the tie wires']} extra {'e': ['extension ladder', 'tie wires'], 'a': ['someone moved the base', 'the top was tied', 'the carpenter cut the tie wires']}
+   ✗ ld-01#1 tool update_report (want update_report) wrong {} extra {'p': ["he can't move his leg"]}
+   ✗ ld-02#0 tool update_report (want no_op) wrong {} extra {'a': ['Rakesh filed it']}
+   ✗ ch-01#0 tool update_report (want update_report) wrong {'a': ['pressurised the internal valve before closing the outer one', 'flushed his eyes at the eyewash']} extra {'e': ['vapour cleaning', 'solvent'], 'a': ['pressurised the internal valve before closing the outer one']}
+   ✗ ch-03#0 tool update_report (want update_report) wrong {'p': None} extra {'e': ['solvent'], 'a': ["he wasn't wearing goggles"]}
+   ✗ ch-03#3 tool update_report (want update_report) wrong {'a': ['flushed his eyes', 'EHS informed']} extra {'a': ['flushed his eyes']}
+  free-running    44 dialogs · final field 0.767 · exact 6 · ended right 41/44 · with extra 33
+                  by field {'a': '10/26', 'd': '38/42', 'e': '8/20', 'l': '39/43', 'p': '9/18', 's': '41/42', 't': '33/43', 'w': '6/6'}
+  saved C:\Users\xitsp\Downloads\mega\wt-v5\ecellmegathon\results\eval_BOARD_dev_20261011_030726.json

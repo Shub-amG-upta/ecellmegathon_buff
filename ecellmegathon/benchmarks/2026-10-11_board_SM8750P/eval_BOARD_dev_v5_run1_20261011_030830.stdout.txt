@@ -1,0 +1,33 @@
+  throttle: pace 0.0 s · heat pause [90.0, 80.0] · 0 pauses, 0.0 s paused · NPU peak 69.4 °C
+
+[BOARD] split dev · model Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf on npu · 2026-10-11T03:19:58+0530
+  teacher-forced  157 turns · tool 0.975 · field 0.744 · turns with extra 37 · dropped by gate 12 · errors 0
+                  answered by code (fast path) 89 · LLM calls 68
+                  by field {'a': '10/27', 'd': '40/42', 'e': '4/20', 'l': '38/44', 'p': '9/18', 's': '42/42', 't': '31/43', 'w': '6/6'}
+                  prefill_ms  {'mean': 132.3, 'median': 119.6, 'n': 68}
+                  decode_ms   {'mean': 1640.9, 'median': 1462.4, 'n': 68}
+                  wall_ms     {'mean': 1813.9, 'median': 1658.5, 'n': 68}
+                  tokens {'prefill_tokens': {'mean': 56.4, 'median': 38.5, 'n': 68}, 'decode_tokens': {'mean': 32.8, 'median': 29.0, 'n': 68}}
+   ✗ ps-01#0 tool update_report (want update_report) wrong {'a': None} extra {}
+   ✗ ps-02#0 tool update_report (want update_report) wrong {'t': None, 'l': None, 'a': ['maintenance guys have isolated it']} extra {'e': ['maintenance guys have isolated it'], 'a': ['maintenance guys have isolated it']}
+   ✗ ps-03#0 tool update_report (want update_report) wrong {'t': None} extra {}
+   ✗ el-01#0 tool update_report (want update_report) wrong {'e': ['pull panel', 'live wire'], 'a': ['got a shock', 'found him on the floor', 'called the ambulance']} extra {'e': ['pull panel', 'live wire'], 'a': ['got a shock', 'found him on the floor']}
+   ✗ el-03#4 tool update_report (want update_report) wrong {'e': ['live wire', 'panel cover']} extra {'e': ['live wire']}
+   ✗ sl-01#0 tool update_report (want update_report) wrong {'p': ['staff', 'hit his right arm on a metal cabinet']} extra {'p': ['staff', 'hit his right arm on a metal cabinet'], 'e': ['medical equipment', 'metal cabinet'], 'a': ['hit his right arm on a metal cabinet']}
+   ✗ sl-03#0 tool update_report (want update_report) wrong {'t': 'fall_height', 'p': ['housekeeping staff']} extra {'d': 'after mopping', 'p': ['housekeeping staff']}
+   ✗ na-01#0 tool update_report (want update_report) wrong {'p': ['nursing aide', 'resident']} extra {'p': ['resident'], 'e': ['metal strip'], 'a': ['tripped over the metal strip', 'hurt her ankle', 'shower a resident']}
+   ✗ na-01#2 tool update_report (want no_op) wrong {} extra {}
+   ✗ fk-01#0 tool update_report (want update_report) wrong {'e': ['stacked material'], 'a': ['hit the stacked material', 'got down to straighten it', 'the load fell on his chest', "couldn't move it"]} extra {'e': ['stacked material'], 'a': ['hit the stacked material', 'got down to straighten it', 'the load fell on his chest', "couldn't move it"]}
+   ✗ fk-03#0 tool update_report (want update_report) wrong {'t': 'caught_in', 'e': ['rack']} extra {'e': ['rack'], 'a': ['no one hurt']}
+   ✗ fk-03#3 tool update_report (want no_op) wrong {} extra {'e': ['forklift mast']}
+   ✗ lw-01#0 tool update_report (want update_report) wrong {'t': 'water_leak', 'e': ['valve', 'extension ladder', 'concrete']} extra {'e': ['concrete'], 'a': ['went up the extension ladder', 'shut it', 'ladder slipped', 'fell onto the concrete']}
+   ✗ lw-01#2 tool update_report (want update_report) wrong {'a': None} extra {}
+   ✗ lw-03#0 tool update_report (want update_report) wrong {} extra {'d': 'the maintenance guy fall off the ladder'}
+   ✗ ld-01#0 tool update_report (want update_report) wrong {'e': ['extension ladder'], 'a': ['someone moved the base while the top was tied', 'the top section came down', 'cut the tie wires']} extra {'e': ['extension ladder'], 'a': ['someone moved the base while the top was tied', 'the top section came down', 'cut the tie wires']}
+   ✗ ld-02#0 tool update_report (want no_op) wrong {} extra {'t': 'fall_height', 'l': 'ladder fall', 'e': ['carpenter ladder'], 'a': ['Rakesh said he filed it']}
+   ✗ ch-01#0 tool update_report (want update_report) wrong {'a': ['pressurised the internal valve', 'closed the outer one', 'flushed his eyes at the eyewash']} extra {'e': ['vapour cleaning', 'solvent'], 'a': ['pressurised the internal valve', 'closed the outer one']}
+   ✗ ch-03#0 tool update_report (want update_report) wrong {'p': None} extra {'e': ['solvent'], 'a': ["got into the operator's eyes"]}
+   ✗ ch-03#3 tool update_report (want update_report) wrong {'a': ['flushed his eyes', 'informed EHS']} extra {'a': ['flushed his eyes']}
+  free-running    44 dialogs · final field 0.696 · exact 2 · ended right 39/44 · with extra 29
+                  by field {'a': '8/26', 'd': '35/42', 'e': '4/20', 'l': '35/43', 'p': '9/18', 's': '39/42', 't': '31/43', 'w': '6/6'}
+  saved C:\Users\xitsp\Downloads\mega\wt-v5\ecellmegathon\results\eval_BOARD_dev_20261011_031958.json

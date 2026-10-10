@@ -1,0 +1,8896 @@
+{
+ "label": "BOARD",
+ "split": "dev",
+ "laptop_time": "2026-10-11T03:19:58+0530",
+ "model": "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf",
+ "lane": "npu",
+ "teacher_forced": {
+  "turns": 157,
+  "tool_accuracy": 0.975,
+  "field_accuracy": 0.744,
+  "by_field": {
+   "a": "10/27",
+   "d": "40/42",
+   "e": "4/20",
+   "l": "38/44",
+   "p": "9/18",
+   "s": "42/42",
+   "t": "31/43",
+   "w": "6/6"
+  },
+  "turns_with_extra": 37,
+  "dropped_by_gate": 12,
+  "errors": 0,
+  "answered_by_code": 89,
+  "llm_calls": 68,
+  "latency_ms": {
+   "prefill_ms": {
+    "mean": 132.3,
+    "median": 119.6,
+    "n": 68
+   },
+   "decode_ms": {
+    "mean": 1640.9,
+    "median": 1462.4,
+    "n": 68
+   },
+   "wall_ms": {
+    "mean": 1813.9,
+    "median": 1658.5,
+    "n": 68
+   }
+  },
+  "tokens": {
+   "prefill_tokens": {
+    "mean": 56.4,
+    "median": 38.5,
+    "n": 68
+   },
+   "decode_tokens": {
+    "mean": 32.8,
+    "median": 29.0,
+    "n": 68
+   }
+  }
+ },
+ "free_running": {
+  "dialogs": 44,
+  "final_field_accuracy": 0.696,
+  "by_field": {
+   "a": "8/26",
+   "d": "35/42",
+   "e": "4/20",
+   "l": "35/43",
+   "p": "9/18",
+   "s": "39/42",
+   "t": "31/43",
+   "w": "6/6"
+  },
+  "dialogs_exact": 2,
+  "ended_right": "39/44",
+  "dialogs_with_extra": 29
+ },
+ "turns": [
+  {
+   "case": "ps-01",
+   "turn": 0,
+   "user": "There was a water leak near Conference Room 2 around 10 AM. Maintenance has already isolated the area.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "water_leak",
+     "pred": "water_leak",
+     "ok": true
+    },
+    "l": {
+     "gold": "near Conference Room 2",
+     "pred": "Conference Room 2",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 10 AM",
+     "pred": "around 10 AM",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "isolated the area"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "water_leak",
+     "l": "Conference Room 2",
+     "d": "around 10 AM"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 1081.102,
+    "decode_ms": 1480.182,
+    "wall_ms": 2680.3379000048153,
+    "decode_tokens": 29,
+    "prefill_tokens": 1100
+   }
+  },
+  {
+   "case": "ps-01",
+   "turn": 1,
+   "user": "it's medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ps-01",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ps-02",
+   "turn": 0,
+   "user": "water leaking near conf room 2 since 10 or so, maintenance guys have isolated it",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "water_leak",
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "near conf room 2",
+     "pred": null,
+     "ok": false
+    },
+    "d": {
+     "gold": "since 10 or so",
+     "pred": "2 since 10",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "isolated it"
+     ],
+     "pred": [
+      "maintenance guys have isolated it"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "maintenance guys have isolated it"
+    ],
+    "a": [
+     "maintenance guys have isolated it"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "l": "pump room",
+     "e": [
+      "maintenance guys have isolated it"
+     ],
+     "a": [
+      "maintenance guys have isolated it"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "l",
+     "value": "pump room",
+     "reason": "not in transcript (support 0.50)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 115.288,
+    "decode_ms": 1586.098,
+    "wall_ms": 1722.8838999872096,
+    "decode_tokens": 32,
+    "prefill_tokens": 23
+   }
+  },
+  {
+   "case": "ps-02",
+   "turn": 1,
+   "user": "medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ps-02",
+   "turn": 2,
+   "user": "yes submit it",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ps-03",
+   "turn": 0,
+   "user": "water leak near Conference Room 2",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "water_leak",
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "near Conference Room 2",
+     "pred": "Conference Room 2",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "l": "Conference Room 2"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 96.421,
+    "decode_ms": 771.554,
+    "wall_ms": 910.3938000043854,
+    "decode_tokens": 16,
+    "prefill_tokens": 11
+   }
+  },
+  {
+   "case": "ps-03",
+   "turn": 1,
+   "user": "submit",
+   "asked": "d",
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 121.824,
+    "decode_ms": 312.702,
+    "wall_ms": 465.8358999877237,
+    "decode_tokens": 7,
+    "prefill_tokens": 27
+   }
+  },
+  {
+   "case": "ps-03",
+   "turn": 2,
+   "user": "around 10 AM",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "around 10 AM",
+     "pred": "around 10 AM",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "around 10 AM"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ps-03",
+   "turn": 3,
+   "user": "medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ps-03",
+   "turn": 4,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "el-01",
+   "turn": 0,
+   "user": "This is to report a serious incident in the meter room on the ground floor around 3 PM today. Our electrical contractor's foreman was installing panels and got a shock from the 480 volt pull panel. The cover was off and one live wire was hanging loose. He was working alone, coworkers found him on the floor and called the ambulance. He has been taken to hospital.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "electrical",
+     "pred": "electrical",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    },
+    "l": {
+     "gold": "meter room on the ground floor",
+     "pred": "meter room on the ground floor",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 3 PM today",
+     "pred": "around 3 PM today",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "electrical contractor's foreman"
+     ],
+     "pred": [
+      "electrical contractor's foreman"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "480 volt pull panel"
+     ],
+     "pred": [
+      "pull panel",
+      "live wire"
+     ],
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "called the ambulance"
+     ],
+     "pred": [
+      "got a shock",
+      "found him on the floor",
+      "called the ambulance"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "pull panel",
+     "live wire"
+    ],
+    "a": [
+     "got a shock",
+     "found him on the floor"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "electrical",
+     "l": "meter room on the ground floor",
+     "d": "around 3 PM today",
+     "p": [
+      "electrical contractor's foreman"
+     ],
+     "e": [
+      "pull panel",
+      "live wire"
+     ],
+     "a": [
+      "got a shock",
+      "found him on the floor",
+      "called the ambulance"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 132.566,
+    "decode_ms": 3266.577,
+    "wall_ms": 3439.460899971891,
+    "decode_tokens": 65,
+    "prefill_tokens": 89
+   }
+  },
+  {
+   "case": "el-01",
+   "turn": 1,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "el-03",
+   "turn": 0,
+   "user": "electrical problem",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "electrical",
+     "pred": "electrical",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "electrical"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 92.171,
+    "decode_ms": 668.322,
+    "wall_ms": 780.7815000414848,
+    "decode_tokens": 14,
+    "prefill_tokens": 7
+   }
+  },
+  {
+   "case": "el-03",
+   "turn": 1,
+   "user": "meter room",
+   "asked": "l",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "l": {
+     "gold": "meter room",
+     "pred": "meter room",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "l": "meter room"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "el-03",
+   "turn": 2,
+   "user": "3 PM",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "3 PM",
+     "pred": "3 PM",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "3 PM"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "el-03",
+   "turn": 3,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "el-03",
+   "turn": 4,
+   "user": "the panel cover was open and a live wire was hanging",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "e": {
+     "gold": [
+      "panel"
+     ],
+     "pred": [
+      "live wire",
+      "panel cover"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "live wire"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "e": [
+      "live wire",
+      "panel cover"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 119.236,
+    "decode_ms": 869.359,
+    "wall_ms": 1031.2145000207238,
+    "decode_tokens": 18,
+    "prefill_tokens": 42
+   }
+  },
+  {
+   "case": "el-03",
+   "turn": 5,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sl-01",
+   "turn": 0,
+   "user": "Around 10:30 this morning one of our staff slipped on the wet floor in the emergency room while preparing medical equipment. He hit his right arm on a metal cabinet, looks like his elbow and wrist are fractured. He has been admitted. I'd say severity high.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "slip_trip",
+     "ok": true
+    },
+    "d": {
+     "gold": "Around 10:30 this morning",
+     "pred": "Around 10:30 this morning",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "one of our staff"
+     ],
+     "pred": [
+      "staff",
+      "hit his right arm on a metal cabinet"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "emergency room",
+     "pred": "wet floor in the emergency room",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "staff",
+     "hit his right arm on a metal cabinet"
+    ],
+    "e": [
+     "medical equipment",
+     "metal cabinet"
+    ],
+    "a": [
+     "hit his right arm on a metal cabinet"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "slip_trip",
+     "l": "emergency room",
+     "d": "Around 10:30 this morning",
+     "p": [
+      "staff",
+      "hit his right arm on a metal cabinet"
+     ],
+     "e": [
+      "wet floor",
+      "medical equipment",
+      "metal cabinet"
+     ],
+     "a": [
+      "hit his right arm on a metal cabinet"
+     ],
+     "w": [
+      "none"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "w",
+     "value": "none",
+     "reason": "not in transcript (support 0.00)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 126.674,
+    "decode_ms": 3736.86,
+    "wall_ms": 3901.2529000174254,
+    "decode_tokens": 71,
+    "prefill_tokens": 67
+   }
+  },
+  {
+   "case": "sl-01",
+   "turn": 1,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sl-03",
+   "turn": 0,
+   "user": "Sir one housekeeping staff fell down in the ER corridor, floor was wet after mopping, she is having pain in wrist",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "fall_height",
+     "ok": false
+    },
+    "p": {
+     "gold": [
+      "one housekeeping staff"
+     ],
+     "pred": [
+      "housekeeping staff"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "ER corridor",
+     "pred": "ER corridor",
+     "ok": true
+    }
+   },
+   "extra": {
+    "d": "after mopping",
+    "p": [
+     "housekeeping staff"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "fall_height",
+     "l": "ER corridor",
+     "d": "after mopping",
+     "p": [
+      "housekeeping staff"
+     ],
+     "e": [
+      "wet floor after mopping"
+     ],
+     "a": [
+      "none"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "a",
+     "value": "none",
+     "reason": "not in transcript (support 0.00)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 126.029,
+    "decode_ms": 2250.359,
+    "wall_ms": 2445.0911000021733,
+    "decode_tokens": 45,
+    "prefill_tokens": 30
+   }
+  },
+  {
+   "case": "sl-03",
+   "turn": 1,
+   "user": "today morning 10:30",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "today morning 10:30",
+     "pred": "today morning 10:30",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "today morning 10:30"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sl-03",
+   "turn": 2,
+   "user": "medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sl-03",
+   "turn": 3,
+   "user": "we gave her ice pack and sent her to doctor",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "a": {
+     "gold": [
+      "gave her ice pack"
+     ],
+     "pred": [
+      "gave her ice pack",
+      "sent her to doctor"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "a": [
+      "gave her ice pack",
+      "sent her to doctor"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 121.583,
+    "decode_ms": 1139.182,
+    "wall_ms": 1295.9043000009842,
+    "decode_tokens": 23,
+    "prefill_tokens": 53
+   }
+  },
+  {
+   "case": "sl-03",
+   "turn": 4,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "na-01",
+   "turn": 0,
+   "user": "Last night around 8 PM a nursing aide tripped over the metal strip in the first floor shower room and hurt her ankle on the wet floor, it's fractured. She was showering a resident at the time. The floor is still wet and the strip is still loose.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "slip_trip",
+     "ok": true
+    },
+    "d": {
+     "gold": "Last night around 8 PM",
+     "pred": "Last night around 8 PM",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "a nursing aide"
+     ],
+     "pred": [
+      "nursing aide",
+      "resident"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "first floor shower room",
+     "pred": "first floor shower room",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "resident"
+    ],
+    "e": [
+     "metal strip"
+    ],
+    "a": [
+     "tripped over the metal strip",
+     "hurt her ankle",
+     "shower a resident"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "slip_trip",
+     "l": "first floor shower room",
+     "d": "Last night around 8 PM",
+     "p": [
+      "nursing aide",
+      "resident"
+     ],
+     "e": [
+      "metal strip",
+      "shower room",
+      "wet floor"
+     ],
+     "a": [
+      "tripped over the metal strip",
+      "hurt her ankle",
+      "shower a resident"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 126.08,
+    "decode_ms": 3652.551,
+    "wall_ms": 3796.8261999776587,
+    "decode_tokens": 73,
+    "prefill_tokens": 68
+   }
+  },
+  {
+   "case": "na-01",
+   "turn": 1,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "na-01",
+   "turn": 2,
+   "user": "she's in hospital now",
+   "asked": null,
+   "gold_tool": "no_op",
+   "pred_tool": "update_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "p": [
+      "she's in hospital now"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 118.071,
+    "decode_ms": 866.927,
+    "wall_ms": 1030.1856000442058,
+    "decode_tokens": 18,
+    "prefill_tokens": 49
+   }
+  },
+  {
+   "case": "na-01",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "na-02",
+   "turn": 0,
+   "user": "A resident nearly slipped in the shower room this morning, but no one was hurt. Housekeeping has dried the floor.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "slip_trip",
+     "ok": true
+    },
+    "l": {
+     "gold": "shower room",
+     "pred": "shower room",
+     "ok": true
+    },
+    "d": {
+     "gold": "this morning",
+     "pred": "this morning",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "dried the floor"
+     ],
+     "pred": [
+      "housekeeping has dried the floor"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "slip_trip",
+     "l": "shower room",
+     "e": [
+      "floor"
+     ],
+     "a": [
+      "housekeeping has dried the floor"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 116.68900000000001,
+    "decode_ms": 1738.032,
+    "wall_ms": 1887.3423000331968,
+    "decode_tokens": 35,
+    "prefill_tokens": 36
+   }
+  },
+  {
+   "case": "na-02",
+   "turn": 1,
+   "user": "low",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "low"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "na-02",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "fk-01",
+   "turn": 0,
+   "user": "At about 2 in the afternoon in the warehouse, a forklift driver hit the stacked material, got down to straighten it and the load fell on his chest. He couldn't move it. We called an ambulance and he's being taken to hospital. This is critical.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "struck_by",
+     "pred": "struck_by",
+     "ok": true
+    },
+    "d": {
+     "gold": "about 2 in the afternoon",
+     "pred": "At about 2 in the afternoon",
+     "ok": true
+    },
+    "l": {
+     "gold": "warehouse",
+     "pred": "warehouse",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "a forklift driver"
+     ],
+     "pred": [
+      "the forklift driver"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "forklift"
+     ],
+     "pred": [
+      "stacked material"
+     ],
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "called an ambulance"
+     ],
+     "pred": [
+      "hit the stacked material",
+      "got down to straighten it",
+      "the load fell on his chest",
+      "couldn't move it"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "stacked material"
+    ],
+    "a": [
+     "hit the stacked material",
+     "got down to straighten it",
+     "the load fell on his chest",
+     "couldn't move it"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "struck_by",
+     "l": "warehouse",
+     "d": "At about 2 in the afternoon",
+     "p": [
+      "the forklift driver"
+     ],
+     "e": [
+      "stacked material"
+     ],
+     "a": [
+      "hit the stacked material",
+      "got down to straighten it",
+      "the load fell on his chest",
+      "couldn't move it"
+     ],
+     "w": [
+      "none"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "w",
+     "value": "none",
+     "reason": "not in transcript (support 0.00)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 122.672,
+    "decode_ms": 4058.102,
+    "wall_ms": 4230.984999972861,
+    "decode_tokens": 75,
+    "prefill_tokens": 62
+   }
+  },
+  {
+   "case": "fk-01",
+   "turn": 1,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "fk-03",
+   "turn": 0,
+   "user": "Material fell from the rack in warehouse aisle 4 and hit the forklift, no one hurt",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "struck_by",
+     "pred": "caught_in",
+     "ok": false
+    },
+    "l": {
+     "gold": "warehouse aisle 4",
+     "pred": "warehouse aisle 4",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "forklift"
+     ],
+     "pred": [
+      "rack"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "rack"
+    ],
+    "a": [
+     "no one hurt"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "caught_in",
+     "l": "warehouse aisle 4",
+     "e": [
+      "rack"
+     ],
+     "a": [
+      "no one hurt"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 123.395,
+    "decode_ms": 1575.315,
+    "wall_ms": 1731.4789000083692,
+    "decode_tokens": 32,
+    "prefill_tokens": 25
+   }
+  },
+  {
+   "case": "fk-03",
+   "turn": 1,
+   "user": "quarter past two",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "quarter past two",
+     "pred": "quarter past two",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "quarter past two"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "fk-03",
+   "turn": 2,
+   "user": "medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "fk-03",
+   "turn": 3,
+   "user": "the forklift mast is bent",
+   "asked": null,
+   "gold_tool": "no_op",
+   "pred_tool": "update_report",
+   "fields": {},
+   "extra": {
+    "e": [
+     "forklift mast"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "e": [
+      "forklift mast"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 113.899,
+    "decode_ms": 762.332,
+    "wall_ms": 894.3065999774262,
+    "decode_tokens": 16,
+    "prefill_tokens": 47
+   }
+  },
+  {
+   "case": "fk-03",
+   "turn": 4,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lw-01",
+   "turn": 0,
+   "user": "There's water leaking from a valve in the basement parking driveway. Our maintenance mechanic went up the extension ladder at 11:30 to shut it, the ladder slipped in the water and he fell onto the concrete. Both his arms look broken. The water is still leaking.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "fall_height",
+     "pred": "water_leak",
+     "ok": false
+    },
+    "l": {
+     "gold": "basement parking driveway",
+     "pred": "basement parking driveway",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "extension ladder"
+     ],
+     "pred": [
+      "valve",
+      "extension ladder",
+      "concrete"
+     ],
+     "ok": false
+    },
+    "p": {
+     "gold": [
+      "maintenance mechanic"
+     ],
+     "pred": [
+      "maintenance mechanic"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "at 11:30",
+     "pred": "at 11:30",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "concrete"
+    ],
+    "a": [
+     "went up the extension ladder",
+     "shut it",
+     "ladder slipped",
+     "fell onto the concrete"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "water_leak",
+     "l": "basement parking driveway",
+     "d": "at 11:30",
+     "p": [
+      "maintenance mechanic"
+     ],
+     "e": [
+      "valve",
+      "extension ladder",
+      "concrete"
+     ],
+     "a": [
+      "went up the extension ladder",
+      "shut it",
+      "ladder slipped",
+      "fell onto the concrete"
+     ],
+     "w": [
+      "none"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "w",
+     "value": "none",
+     "reason": "not in transcript (support 0.00)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 124.49900000000001,
+    "decode_ms": 3758.7580000000003,
+    "wall_ms": 3901.9178000162356,
+    "decode_tokens": 74,
+    "prefill_tokens": 67
+   }
+  },
+  {
+   "case": "lw-01",
+   "turn": 1,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lw-01",
+   "turn": 2,
+   "user": "he's been taken to hospital, and security has cordoned off the driveway",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "a": {
+     "gold": [
+      "cordoned off the driveway"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "p": [
+      "maintenance mechanic",
+      "he's been taken to hospital"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 123.539,
+    "decode_ms": 1078.961,
+    "wall_ms": 1262.0807999628596,
+    "decode_tokens": 22,
+    "prefill_tokens": 61
+   }
+  },
+  {
+   "case": "lw-01",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lw-03",
+   "turn": 0,
+   "user": "I saw the maintenance guy fall off the ladder at the parking ramp, me and Ravi both saw it, he was trying to shut the water valve",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "fall_height",
+     "pred": "fall_height",
+     "ok": true
+    },
+    "l": {
+     "gold": "parking ramp",
+     "pred": "parking ramp",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "the maintenance guy"
+     ],
+     "pred": [
+      "the maintenance guy"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "ladder"
+     ],
+     "pred": [
+      "ladder",
+      "water valve"
+     ],
+     "ok": true
+    },
+    "w": {
+     "gold": [
+      "Ravi"
+     ],
+     "pred": [
+      "Ravi"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {
+    "d": "the maintenance guy fall off the ladder"
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "fall_height",
+     "l": "parking ramp",
+     "d": "the maintenance guy fall off the ladder",
+     "p": [
+      "Ravi",
+      "the maintenance guy"
+     ],
+     "e": [
+      "ladder",
+      "water valve"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 119.399,
+    "decode_ms": 2407.459,
+    "wall_ms": 2581.96510002017,
+    "decode_tokens": 48,
+    "prefill_tokens": 42
+   }
+  },
+  {
+   "case": "lw-03",
+   "turn": 1,
+   "user": "11:30",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "11:30",
+     "pred": "11:30",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "11:30"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lw-03",
+   "turn": 2,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lw-03",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ld-01",
+   "turn": 0,
+   "user": "A carpenter fell from the thirty foot extension ladder near the east wall about twenty minutes ago. Someone moved the base while the top was tied, then he cut the tie wires and the top section came down. He is conscious, we have called the ambulance and informed the site supervisor.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "fall_height",
+     "pred": "fall_height",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A carpenter"
+     ],
+     "pred": [
+      "the carpenter"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "thirty foot extension ladder"
+     ],
+     "pred": [
+      "extension ladder"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "near the east wall",
+     "pred": "near the east wall",
+     "ok": true
+    },
+    "d": {
+     "gold": "about twenty minutes ago",
+     "pred": "about twenty minutes ago",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "called the ambulance",
+      "informed the site supervisor"
+     ],
+     "pred": [
+      "someone moved the base while the top was tied",
+      "the top section came down",
+      "cut the tie wires"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "extension ladder"
+    ],
+    "a": [
+     "someone moved the base while the top was tied",
+     "the top section came down",
+     "cut the tie wires"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "fall_height",
+     "l": "near the east wall",
+     "d": "about twenty minutes ago",
+     "p": [
+      "the carpenter"
+     ],
+     "e": [
+      "extension ladder",
+      "the top section"
+     ],
+     "a": [
+      "someone moved the base while the top was tied",
+      "the top section came down",
+      "cut the tie wires"
+     ],
+     "w": [
+      "none mentioned"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "w",
+     "value": "none mentioned",
+     "reason": "not in transcript (support 0.00)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 129.216,
+    "decode_ms": 3727.728,
+    "wall_ms": 3876.570099964738,
+    "decode_tokens": 72,
+    "prefill_tokens": 62
+   }
+  },
+  {
+   "case": "ld-01",
+   "turn": 1,
+   "user": "critical, he can't move his leg",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "critical"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 137.558,
+    "decode_ms": 616.727,
+    "wall_ms": 819.7249000077136,
+    "decode_tokens": 13,
+    "prefill_tokens": 65
+   }
+  },
+  {
+   "case": "ld-01",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ld-02",
+   "turn": 0,
+   "user": "Is the carpenter ladder fall already reported? Rakesh said he filed it.",
+   "asked": null,
+   "gold_tool": "no_op",
+   "pred_tool": "update_report",
+   "fields": {},
+   "extra": {
+    "t": "fall_height",
+    "l": "ladder fall",
+    "e": [
+     "carpenter ladder"
+    ],
+    "a": [
+     "Rakesh said he filed it"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "fall_height",
+     "l": "ladder fall",
+     "e": [
+      "carpenter ladder"
+     ],
+     "a": [
+      "Rakesh said he filed it"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 123.515,
+    "decode_ms": 1902.1770000000001,
+    "wall_ms": 2097.3920000251383,
+    "decode_tokens": 38,
+    "prefill_tokens": 29
+   }
+  },
+  {
+   "case": "ld-02",
+   "turn": 1,
+   "user": "ok then cancel this one",
+   "asked": "t",
+   "gold_tool": "cancel_report",
+   "pred_tool": "cancel_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "cancel_report",
+    "args": {}
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 105.255,
+    "decode_ms": 503.651,
+    "wall_ms": 651.1888999957591,
+    "decode_tokens": 11,
+    "prefill_tokens": 14
+   }
+  },
+  {
+   "case": "ch-01",
+   "turn": 0,
+   "user": "Reporting a chemical splash at the tanker wash bay around 9 AM. The manager was checking the vapour cleaning, he pressurised the internal valve before closing the outer one and the solvent splashed into his eyes. He wasn't wearing goggles. We flushed his eyes at the eyewash and he has gone to the clinic. Medium severity.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "chemical",
+     "pred": "chemical",
+     "ok": true
+    },
+    "l": {
+     "gold": "tanker wash bay",
+     "pred": "tanker wash bay",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 9 AM",
+     "pred": "around 9 AM",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "The manager"
+     ],
+     "pred": [
+      "the manager"
+     ],
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "flushed his eyes at the eyewash"
+     ],
+     "pred": [
+      "pressurised the internal valve",
+      "closed the outer one",
+      "flushed his eyes at the eyewash"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "vapour cleaning",
+     "solvent"
+    ],
+    "a": [
+     "pressurised the internal valve",
+     "closed the outer one"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "chemical",
+     "l": "tanker wash bay",
+     "d": "around 9 AM",
+     "p": [
+      "the manager"
+     ],
+     "e": [
+      "vapour cleaning",
+      "internal valve",
+      "solvent"
+     ],
+     "a": [
+      "pressurised the internal valve",
+      "closed the outer one",
+      "flushed his eyes at the eyewash"
+     ],
+     "w": [
+      "none"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "w",
+     "value": "none",
+     "reason": "not in transcript (support 0.00)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 129.65,
+    "decode_ms": 3680.073,
+    "wall_ms": 3830.5063000298105,
+    "decode_tokens": 73,
+    "prefill_tokens": 79
+   }
+  },
+  {
+   "case": "ch-01",
+   "turn": 1,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ch-03",
+   "turn": 0,
+   "user": "Solvent got into the operator's eyes at the wash bay, he wasn't wearing goggles",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "chemical",
+     "pred": "chemical",
+     "ok": true
+    },
+    "l": {
+     "gold": "wash bay",
+     "pred": "wash bay",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "the operator"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "solvent"
+    ],
+    "a": [
+     "got into the operator's eyes"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "chemical",
+     "l": "wash bay",
+     "e": [
+      "solvent"
+     ],
+     "a": [
+      "got into the operator's eyes"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 116.688,
+    "decode_ms": 1649.479,
+    "wall_ms": 1812.5283000408672,
+    "decode_tokens": 33,
+    "prefill_tokens": 23
+   }
+  },
+  {
+   "case": "ch-03",
+   "turn": 1,
+   "user": "9 o'clock",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "9 o'clock",
+     "pred": "9 o'clock",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "9 o'clock"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ch-03",
+   "turn": 2,
+   "user": "medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "ch-03",
+   "turn": 3,
+   "user": "we have flushed his eyes for fifteen minutes and EHS has been informed",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "a": {
+     "gold": [
+      "flushed his eyes for fifteen minutes",
+      "EHS has been informed"
+     ],
+     "pred": [
+      "flushed his eyes",
+      "informed EHS"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "a": [
+     "flushed his eyes"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "a": [
+      "flushed his eyes",
+      "informed EHS"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 117.568,
+    "decode_ms": 1077.194,
+    "wall_ms": 1224.2139999871142,
+    "decode_tokens": 22,
+    "prefill_tokens": 50
+   }
+  },
+  {
+   "case": "ch-03",
+   "turn": 4,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "cv-01",
+   "turn": 0,
+   "user": "One of the mechanics got his finger caught in the conveyor chain while taking tyres off. The fingertip is cut off. It happened at about 1:45 at the tyre line. We stopped the conveyor and he is on the way to hospital. Critical.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "caught_in",
+     "pred": "caught_in",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "One of the mechanics"
+     ],
+     "pred": [
+      "the mechanic"
+     ],
+     "ok": false
+    },
+    "e": {
+     "gold": [
+      "conveyor chain"
+     ],
+     "pred": [
+      "conveyor chain"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "about 1:45",
+     "pred": "at about 1:45",
+     "ok": true
+    },
+    "l": {
+     "gold": "tyre line",
+     "pred": "tyre line",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "stopped the conveyor"
+     ],
+     "pred": [
+      "stopped the conveyor",
+      "he is on the way to hospital"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "the mechanic"
+    ],
+    "a": [
+     "he is on the way to hospital"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "caught_in",
+     "s": "critical",
+     "l": "tyre line",
+     "d": "at about 1:45",
+     "p": [
+      "the mechanic"
+     ],
+     "e": [
+      "conveyor chain"
+     ],
+     "a": [
+      "stopped the conveyor",
+      "he is on the way to hospital"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 125.34100000000001,
+    "decode_ms": 2997.497,
+    "wall_ms": 3168.348799983505,
+    "decode_tokens": 59,
+    "prefill_tokens": 64
+   }
+  },
+  {
+   "case": "cv-01",
+   "turn": 1,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "cv-02",
+   "turn": 0,
+   "user": "The conveyor at the tyre line jammed, nobody hurt",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "equipment_failure",
+     "pred": "equipment_failure",
+     "ok": true
+    },
+    "l": {
+     "gold": "tyre line",
+     "pred": null,
+     "ok": false
+    },
+    "e": {
+     "gold": [
+      "conveyor"
+     ],
+     "pred": [
+      "conveyor at the tyre line"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "conveyor at the tyre line"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "equipment_failure",
+     "e": [
+      "conveyor at the tyre line"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 114.494,
+    "decode_ms": 1169.237,
+    "wall_ms": 1302.8614000068046,
+    "decode_tokens": 24,
+    "prefill_tokens": 16
+   }
+  },
+  {
+   "case": "cv-02",
+   "turn": 1,
+   "user": "sorry, it's fine actually, maintenance already fixed it, cancel this",
+   "asked": "d",
+   "gold_tool": "cancel_report",
+   "pred_tool": "cancel_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "cancel_report",
+    "args": {}
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 128.601,
+    "decode_ms": 513.86,
+    "wall_ms": 681.297299975995,
+    "decode_tokens": 11,
+    "prefill_tokens": 42
+   }
+  },
+  {
+   "case": "fi-01",
+   "turn": 0,
+   "user": "Fire on the fourth floor, in the software company office, started maybe ten minutes back. Looks like a short circuit. We have evacuated everyone and the fire brigade is on the way. Nobody is hurt.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "fire",
+     "pred": "fire",
+     "ok": true
+    },
+    "l": {
+     "gold": "fourth floor",
+     "pred": "software company office on the fourth floor",
+     "ok": true
+    },
+    "d": {
+     "gold": "ten minutes back",
+     "pred": "ten minutes back",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "evacuated everyone"
+     ],
+     "pred": [
+      "evacuated everyone",
+      "fire brigade is on the way"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "short circuit"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "fire",
+     "l": "software company office on the fourth floor",
+     "e": [
+      "short circuit"
+     ],
+     "a": [
+      "evacuated everyone",
+      "fire brigade is on the way"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 122.05,
+    "decode_ms": 2153.297,
+    "wall_ms": 2332.5547000276856,
+    "decode_tokens": 43,
+    "prefill_tokens": 53
+   }
+  },
+  {
+   "case": "fi-01",
+   "turn": 1,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "fi-01",
+   "turn": 2,
+   "user": "fire is out now, the firefighters put it out",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "a": {
+     "gold": [
+      "the firefighters put it out"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "fire",
+     "firefighters"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "e": [
+      "fire",
+      "firefighters"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 122.514,
+    "decode_ms": 820.862,
+    "wall_ms": 1003.2826999668032,
+    "decode_tokens": 17,
+    "prefill_tokens": 49
+   }
+  },
+  {
+   "case": "fi-01",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "fi-03",
+   "turn": 0,
+   "user": "There's a fire in the server room on the third floor! Everyone is evacuating.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "fire",
+     "pred": "fire",
+     "ok": true
+    },
+    "l": {
+     "gold": "server room on the third floor",
+     "pred": "server room on the third floor",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "evacuating"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "fire",
+     "l": "server room on the third floor",
+     "e": [
+      "server"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 124.943,
+    "decode_ms": 1333.1970000000001,
+    "wall_ms": 1520.9468999528326,
+    "decode_tokens": 27,
+    "prefill_tokens": 30
+   }
+  },
+  {
+   "case": "fi-03",
+   "turn": 1,
+   "user": "right now",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "right now",
+     "pred": "right now",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "right now"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 108.233,
+    "decode_ms": 668.785,
+    "wall_ms": 820.1362999971025,
+    "decode_tokens": 14,
+    "prefill_tokens": 33
+   }
+  },
+  {
+   "case": "fi-03",
+   "turn": 2,
+   "user": "critical",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "critical"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "fi-03",
+   "turn": 3,
+   "user": "sorry, it's the UPS room, not the server room",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "l": {
+     "gold": "UPS room",
+     "pred": "UPS room on the third floor",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "l": "UPS room on the third floor"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 116.381,
+    "decode_ms": 876.082,
+    "wall_ms": 1031.4458000357263,
+    "decode_tokens": 18,
+    "prefill_tokens": 47
+   }
+  },
+  {
+   "case": "fi-03",
+   "turn": 4,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "fi-04",
+   "turn": 0,
+   "user": "Kitchen fire in the cafeteria at 11:55 AM, LPG leak, six staff with burns, evacuated everyone, called fire brigade, it's critical.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "fire",
+     "pred": "fire",
+     "ok": true
+    },
+    "l": {
+     "gold": "cafeteria",
+     "pred": "Kitchen fire in the cafeteria",
+     "ok": true
+    },
+    "d": {
+     "gold": "11:55 AM",
+     "pred": "at 11:55 AM",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "evacuated everyone",
+      "called fire brigade"
+     ],
+     "pred": [
+      "evacuated everyone",
+      "called fire brigade"
+     ],
+     "ok": true
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "six staff with burns"
+    ],
+    "e": [
+     "LPG leak"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "fire",
+     "l": "cafeteria",
+     "d": "at 11:55 AM",
+     "p": [
+      "six staff with burns"
+     ],
+     "e": [
+      "LPG leak"
+     ],
+     "a": [
+      "evacuated everyone",
+      "called fire brigade"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 104.297,
+    "decode_ms": 2615.66,
+    "wall_ms": 2745.5309000215493,
+    "decode_tokens": 52,
+    "prefill_tokens": 44
+   }
+  },
+  {
+   "case": "fi-04",
+   "turn": 1,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lf-01",
+   "turn": 0,
+   "user": "The lift in Block C fell from the second floor at around 3:15 PM. Seven people were inside, mostly leg injuries, one man has fractures in both legs. The security guard and police broke the lift door and got everyone out, they are all at the hospital. It's an old lift, probably overloaded.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "lift",
+     "pred": "equipment_failure",
+     "ok": false
+    },
+    "l": {
+     "gold": "Block C",
+     "pred": "Block C",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 3:15 PM",
+     "pred": "at around 3:15 PM",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "broke the lift door",
+      "got everyone out"
+     ],
+     "pred": [
+      "broke the lift door",
+      "got everyone out"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "lift"
+     ],
+     "pred": [
+      "lift"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "security guard"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "equipment_failure",
+     "l": "Block C",
+     "d": "at around 3:15 PM",
+     "p": [
+      "security guard",
+      "police"
+     ],
+     "e": [
+      "lift"
+     ],
+     "a": [
+      "broke the lift door",
+      "got everyone out"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 133.894,
+    "decode_ms": 2688.204,
+    "wall_ms": 2878.691299993079,
+    "decode_tokens": 54,
+    "prefill_tokens": 70
+   }
+  },
+  {
+   "case": "lf-01",
+   "turn": 1,
+   "user": "critical",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "critical"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lf-01",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lf-03",
+   "turn": 0,
+   "user": "Two people are stuck in lift number 3 between second and third floor, the lift stopped suddenly about ten minutes ago. Security is trying to open it.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "lift",
+     "pred": "equipment_failure",
+     "ok": false
+    },
+    "p": {
+     "gold": [
+      "Two people"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "e": {
+     "gold": [
+      "lift number 3"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "between second and third floor",
+     "pred": "lift number 3",
+     "ok": false
+    },
+    "d": {
+     "gold": "about ten minutes ago",
+     "pred": "about ten minutes ago",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "Security is trying to open it"
+     ],
+     "pred": [
+      "stuck",
+      "security trying to open it"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "a": [
+     "stuck"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "equipment_failure",
+     "l": "lift number 3",
+     "e": [
+      "lift"
+     ],
+     "a": [
+      "stuck",
+      "security trying to open it"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 110.72,
+    "decode_ms": 1860.885,
+    "wall_ms": 2012.6876999856904,
+    "decode_tokens": 37,
+    "prefill_tokens": 36
+   }
+  },
+  {
+   "case": "lf-03",
+   "turn": 1,
+   "user": "medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lf-03",
+   "turn": 2,
+   "user": "they're out now, nobody hurt",
+   "asked": null,
+   "gold_tool": "no_op",
+   "pred_tool": "update_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 124.23400000000001,
+    "decode_ms": 619.238,
+    "wall_ms": 762.0379999862053,
+    "decode_tokens": 13,
+    "prefill_tokens": 63
+   }
+  },
+  {
+   "case": "lf-03",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lf-04",
+   "turn": 0,
+   "user": "um... uh...",
+   "asked": null,
+   "gold_tool": "no_op",
+   "pred_tool": "no_op",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "no_op"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 109.75,
+    "decode_ms": 311.385,
+    "wall_ms": 454.6890000347048,
+    "decode_tokens": 7,
+    "prefill_tokens": 16
+   }
+  },
+  {
+   "case": "lf-04",
+   "turn": 1,
+   "user": "the lift in tower B fell, people are hurt",
+   "asked": "t",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "lift",
+     "pred": "equipment_failure",
+     "ok": false
+    },
+    "l": {
+     "gold": "tower B",
+     "pred": "tower B",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "equipment_failure",
+     "l": "tower B"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 111.06400000000001,
+    "decode_ms": 922.04,
+    "wall_ms": 1064.769500051625,
+    "decode_tokens": 19,
+    "prefill_tokens": 19
+   }
+  },
+  {
+   "case": "lf-04",
+   "turn": 2,
+   "user": "5:45",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "5:45",
+     "pred": "5:45",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "5:45"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lf-04",
+   "turn": 3,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lf-04",
+   "turn": 4,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "gs-01",
+   "turn": 0,
+   "user": "Gas leaked from the LPG cylinder in the canteen kitchen and caught fire around 12:30. One cook has bad burns, nine others are minor. The fire brigade put it out in twenty minutes, the injured were shifted to KIMS hospital.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "fire",
+     "pred": "gas_leak",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "LPG cylinder"
+     ],
+     "pred": [
+      "LPG cylinder"
+     ],
+     "ok": true
+    },
+    "l": {
+     "gold": "canteen kitchen",
+     "pred": "canteen kitchen",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 12:30",
+     "pred": "around 12:30",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "put it out in twenty minutes",
+      "shifted to KIMS hospital"
+     ],
+     "pred": [
+      "fire brigade put it out in twenty minutes",
+      "injured were shifted to KIMS hospital"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "one cook",
+     "nine others"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "gas_leak",
+     "l": "canteen kitchen",
+     "d": "around 12:30",
+     "p": [
+      "one cook",
+      "nine others"
+     ],
+     "e": [
+      "LPG cylinder"
+     ],
+     "a": [
+      "fire brigade put it out in twenty minutes",
+      "injured were shifted to KIMS hospital"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 120.991,
+    "decode_ms": 3352.068,
+    "wall_ms": 3524.5801999699324,
+    "decode_tokens": 65,
+    "prefill_tokens": 61
+   }
+  },
+  {
+   "case": "gs-01",
+   "turn": 1,
+   "user": "critical",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "critical"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "gs-01",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "gs-03",
+   "turn": 0,
+   "user": "Strong gas smell in the pantry on 6th floor, everyone moved out, Facilities is checking the pipeline",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "gas_leak",
+     "pred": "gas_leak",
+     "ok": true
+    },
+    "l": {
+     "gold": "pantry on 6th floor",
+     "pred": "pantry on 6th floor",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "everyone moved out",
+      "checking the pipeline"
+     ],
+     "pred": [
+      "everyone moved out",
+      "Facilities is checking the pipeline"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "pipeline"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "gas_leak",
+     "l": "pantry on 6th floor",
+     "e": [
+      "pipeline"
+     ],
+     "a": [
+      "everyone moved out",
+      "Facilities is checking the pipeline"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 120.793,
+    "decode_ms": 2159.274,
+    "wall_ms": 2334.4977000379004,
+    "decode_tokens": 43,
+    "prefill_tokens": 26
+   }
+  },
+  {
+   "case": "gs-03",
+   "turn": 1,
+   "user": "15 min ago",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "15 min ago",
+     "pred": "15 min ago",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "15 min ago"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "gs-03",
+   "turn": 2,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "gs-03",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "cl-01",
+   "turn": 0,
+   "user": "Part of the roof and false ceiling collapsed in the ward onto the beds. Three patients and two sanitation workers are injured, they were shifted to the emergency ward. Ceiling fans are damaged.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "structural",
+     "pred": "structural",
+     "ok": true
+    },
+    "l": {
+     "gold": "the ward",
+     "pred": "ward",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "Three patients",
+      "two sanitation workers"
+     ],
+     "pred": [
+      "three patients",
+      "two sanitation workers"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "ceiling fans"
+    ],
+    "a": [
+     "damaged"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "structural",
+     "l": "ward",
+     "p": [
+      "three patients",
+      "two sanitation workers"
+     ],
+     "e": [
+      "ceiling fans"
+     ],
+     "a": [
+      "damaged"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 121.041,
+    "decode_ms": 1875.8410000000001,
+    "wall_ms": 2037.2174000367522,
+    "decode_tokens": 38,
+    "prefill_tokens": 42
+   }
+  },
+  {
+   "case": "cl-01",
+   "turn": 1,
+   "user": "sometime yesterday night",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "yesterday night",
+     "pred": "sometime yesterday night",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "sometime yesterday night"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 100.807,
+    "decode_ms": 770.73,
+    "wall_ms": 888.8543999637477,
+    "decode_tokens": 16,
+    "prefill_tokens": 33
+   }
+  },
+  {
+   "case": "cl-01",
+   "turn": 2,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "cl-01",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "cl-03",
+   "turn": 0,
+   "user": "False ceiling has fallen down in the conference hall on 2nd floor, luckily meeting was not going on. Light fittings broken.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "structural",
+     "pred": "structural",
+     "ok": true
+    },
+    "l": {
+     "gold": "conference hall on 2nd floor",
+     "pred": "conference hall on 2nd floor",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "ceiling",
+     "light fittings"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "structural",
+     "l": "conference hall on 2nd floor",
+     "e": [
+      "ceiling",
+      "light fittings"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 119.811,
+    "decode_ms": 1601.394,
+    "wall_ms": 1750.6093000411056,
+    "decode_tokens": 32,
+    "prefill_tokens": 38
+   }
+  },
+  {
+   "case": "cl-03",
+   "turn": 1,
+   "user": "morning around 9",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "morning around 9",
+     "pred": "morning around 9",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "morning around 9"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "cl-03",
+   "turn": 2,
+   "user": "medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "cl-03",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sc-01",
+   "turn": 0,
+   "user": "At the new block construction site the parapet wall on the top floor fell on workers standing on the wooden scaffolding, this morning after the heavy rain. Three workers are badly injured, the ambulance took them. We have stopped all work at the site.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "structural",
+     "pred": "structural",
+     "ok": true
+    },
+    "l": {
+     "gold": "new block construction site",
+     "pred": "top floor",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "wooden scaffolding"
+     ],
+     "pred": [
+      "parapet wall",
+      "wooden scaffolding"
+     ],
+     "ok": false
+    },
+    "d": {
+     "gold": "this morning",
+     "pred": "this morning after the heavy rain",
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "stopped all work at the site"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {
+    "p": [
+     "Three workers"
+    ],
+    "e": [
+     "parapet wall"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "structural",
+     "l": "top floor",
+     "d": "this morning after the heavy rain",
+     "p": [
+      "Three workers",
+      "ambulance"
+     ],
+     "e": [
+      "parapet wall",
+      "wooden scaffolding"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 118.87400000000001,
+    "decode_ms": 2413.321,
+    "wall_ms": 2565.241399977822,
+    "decode_tokens": 48,
+    "prefill_tokens": 57
+   }
+  },
+  {
+   "case": "sc-01",
+   "turn": 1,
+   "user": "critical",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "critical"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sc-01",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lb-02",
+   "turn": 0,
+   "user": "An acid bottle broke in the chemistry lab, some spilled on the floor, no one touched it. The lab assistant put sand on it.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "chemical",
+     "pred": "chemical",
+     "ok": true
+    },
+    "l": {
+     "gold": "chemistry lab",
+     "pred": "chemistry lab",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "put sand on it"
+     ],
+     "pred": [
+      "lab assistant put sand on it"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "acid bottle"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "chemical",
+     "l": "chemistry lab",
+     "e": [
+      "acid bottle"
+     ],
+     "a": [
+      "lab assistant put sand on it"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 104.111,
+    "decode_ms": 1647.382,
+    "wall_ms": 1810.9296000329778,
+    "decode_tokens": 33,
+    "prefill_tokens": 33
+   }
+  },
+  {
+   "case": "lb-02",
+   "turn": 1,
+   "user": "11:40",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "11:40",
+     "pred": "11:40",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "11:40"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lb-02",
+   "turn": 2,
+   "user": "low",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "low"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "lb-02",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "md-01",
+   "turn": 0,
+   "user": "A security supervisor collapsed at the front desk during night shift, around 2 AM. Two colleagues gave CPR and fanned him till the ambulance came. He is in hospital, stable now.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "medical",
+     "pred": "medical",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A security supervisor",
+      "Two colleagues"
+     ],
+     "pred": [
+      "Two colleagues"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "front desk",
+     "pred": "front desk",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 2 AM",
+     "pred": "around 2 AM",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "gave CPR",
+      "fanned him"
+     ],
+     "pred": [
+      "CPR",
+      "fanned him"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "a": [
+     "CPR"
+    ],
+    "w": [
+     "Two colleagues"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "medical",
+     "l": "front desk",
+     "d": "around 2 AM",
+     "p": [
+      "Two colleagues"
+     ],
+     "a": [
+      "CPR",
+      "fanned him"
+     ],
+     "w": [
+      "Two colleagues"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 126.657,
+    "decode_ms": 2325.154,
+    "wall_ms": 2515.4317000415176,
+    "decode_tokens": 46,
+    "prefill_tokens": 43
+   }
+  },
+  {
+   "case": "md-01",
+   "turn": 1,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "md-01",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "md-03",
+   "turn": 0,
+   "user": "A visitor fainted at the reception, he is conscious now, we gave him water and he is sitting",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "medical",
+     "pred": "medical",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A visitor"
+     ],
+     "pred": [
+      "visitor"
+     ],
+     "ok": true
+    },
+    "l": {
+     "gold": "reception",
+     "pred": null,
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "gave him water"
+     ],
+     "pred": [
+      "gave him water",
+      "he is sitting"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "a": [
+     "he is sitting"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "medical",
+     "p": [
+      "visitor"
+     ],
+     "a": [
+      "gave him water",
+      "he is sitting"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 123.009,
+    "decode_ms": 1437.298,
+    "wall_ms": 1601.8337999703363,
+    "decode_tokens": 29,
+    "prefill_tokens": 25
+   }
+  },
+  {
+   "case": "md-03",
+   "turn": 1,
+   "user": "just now",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "just now",
+     "pred": "just now",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "just now"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "md-03",
+   "turn": 2,
+   "user": "low",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "low"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "md-03",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wl-03",
+   "turn": 0,
+   "user": "Ceiling is dripping water in the server room, right on top of rack 2",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "water_leak",
+     "pred": "structural",
+     "ok": false
+    },
+    "l": {
+     "gold": "server room",
+     "pred": "server room",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "rack 2"
+     ],
+     "pred": [
+      "ceiling"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "ceiling"
+    ],
+    "a": [
+     "dripping water"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "structural",
+     "l": "server room",
+     "e": [
+      "ceiling"
+     ],
+     "a": [
+      "dripping water"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 128.89000000000001,
+    "decode_ms": 1529.096,
+    "wall_ms": 1689.506899972912,
+    "decode_tokens": 31,
+    "prefill_tokens": 21
+   }
+  },
+  {
+   "case": "wl-03",
+   "turn": 1,
+   "user": "noticed it 20 minutes ago",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "20 minutes ago",
+     "pred": "20 minutes ago",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "20 minutes ago"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 109.45,
+    "decode_ms": 705.606,
+    "wall_ms": 843.1555000133812,
+    "decode_tokens": 15,
+    "prefill_tokens": 35
+   }
+  },
+  {
+   "case": "wl-03",
+   "turn": 2,
+   "user": "critical, IT is shutting down the rack",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "shutting down the rack"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "critical"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 123.513,
+    "decode_ms": 609.403,
+    "wall_ms": 789.3408000236377,
+    "decode_tokens": 13,
+    "prefill_tokens": 31
+   }
+  },
+  {
+   "case": "wl-03",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sec-01",
+   "turn": 0,
+   "user": "Sixty laptops are missing from the computer lab. Looks like someone broke open the window last night and cut the CCTV cables.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "security",
+     "pred": "security",
+     "ok": true
+    },
+    "l": {
+     "gold": "computer lab",
+     "pred": "computer lab",
+     "ok": true
+    },
+    "d": {
+     "gold": "last night",
+     "pred": "last night",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "CCTV cables"
+     ],
+     "pred": [
+      "window",
+      "cctv cables"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "window"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "security",
+     "l": "computer lab",
+     "e": [
+      "window",
+      "cctv cables"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 111.649,
+    "decode_ms": 1366.265,
+    "wall_ms": 1527.299600013066,
+    "decode_tokens": 28,
+    "prefill_tokens": 37
+   }
+  },
+  {
+   "case": "sec-01",
+   "turn": 1,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sec-01",
+   "turn": 2,
+   "user": "we have informed the police and our security team",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "a": {
+     "gold": [
+      "informed the police and our security team"
+     ],
+     "pred": [
+      "informed the police",
+      "informed our security team"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "a": [
+     "informed the police",
+     "informed our security team"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "a": [
+      "informed the police",
+      "informed our security team"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 116.099,
+    "decode_ms": 1125.233,
+    "wall_ms": 1272.9172999970615,
+    "decode_tokens": 23,
+    "prefill_tokens": 46
+   }
+  },
+  {
+   "case": "sec-01",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sec-03",
+   "turn": 0,
+   "user": "My laptop was stolen from my desk on the 4th floor during lunch",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "security",
+     "pred": "security",
+     "ok": true
+    },
+    "l": {
+     "gold": "my desk on the 4th floor",
+     "pred": "my desk on the 4th floor",
+     "ok": true
+    },
+    "d": {
+     "gold": "during lunch",
+     "pred": "during lunch",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "my laptop"
+    ],
+    "e": [
+     "laptop"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "security",
+     "l": "4th floor",
+     "d": "during lunch",
+     "p": [
+      "my laptop"
+     ],
+     "e": [
+      "laptop"
+     ],
+     "a": [
+      "none"
+     ],
+     "w": [
+      "none"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "a",
+     "value": "none",
+     "reason": "not in transcript (support 0.00)"
+    },
+    {
+     "field": "w",
+     "value": "none",
+     "reason": "not in transcript (support 0.00)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 123.027,
+    "decode_ms": 2165.185,
+    "wall_ms": 2320.8455000421964,
+    "decode_tokens": 43,
+    "prefill_tokens": 27
+   }
+  },
+  {
+   "case": "sec-03",
+   "turn": 1,
+   "user": "medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "sec-03",
+   "turn": 2,
+   "user": "I have informed security and they are checking CCTV",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "a": {
+     "gold": [
+      "informed security",
+      "checking CCTV"
+     ],
+     "pred": [
+      "informed security",
+      "they are checking CCTV"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "a": [
+      "informed security",
+      "they are checking CCTV"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 113.07600000000001,
+    "decode_ms": 1034.821,
+    "wall_ms": 1183.6965000256896,
+    "decode_tokens": 21,
+    "prefill_tokens": 45
+   }
+  },
+  {
+   "case": "sec-03",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "eq-01",
+   "turn": 0,
+   "user": "AHU-2 on the terrace tripped and the whole 3rd floor has no cooling since 2 PM",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "equipment_failure",
+     "pred": "fire",
+     "ok": false
+    },
+    "e": {
+     "gold": [
+      "AHU-2"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "terrace",
+     "pred": "AHU-2 on the terrace",
+     "ok": false
+    },
+    "d": {
+     "gold": "since 2 PM",
+     "pred": "2 PM",
+     "ok": false
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "fire",
+     "l": "AHU-2 on the terrace",
+     "d": "2 PM"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 113.0,
+    "decode_ms": 1385.484,
+    "wall_ms": 1532.5341999996454,
+    "decode_tokens": 28,
+    "prefill_tokens": 35
+   }
+  },
+  {
+   "case": "eq-01",
+   "turn": 1,
+   "user": "low",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "low"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "eq-01",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "oth-01",
+   "turn": 0,
+   "user": "There is a strong burning smell near the pantry on 3rd floor, we can't find where it is coming from",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "other",
+     "pred": "gas_leak",
+     "ok": false
+    },
+    "l": {
+     "gold": "near the pantry on 3rd floor",
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {
+    "a": [
+     "can't find where it is coming from"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "gas_leak",
+     "l": "third floor",
+     "e": [
+      "pantry"
+     ],
+     "a": [
+      "can't find where it is coming from"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "l",
+     "value": "third floor",
+     "reason": "not in transcript (support 0.50)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 121.662,
+    "decode_ms": 2149.6620000000003,
+    "wall_ms": 2326.1053999885917,
+    "decode_tokens": 41,
+    "prefill_tokens": 29
+   }
+  },
+  {
+   "case": "oth-01",
+   "turn": 1,
+   "user": "started around 10 minutes ago",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "around 10 minutes ago",
+     "pred": "started around 10 minutes ago",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "started around 10 minutes ago"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 102.848,
+    "decode_ms": 864.769,
+    "wall_ms": 997.2844999865629,
+    "decode_tokens": 18,
+    "prefill_tokens": 33
+   }
+  },
+  {
+   "case": "oth-01",
+   "turn": 2,
+   "user": "medium",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "oth-01",
+   "turn": 3,
+   "user": "Facilities team is checking the wiring",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "a": {
+     "gold": [
+      "checking the wiring"
+     ],
+     "pred": [
+      "Facilities team is checking the wiring"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "a": [
+      "Facilities team is checking the wiring"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 114.623,
+    "decode_ms": 956.95,
+    "wall_ms": 1088.3504999801517,
+    "decode_tokens": 20,
+    "prefill_tokens": 40
+   }
+  },
+  {
+   "case": "oth-01",
+   "turn": 4,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-01",
+   "turn": 0,
+   "user": "A box fell off the top shelf in the store room, it just missed a delivery boy. Anil and I both saw it.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "struck_by",
+     "pred": "struck_by",
+     "ok": true
+    },
+    "l": {
+     "gold": "store room",
+     "pred": "store room",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "top shelf"
+     ],
+     "pred": [
+      "box"
+     ],
+     "ok": false
+    },
+    "p": {
+     "gold": [
+      "a delivery boy"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "w": {
+     "gold": [
+      "Anil"
+     ],
+     "pred": [
+      "Anil"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "box"
+    ]
+   },
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "struck_by",
+     "l": "store room",
+     "e": [
+      "box"
+     ],
+     "a": [
+      "none"
+     ],
+     "w": [
+      "Anil",
+      "the speaker"
+     ]
+    }
+   },
+   "dropped": [
+    {
+     "field": "a",
+     "value": "none",
+     "reason": "not in transcript (support 0.00)"
+    },
+    {
+     "field": "w",
+     "value": "the speaker",
+     "reason": "not in transcript (support 0.00)"
+    }
+   ],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 113.932,
+    "decode_ms": 1842.022,
+    "wall_ms": 1991.0168999922462,
+    "decode_tokens": 37,
+    "prefill_tokens": 39
+   }
+  },
+  {
+   "case": "wit-01",
+   "turn": 1,
+   "user": "about fifteen minutes ago",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "about fifteen minutes ago",
+     "pred": "about fifteen minutes ago",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "about fifteen minutes ago"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-01",
+   "turn": 2,
+   "user": "low",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "low"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-01",
+   "turn": 3,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-02",
+   "turn": 0,
+   "user": "There's oil spilled near the generator room entrance. The guard Mahesh saw the drum tip over around 1 PM.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "chemical",
+     "pred": "gas_leak",
+     "ok": false
+    },
+    "l": {
+     "gold": "near the generator room entrance",
+     "pred": "generator room entrance",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "the drum"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "w": {
+     "gold": [
+      "The guard Mahesh"
+     ],
+     "pred": [
+      "Mahesh",
+      "The guard Mahesh"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "around 1 PM",
+     "pred": "around 1 PM",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "gas_leak",
+     "l": "generator room entrance",
+     "d": "around 1 PM",
+     "w": [
+      "Mahesh"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 126.8,
+    "decode_ms": 1673.057,
+    "wall_ms": 1837.1226000017487,
+    "decode_tokens": 34,
+    "prefill_tokens": 29
+   }
+  },
+  {
+   "case": "wit-02",
+   "turn": 1,
+   "user": "medium, someone could slip",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "medium"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 114.676,
+    "decode_ms": 609.789,
+    "wall_ms": 761.6647999966517,
+    "decode_tokens": 13,
+    "prefill_tokens": 48
+   }
+  },
+  {
+   "case": "wit-02",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-03",
+   "turn": 0,
+   "user": "Short circuit in the switchboard of the second floor lab",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "electrical",
+     "pred": "electrical",
+     "ok": true
+    },
+    "l": {
+     "gold": "second floor lab",
+     "pred": "second floor lab",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "switchboard"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "electrical",
+     "l": "second floor lab"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 114.714,
+    "decode_ms": 982.405,
+    "wall_ms": 1154.6368999988772,
+    "decode_tokens": 20,
+    "prefill_tokens": 23
+   }
+  },
+  {
+   "case": "wit-03",
+   "turn": 1,
+   "user": "at 11:20",
+   "asked": "d",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "d": {
+     "gold": "at 11:20",
+     "pred": "at 11:20",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "d": "at 11:20"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-03",
+   "turn": 2,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-03",
+   "turn": 3,
+   "user": "Priya from the lab saw the sparks",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "w": {
+     "gold": [
+      "Priya from the lab"
+     ],
+     "pred": [
+      "Priya",
+      "Priya from the lab"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "w": [
+      "Priya"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 119.453,
+    "decode_ms": 717.378,
+    "wall_ms": 856.7978999926709,
+    "decode_tokens": 15,
+    "prefill_tokens": 48
+   }
+  },
+  {
+   "case": "wit-03",
+   "turn": 4,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-04",
+   "turn": 0,
+   "user": "A cleaner slipped on the stairs near gate 3 at 9 AM. Nobody else saw it, I found him later.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "slip_trip",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A cleaner"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "stairs near gate 3",
+     "pred": "stairs near gate 3",
+     "ok": true
+    },
+    "d": {
+     "gold": "at 9 AM",
+     "pred": "9 AM",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "slip_trip",
+     "l": "stairs near gate 3",
+     "d": "9 AM"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 112.373,
+    "decode_ms": 1444.616,
+    "wall_ms": 1627.5472999550402,
+    "decode_tokens": 29,
+    "prefill_tokens": 37
+   }
+  },
+  {
+   "case": "wit-04",
+   "turn": 1,
+   "user": "low",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "low"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-04",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-05",
+   "turn": 0,
+   "user": "Two cars scraped each other in the basement parking around 6 PM yesterday. Ravi, Sunita and the parking attendant saw it.",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "other",
+     "pred": "struck_by",
+     "ok": true
+    },
+    "l": {
+     "gold": "basement parking",
+     "pred": "basement parking",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 6 PM yesterday",
+     "pred": "around 6 PM yesterday",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "Two cars"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "w": {
+     "gold": [
+      "Ravi",
+      "Sunita",
+      "the parking attendant"
+     ],
+     "pred": [
+      "the parking attendant",
+      "Ravi",
+      "Sunita"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "struck_by",
+     "l": "basement parking",
+     "p": [
+      "Ravi",
+      "Sunita",
+      "parking attendant"
+     ],
+     "w": [
+      "the parking attendant"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 103.93,
+    "decode_ms": 2068.176,
+    "wall_ms": 2214.989300002344,
+    "decode_tokens": 41,
+    "prefill_tokens": 33
+   }
+  },
+  {
+   "case": "wit-05",
+   "turn": 1,
+   "user": "low",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "low"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-05",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-09",
+   "turn": 0,
+   "user": "A man fainted in the canteen queue around 1:30, Deepak and Farah saw him fall",
+   "asked": null,
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "t": {
+     "gold": "medical",
+     "pred": "medical",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A man"
+     ],
+     "pred": [
+      "a man"
+     ],
+     "ok": true
+    },
+    "l": {
+     "gold": "canteen queue",
+     "pred": "canteen queue",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 1:30",
+     "pred": "around 1:30",
+     "ok": true
+    },
+    "w": {
+     "gold": [
+      "Deepak",
+      "Farah"
+     ],
+     "pred": [
+      "Deepak",
+      "Farah"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "t": "medical",
+     "l": "canteen queue",
+     "d": "around 1:30",
+     "p": [
+      "a man"
+     ],
+     "w": [
+      "Deepak",
+      "Farah"
+     ]
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": false,
+   "llm": {
+    "prefill_ms": 121.24600000000001,
+    "decode_ms": 2078.656,
+    "wall_ms": 2217.1408000285737,
+    "decode_tokens": 42,
+    "prefill_tokens": 29
+   }
+  },
+  {
+   "case": "wit-09",
+   "turn": 1,
+   "user": "high",
+   "asked": "s",
+   "gold_tool": "update_report",
+   "pred_tool": "update_report",
+   "fields": {
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "raw": {
+    "tool": "update_report",
+    "args": {
+     "s": "high"
+    }
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  },
+  {
+   "case": "wit-09",
+   "turn": 2,
+   "user": "submit",
+   "asked": null,
+   "gold_tool": "submit_report",
+   "pred_tool": "submit_report",
+   "fields": {},
+   "extra": {},
+   "raw": {
+    "tool": "submit_report"
+   },
+   "dropped": [],
+   "error": "",
+   "fast_path": true,
+   "llm": {
+    "prefill_ms": null,
+    "decode_ms": null,
+    "wall_ms": 0.0,
+    "decode_tokens": null,
+    "prefill_tokens": null
+   }
+  }
+ ],
+ "dialogs": [
+  {
+   "case": "ps-01",
+   "fields": {
+    "t": {
+     "gold": "water_leak",
+     "pred": "water_leak",
+     "ok": true
+    },
+    "l": {
+     "gold": "near Conference Room 2",
+     "pred": "Conference Room 2",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 10 AM",
+     "pred": "around 10 AM",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "isolated the area"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "ps-02",
+   "fields": {
+    "t": {
+     "gold": "water_leak",
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "near conf room 2",
+     "pred": null,
+     "ok": false
+    },
+    "d": {
+     "gold": "since 10 or so",
+     "pred": "2 since 10",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "isolated it"
+     ],
+     "pred": [
+      "maintenance guys have isolated it"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "maintenance guys have isolated it"
+    ],
+    "a": [
+     "maintenance guys have isolated it"
+    ]
+   },
+   "final_state": "collecting",
+   "want_state": "submitted",
+   "state_ok": false,
+   "missing": [
+    "incident_type",
+    "location"
+   ]
+  },
+  {
+   "case": "ps-03",
+   "fields": {
+    "t": {
+     "gold": "water_leak",
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "near Conference Room 2",
+     "pred": "Conference Room 2",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 10 AM",
+     "pred": "around 10 AM",
+     "ok": true
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "collecting",
+   "want_state": "submitted",
+   "state_ok": false,
+   "missing": [
+    "incident_type"
+   ]
+  },
+  {
+   "case": "el-01",
+   "fields": {
+    "t": {
+     "gold": "electrical",
+     "pred": "electrical",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    },
+    "l": {
+     "gold": "meter room on the ground floor",
+     "pred": "meter room on the ground floor",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 3 PM today",
+     "pred": "around 3 PM today",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "electrical contractor's foreman"
+     ],
+     "pred": [
+      "electrical contractor's foreman"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "480 volt pull panel"
+     ],
+     "pred": [
+      "pull panel",
+      "live wire"
+     ],
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "called the ambulance"
+     ],
+     "pred": [
+      "got a shock",
+      "found him on the floor",
+      "called the ambulance"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "pull panel",
+     "live wire"
+    ],
+    "a": [
+     "got a shock",
+     "found him on the floor"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "el-03",
+   "fields": {
+    "t": {
+     "gold": "electrical",
+     "pred": "electrical",
+     "ok": true
+    },
+    "l": {
+     "gold": "meter room",
+     "pred": "meter room",
+     "ok": true
+    },
+    "d": {
+     "gold": "3 PM",
+     "pred": "3 PM",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "panel"
+     ],
+     "pred": [
+      "live wire",
+      "panel cover"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "live wire"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "sl-01",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "slip_trip",
+     "ok": true
+    },
+    "d": {
+     "gold": "Around 10:30 this morning",
+     "pred": "Around 10:30 this morning",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "one of our staff"
+     ],
+     "pred": [
+      "staff",
+      "hit his right arm on a metal cabinet"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "emergency room",
+     "pred": "wet floor in the emergency room",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "staff",
+     "hit his right arm on a metal cabinet"
+    ],
+    "e": [
+     "medical equipment",
+     "metal cabinet"
+    ],
+    "a": [
+     "hit his right arm on a metal cabinet"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "sl-03",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "fall_height",
+     "ok": false
+    },
+    "p": {
+     "gold": [
+      "one housekeeping staff"
+     ],
+     "pred": [
+      "housekeeping staff"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "ER corridor",
+     "pred": "ER corridor",
+     "ok": true
+    },
+    "d": {
+     "gold": "today morning 10:30",
+     "pred": "after mopping",
+     "ok": false
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "gave her ice pack"
+     ],
+     "pred": [
+      "gave her ice pack",
+      "sent her to doctor"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "housekeeping staff"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "na-01",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "slip_trip",
+     "ok": true
+    },
+    "d": {
+     "gold": "Last night around 8 PM",
+     "pred": "Last night around 8 PM",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "a nursing aide"
+     ],
+     "pred": [
+      "nursing aide",
+      "resident"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "first floor shower room",
+     "pred": "first floor shower room",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "resident"
+    ],
+    "e": [
+     "metal strip"
+    ],
+    "a": [
+     "tripped over the metal strip",
+     "hurt her ankle",
+     "shower a resident"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "na-02",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "slip_trip",
+     "ok": true
+    },
+    "l": {
+     "gold": "shower room",
+     "pred": "shower room",
+     "ok": true
+    },
+    "d": {
+     "gold": "this morning",
+     "pred": "this morning",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "dried the floor"
+     ],
+     "pred": [
+      "housekeeping has dried the floor"
+     ],
+     "ok": true
+    },
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "fk-01",
+   "fields": {
+    "t": {
+     "gold": "struck_by",
+     "pred": "struck_by",
+     "ok": true
+    },
+    "d": {
+     "gold": "about 2 in the afternoon",
+     "pred": "At about 2 in the afternoon",
+     "ok": true
+    },
+    "l": {
+     "gold": "warehouse",
+     "pred": "warehouse",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "a forklift driver"
+     ],
+     "pred": [
+      "the forklift driver"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "forklift"
+     ],
+     "pred": [
+      "stacked material"
+     ],
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "called an ambulance"
+     ],
+     "pred": [
+      "hit the stacked material",
+      "got down to straighten it",
+      "the load fell on his chest",
+      "couldn't move it"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "stacked material"
+    ],
+    "a": [
+     "hit the stacked material",
+     "got down to straighten it",
+     "the load fell on his chest",
+     "couldn't move it"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "fk-03",
+   "fields": {
+    "t": {
+     "gold": "struck_by",
+     "pred": "caught_in",
+     "ok": false
+    },
+    "l": {
+     "gold": "warehouse aisle 4",
+     "pred": "warehouse aisle 4",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "forklift"
+     ],
+     "pred": [
+      "rack",
+      "forklift mast"
+     ],
+     "ok": false
+    },
+    "d": {
+     "gold": "quarter past two",
+     "pred": "quarter past two",
+     "ok": true
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "rack"
+    ],
+    "a": [
+     "no one hurt"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "lw-01",
+   "fields": {
+    "t": {
+     "gold": "fall_height",
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "basement parking driveway",
+     "pred": null,
+     "ok": false
+    },
+    "e": {
+     "gold": [
+      "extension ladder"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "p": {
+     "gold": [
+      "maintenance mechanic"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "d": {
+     "gold": "at 11:30",
+     "pred": null,
+     "ok": false
+    },
+    "s": {
+     "gold": "high",
+     "pred": null,
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "cordoned off the driveway"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {},
+   "final_state": "collecting",
+   "want_state": "submitted",
+   "state_ok": false,
+   "missing": [
+    "incident_type",
+    "location",
+    "date_time",
+    "severity",
+    "description"
+   ]
+  },
+  {
+   "case": "lw-03",
+   "fields": {
+    "t": {
+     "gold": "fall_height",
+     "pred": "fall_height",
+     "ok": true
+    },
+    "l": {
+     "gold": "parking ramp",
+     "pred": "parking ramp",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "the maintenance guy"
+     ],
+     "pred": [
+      "the maintenance guy"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "ladder"
+     ],
+     "pred": [
+      "ladder",
+      "water valve"
+     ],
+     "ok": true
+    },
+    "w": {
+     "gold": [
+      "Ravi"
+     ],
+     "pred": [
+      "Ravi"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "11:30",
+     "pred": "the maintenance guy fall off the ladder",
+     "ok": false
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "ld-01",
+   "fields": {
+    "t": {
+     "gold": "fall_height",
+     "pred": "fall_height",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A carpenter"
+     ],
+     "pred": [
+      "the carpenter"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "thirty foot extension ladder"
+     ],
+     "pred": [
+      "extension ladder"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "near the east wall",
+     "pred": "near the east wall",
+     "ok": true
+    },
+    "d": {
+     "gold": "about twenty minutes ago",
+     "pred": "about twenty minutes ago",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "called the ambulance",
+      "informed the site supervisor"
+     ],
+     "pred": [
+      "someone moved the base while the top was tied",
+      "the top section came down",
+      "cut the tie wires"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "extension ladder"
+    ],
+    "a": [
+     "someone moved the base while the top was tied",
+     "the top section came down",
+     "cut the tie wires"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "ld-02",
+   "fields": {},
+   "extra": {
+    "t": "fall_height",
+    "l": "ladder fall",
+    "e": [
+     "carpenter ladder"
+    ],
+    "a": [
+     "Rakesh said he filed it"
+    ]
+   },
+   "final_state": "cancelled",
+   "want_state": "cancelled",
+   "state_ok": true,
+   "missing": [
+    "date_time",
+    "severity"
+   ]
+  },
+  {
+   "case": "ch-01",
+   "fields": {
+    "t": {
+     "gold": "chemical",
+     "pred": "chemical",
+     "ok": true
+    },
+    "l": {
+     "gold": "tanker wash bay",
+     "pred": "tanker wash bay",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 9 AM",
+     "pred": "around 9 AM",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "The manager"
+     ],
+     "pred": [
+      "the manager"
+     ],
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "flushed his eyes at the eyewash"
+     ],
+     "pred": [
+      "pressurised the internal valve",
+      "closed the outer one",
+      "flushed his eyes at the eyewash"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "vapour cleaning",
+     "solvent"
+    ],
+    "a": [
+     "pressurised the internal valve",
+     "closed the outer one"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "ch-03",
+   "fields": {
+    "t": {
+     "gold": "chemical",
+     "pred": "chemical",
+     "ok": true
+    },
+    "l": {
+     "gold": "wash bay",
+     "pred": "wash bay",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "the operator"
+     ],
+     "pred": [
+      "operator"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "9 o'clock",
+     "pred": "9 o'clock",
+     "ok": true
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "flushed his eyes for fifteen minutes",
+      "EHS has been informed"
+     ],
+     "pred": [
+      "got into the operator's eyes",
+      "flushed his eyes for fifteen minutes",
+      "informed EHS"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "solvent"
+    ],
+    "a": [
+     "got into the operator's eyes"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "cv-01",
+   "fields": {
+    "t": {
+     "gold": "caught_in",
+     "pred": "caught_in",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "One of the mechanics"
+     ],
+     "pred": [
+      "the mechanic"
+     ],
+     "ok": false
+    },
+    "e": {
+     "gold": [
+      "conveyor chain"
+     ],
+     "pred": [
+      "conveyor chain"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "about 1:45",
+     "pred": "at about 1:45",
+     "ok": true
+    },
+    "l": {
+     "gold": "tyre line",
+     "pred": "tyre line",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "stopped the conveyor"
+     ],
+     "pred": [
+      "stopped the conveyor",
+      "he is on the way to hospital"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "the mechanic"
+    ],
+    "a": [
+     "he is on the way to hospital"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "cv-02",
+   "fields": {
+    "t": {
+     "gold": "equipment_failure",
+     "pred": "equipment_failure",
+     "ok": true
+    },
+    "l": {
+     "gold": "tyre line",
+     "pred": null,
+     "ok": false
+    },
+    "e": {
+     "gold": [
+      "conveyor"
+     ],
+     "pred": [
+      "conveyor at the tyre line"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "conveyor at the tyre line"
+    ]
+   },
+   "final_state": "cancelled",
+   "want_state": "cancelled",
+   "state_ok": true,
+   "missing": [
+    "location",
+    "date_time",
+    "severity"
+   ]
+  },
+  {
+   "case": "fi-01",
+   "fields": {
+    "t": {
+     "gold": "fire",
+     "pred": "fire",
+     "ok": true
+    },
+    "l": {
+     "gold": "fourth floor",
+     "pred": "software company office on the fourth floor",
+     "ok": true
+    },
+    "d": {
+     "gold": "ten minutes back",
+     "pred": "ten minutes back",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "evacuated everyone",
+      "the firefighters put it out"
+     ],
+     "pred": [
+      "evacuated everyone",
+      "fire brigade is on the way",
+      "put it out"
+     ],
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "short circuit"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "fi-03",
+   "fields": {
+    "t": {
+     "gold": "fire",
+     "pred": "fire",
+     "ok": true
+    },
+    "l": {
+     "gold": "UPS room",
+     "pred": "UPS room on the third floor",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "evacuating"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "d": {
+     "gold": "right now",
+     "pred": "right now",
+     "ok": true
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "fi-04",
+   "fields": {
+    "t": {
+     "gold": "fire",
+     "pred": "fire",
+     "ok": true
+    },
+    "l": {
+     "gold": "cafeteria",
+     "pred": "Kitchen fire in the cafeteria",
+     "ok": true
+    },
+    "d": {
+     "gold": "11:55 AM",
+     "pred": "at 11:55 AM",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "evacuated everyone",
+      "called fire brigade"
+     ],
+     "pred": [
+      "evacuated everyone",
+      "called fire brigade"
+     ],
+     "ok": true
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "six staff with burns"
+    ],
+    "e": [
+     "LPG leak"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "lf-01",
+   "fields": {
+    "t": {
+     "gold": "lift",
+     "pred": "equipment_failure",
+     "ok": false
+    },
+    "l": {
+     "gold": "Block C",
+     "pred": "Block C",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 3:15 PM",
+     "pred": "at around 3:15 PM",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "broke the lift door",
+      "got everyone out"
+     ],
+     "pred": [
+      "broke the lift door",
+      "got everyone out"
+     ],
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "lift"
+     ],
+     "pred": [
+      "lift"
+     ],
+     "ok": true
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "security guard"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "lf-03",
+   "fields": {
+    "t": {
+     "gold": "lift",
+     "pred": null,
+     "ok": false
+    },
+    "p": {
+     "gold": [
+      "Two people"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "e": {
+     "gold": [
+      "lift number 3"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "between second and third floor",
+     "pred": null,
+     "ok": false
+    },
+    "d": {
+     "gold": "about ten minutes ago",
+     "pred": null,
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "Security is trying to open it"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "s": {
+     "gold": "medium",
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {},
+   "final_state": "collecting",
+   "want_state": "submitted",
+   "state_ok": false,
+   "missing": [
+    "incident_type",
+    "location",
+    "date_time",
+    "severity",
+    "description"
+   ]
+  },
+  {
+   "case": "lf-04",
+   "fields": {
+    "t": {
+     "gold": "lift",
+     "pred": "equipment_failure",
+     "ok": false
+    },
+    "l": {
+     "gold": "tower B",
+     "pred": "tower B",
+     "ok": true
+    },
+    "d": {
+     "gold": "5:45",
+     "pred": "5:45",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "gs-01",
+   "fields": {
+    "t": {
+     "gold": "fire",
+     "pred": "gas_leak",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "LPG cylinder"
+     ],
+     "pred": [
+      "LPG cylinder"
+     ],
+     "ok": true
+    },
+    "l": {
+     "gold": "canteen kitchen",
+     "pred": "canteen kitchen",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 12:30",
+     "pred": "around 12:30",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "put it out in twenty minutes",
+      "shifted to KIMS hospital"
+     ],
+     "pred": [
+      "fire brigade put it out in twenty minutes",
+      "injured were shifted to KIMS hospital"
+     ],
+     "ok": true
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "one cook",
+     "nine others"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "gs-03",
+   "fields": {
+    "t": {
+     "gold": "gas_leak",
+     "pred": "gas_leak",
+     "ok": true
+    },
+    "l": {
+     "gold": "pantry on 6th floor",
+     "pred": "pantry on 6th floor",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "everyone moved out",
+      "checking the pipeline"
+     ],
+     "pred": [
+      "everyone moved out",
+      "Facilities is checking the pipeline"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "15 min ago",
+     "pred": "15 min ago",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "pipeline"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "cl-01",
+   "fields": {
+    "t": {
+     "gold": "structural",
+     "pred": "structural",
+     "ok": true
+    },
+    "l": {
+     "gold": "the ward",
+     "pred": "ward",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "Three patients",
+      "two sanitation workers"
+     ],
+     "pred": [
+      "three patients",
+      "two sanitation workers"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "yesterday night",
+     "pred": "sometime yesterday night",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "ceiling fans"
+    ],
+    "a": [
+     "damaged"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "cl-03",
+   "fields": {
+    "t": {
+     "gold": "structural",
+     "pred": "structural",
+     "ok": true
+    },
+    "l": {
+     "gold": "conference hall on 2nd floor",
+     "pred": "conference hall on 2nd floor",
+     "ok": true
+    },
+    "d": {
+     "gold": "morning around 9",
+     "pred": "morning around 9",
+     "ok": true
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "ceiling",
+     "light fittings"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "sc-01",
+   "fields": {
+    "t": {
+     "gold": "structural",
+     "pred": "structural",
+     "ok": true
+    },
+    "l": {
+     "gold": "new block construction site",
+     "pred": "top floor",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "wooden scaffolding"
+     ],
+     "pred": [
+      "parapet wall",
+      "wooden scaffolding"
+     ],
+     "ok": false
+    },
+    "d": {
+     "gold": "this morning",
+     "pred": "this morning after the heavy rain",
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "stopped all work at the site"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    }
+   },
+   "extra": {
+    "p": [
+     "Three workers"
+    ],
+    "e": [
+     "parapet wall"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "lb-02",
+   "fields": {
+    "t": {
+     "gold": "chemical",
+     "pred": "chemical",
+     "ok": true
+    },
+    "l": {
+     "gold": "chemistry lab",
+     "pred": "chemistry lab",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "put sand on it"
+     ],
+     "pred": [
+      "lab assistant put sand on it"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "11:40",
+     "pred": "11:40",
+     "ok": true
+    },
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "acid bottle"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "md-01",
+   "fields": {
+    "t": {
+     "gold": "medical",
+     "pred": "medical",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A security supervisor",
+      "Two colleagues"
+     ],
+     "pred": [
+      "Two colleagues"
+     ],
+     "ok": false
+    },
+    "l": {
+     "gold": "front desk",
+     "pred": "front desk",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 2 AM",
+     "pred": "around 2 AM",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "gave CPR",
+      "fanned him"
+     ],
+     "pred": [
+      "CPR",
+      "fanned him"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {
+    "a": [
+     "CPR"
+    ],
+    "w": [
+     "Two colleagues"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "md-03",
+   "fields": {
+    "t": {
+     "gold": "medical",
+     "pred": "medical",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A visitor"
+     ],
+     "pred": [
+      "visitor"
+     ],
+     "ok": true
+    },
+    "l": {
+     "gold": "reception",
+     "pred": "low",
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "gave him water"
+     ],
+     "pred": [
+      "gave him water",
+      "he is sitting"
+     ],
+     "ok": false
+    },
+    "d": {
+     "gold": "just now",
+     "pred": "just now",
+     "ok": true
+    },
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {
+    "a": [
+     "he is sitting"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "wl-03",
+   "fields": {
+    "t": {
+     "gold": "water_leak",
+     "pred": "water_leak",
+     "ok": true
+    },
+    "l": {
+     "gold": "server room",
+     "pred": "server room",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "rack 2"
+     ],
+     "pred": [
+      "ceiling"
+     ],
+     "ok": false
+    },
+    "d": {
+     "gold": "20 minutes ago",
+     "pred": "20 minutes ago",
+     "ok": true
+    },
+    "s": {
+     "gold": "critical",
+     "pred": "critical",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "shutting down the rack"
+     ],
+     "pred": [
+      "dripping water",
+      "IT is shutting down the rack"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "ceiling"
+    ],
+    "a": [
+     "dripping water"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "sec-01",
+   "fields": {
+    "t": {
+     "gold": "security",
+     "pred": "security",
+     "ok": true
+    },
+    "l": {
+     "gold": "computer lab",
+     "pred": "computer lab",
+     "ok": true
+    },
+    "d": {
+     "gold": "last night",
+     "pred": "last night",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "CCTV cables"
+     ],
+     "pred": [
+      "window",
+      "cctv cables"
+     ],
+     "ok": false
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "informed the police and our security team"
+     ],
+     "pred": [
+      "informed the police",
+      "informed our security team"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "e": [
+     "window"
+    ],
+    "a": [
+     "informed the police",
+     "informed our security team"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "sec-03",
+   "fields": {
+    "t": {
+     "gold": "security",
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "my desk on the 4th floor",
+     "pred": null,
+     "ok": false
+    },
+    "d": {
+     "gold": "during lunch",
+     "pred": null,
+     "ok": false
+    },
+    "s": {
+     "gold": "medium",
+     "pred": null,
+     "ok": false
+    },
+    "a": {
+     "gold": [
+      "informed security",
+      "checking CCTV"
+     ],
+     "pred": null,
+     "ok": false
+    }
+   },
+   "extra": {},
+   "final_state": "collecting",
+   "want_state": "submitted",
+   "state_ok": false,
+   "missing": [
+    "incident_type",
+    "location",
+    "date_time",
+    "severity",
+    "description"
+   ]
+  },
+  {
+   "case": "eq-01",
+   "fields": {
+    "t": {
+     "gold": "equipment_failure",
+     "pred": "fire",
+     "ok": false
+    },
+    "e": {
+     "gold": [
+      "AHU-2"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "terrace",
+     "pred": "AHU-2 on the terrace",
+     "ok": false
+    },
+    "d": {
+     "gold": "since 2 PM",
+     "pred": "2 PM",
+     "ok": false
+    },
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "oth-01",
+   "fields": {
+    "t": {
+     "gold": "other",
+     "pred": "gas_leak",
+     "ok": false
+    },
+    "l": {
+     "gold": "near the pantry on 3rd floor",
+     "pred": "wiring",
+     "ok": false
+    },
+    "d": {
+     "gold": "around 10 minutes ago",
+     "pred": "started around 10 minutes ago",
+     "ok": true
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    },
+    "a": {
+     "gold": [
+      "checking the wiring"
+     ],
+     "pred": [
+      "can't find where it is coming from"
+     ],
+     "ok": false
+    }
+   },
+   "extra": {
+    "a": [
+     "can't find where it is coming from"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "wit-01",
+   "fields": {
+    "t": {
+     "gold": "struck_by",
+     "pred": "struck_by",
+     "ok": true
+    },
+    "l": {
+     "gold": "store room",
+     "pred": "store room",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "top shelf"
+     ],
+     "pred": [
+      "box"
+     ],
+     "ok": false
+    },
+    "p": {
+     "gold": [
+      "a delivery boy"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "w": {
+     "gold": [
+      "Anil"
+     ],
+     "pred": [
+      "Anil"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "about fifteen minutes ago",
+     "pred": "about fifteen minutes ago",
+     "ok": true
+    },
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {
+    "e": [
+     "box"
+    ]
+   },
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "wit-02",
+   "fields": {
+    "t": {
+     "gold": "chemical",
+     "pred": "gas_leak",
+     "ok": false
+    },
+    "l": {
+     "gold": "near the generator room entrance",
+     "pred": "generator room entrance",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "the drum"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "w": {
+     "gold": [
+      "The guard Mahesh"
+     ],
+     "pred": [
+      "Mahesh",
+      "The guard Mahesh"
+     ],
+     "ok": true
+    },
+    "d": {
+     "gold": "around 1 PM",
+     "pred": "around 1 PM",
+     "ok": true
+    },
+    "s": {
+     "gold": "medium",
+     "pred": "medium",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "wit-03",
+   "fields": {
+    "t": {
+     "gold": "electrical",
+     "pred": "electrical",
+     "ok": true
+    },
+    "l": {
+     "gold": "second floor lab",
+     "pred": "second floor lab",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "switchboard"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "d": {
+     "gold": "at 11:20",
+     "pred": "at 11:20",
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    },
+    "w": {
+     "gold": [
+      "Priya from the lab"
+     ],
+     "pred": [
+      "Priya",
+      "Priya from the lab"
+     ],
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "wit-04",
+   "fields": {
+    "t": {
+     "gold": "slip_trip",
+     "pred": "slip_trip",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A cleaner"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "l": {
+     "gold": "stairs near gate 3",
+     "pred": "stairs near gate 3",
+     "ok": true
+    },
+    "d": {
+     "gold": "at 9 AM",
+     "pred": "9 AM",
+     "ok": true
+    },
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "wit-05",
+   "fields": {
+    "t": {
+     "gold": "other",
+     "pred": "struck_by",
+     "ok": true
+    },
+    "l": {
+     "gold": "basement parking",
+     "pred": "basement parking",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 6 PM yesterday",
+     "pred": "around 6 PM yesterday",
+     "ok": true
+    },
+    "e": {
+     "gold": [
+      "Two cars"
+     ],
+     "pred": null,
+     "ok": false
+    },
+    "w": {
+     "gold": [
+      "Ravi",
+      "Sunita",
+      "the parking attendant"
+     ],
+     "pred": [
+      "the parking attendant",
+      "Ravi",
+      "Sunita"
+     ],
+     "ok": true
+    },
+    "s": {
+     "gold": "low",
+     "pred": "low",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  },
+  {
+   "case": "wit-09",
+   "fields": {
+    "t": {
+     "gold": "medical",
+     "pred": "medical",
+     "ok": true
+    },
+    "p": {
+     "gold": [
+      "A man"
+     ],
+     "pred": [
+      "a man"
+     ],
+     "ok": true
+    },
+    "l": {
+     "gold": "canteen queue",
+     "pred": "canteen queue",
+     "ok": true
+    },
+    "d": {
+     "gold": "around 1:30",
+     "pred": "around 1:30",
+     "ok": true
+    },
+    "w": {
+     "gold": [
+      "Deepak",
+      "Farah"
+     ],
+     "pred": [
+      "Deepak",
+      "Farah"
+     ],
+     "ok": true
+    },
+    "s": {
+     "gold": "high",
+     "pred": "high",
+     "ok": true
+    }
+   },
+   "extra": {},
+   "final_state": "submitted",
+   "want_state": "submitted",
+   "state_ok": true,
+   "missing": []
+  }
+ ],
+ "fast_path": true,
+ "postfix": true,
+ "prompt": "2",
+ "throttle": {
+  "pace_s": 0.0,
+  "heat_pause": [
+   90.0,
+   80.0
+  ],
+  "llm_calls": 151,
+  "pauses": 0,
+  "paused_s": 0.0,
+  "npu_peak_c": 69.4,
+  "samples": [
+   {
+    "t": "03:08:38",
+    "npu_c": 52.3,
+    "cpu_c": 80.3,
+    "status": "NONE"
+   },
+   {
+    "t": "03:08:49",
+    "npu_c": 54.3,
+    "cpu_c": 68.0,
+    "status": "NONE"
+   },
+   {
+    "t": "03:08:58",
+    "npu_c": 56.2,
+    "cpu_c": 66.5,
+    "status": "NONE"
+   },
+   {
+    "t": "03:09:08",
+    "npu_c": 57.7,
+    "cpu_c": 86.5,
+    "status": "NONE"
+   },
+   {
+    "t": "03:09:20",
+    "npu_c": 60.8,
+    "cpu_c": 70.3,
+    "status": "NONE"
+   },
+   {
+    "t": "03:09:35",
+    "npu_c": 64.3,
+    "cpu_c": 80.7,
+    "status": "NONE"
+   },
+   {
+    "t": "03:09:45",
+    "npu_c": 61.2,
+    "cpu_c": 76.9,
+    "status": "NONE"
+   },
+   {
+    "t": "03:09:56",
+    "npu_c": 61.2,
+    "cpu_c": 77.2,
+    "status": "NONE"
+   },
+   {
+    "t": "03:10:09",
+    "npu_c": 64.7,
+    "cpu_c": 81.9,
+    "status": "NONE"
+   },
+   {
+    "t": "03:10:21",
+    "npu_c": 64.3,
+    "cpu_c": 94.6,
+    "status": "NONE"
+   },
+   {
+    "t": "03:10:31",
+    "npu_c": 62.0,
+    "cpu_c": 70.7,
+    "status": "NONE"
+   },
+   {
+    "t": "03:10:47",
+    "npu_c": 66.3,
+    "cpu_c": 94.2,
+    "status": "LIGHT"
+   },
+   {
+    "t": "03:10:57",
+    "npu_c": 62.0,
+    "cpu_c": 86.9,
+    "status": "LIGHT"
+   },
+   {
+    "t": "03:11:09",
+    "npu_c": 63.2,
+    "cpu_c": 81.9,
+    "status": "LIGHT"
+   },
+   {
+    "t": "03:11:19",
+    "npu_c": 63.6,
+    "cpu_c": 78.4,
+    "status": "LIGHT"
+   },
+   {
+    "t": "03:11:35",
+    "npu_c": 64.3,
+    "cpu_c": 93.8,
+    "status": "LIGHT"
+   },
+   {
+    "t": "03:11:44",
+    "npu_c": 60.8,
+    "cpu_c": 70.3,
+    "status": "LIGHT"
+   },
+   {
+    "t": "03:11:56",
+    "npu_c": 63.6,
+    "cpu_c": 78.8,
+    "status": "LIGHT"
+   },
+   {
+    "t": "03:12:09",
+    "npu_c": 66.3,
+    "cpu_c": 100.3,
+    "status": "LIGHT"
+   },
+   {
+    "t": "03:12:21",
+    "npu_c": 65.1,
+    "cpu_c": 82.6,
+    "status": "LIGHT"
+   },
+   {
+    "t": "03:12:32",
+    "npu_c": 65.1,
+    "cpu_c": 78.8,
+    "status": "MODERATE"
+   },
+   {
+    "t": "03:12:45",
+    "npu_c": 67.1,
+    "cpu_c": 92.6,
+    "status": "MODERATE"
+   },
+   {
+    "t": "03:12:53",
+    "npu_c": 62.0,
+    "cpu_c": 71.9,
+    "status": "MODERATE"
+   },
+   {
+    "t": "03:13:05",
+    "npu_c": 65.9,
+    "cpu_c": 88.0,
+    "status": "MODERATE"
+   },
+   {
+    "t": "03:13:15",
+    "npu_c": 63.6,
+    "cpu_c": 76.5,
+    "status": "MODERATE"
+   },
+   {
+    "t": "03:13:27",
+    "npu_c": 65.5,
+    "cpu_c": 82.2,
+    "status": "MODERATE"
+   },
+   {
+    "t": "03:13:38",
+    "npu_c": 65.5,
+    "cpu_c": 79.6,
+    "status": "MODERATE"
+   },
+   {
+    "t": "03:13:48",
+    "npu_c": 65.9,
+    "cpu_c": 80.7,
+    "status": "MODERATE"
+   },
+   {
+    "t": "03:14:00",
+    "npu_c": 65.5,
+    "cpu_c": 78.8,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:14:10",
+    "npu_c": 67.1,
+    "cpu_c": 81.5,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:14:20",
+    "npu_c": 65.1,
+    "cpu_c": 78.0,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:14:32",
+    "npu_c": 66.7,
+    "cpu_c": 79.2,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:14:43",
+    "npu_c": 67.4,
+    "cpu_c": 101.5,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:14:54",
+    "npu_c": 67.1,
+    "cpu_c": 83.4,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:15:04",
+    "npu_c": 66.7,
+    "cpu_c": 80.7,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:15:17",
+    "npu_c": 69.4,
+    "cpu_c": 98.8,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:15:27",
+    "npu_c": 66.7,
+    "cpu_c": 75.3,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:15:38",
+    "npu_c": 67.1,
+    "cpu_c": 80.7,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:15:52",
+    "npu_c": 69.4,
+    "cpu_c": 100.3,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:16:02",
+    "npu_c": 67.1,
+    "cpu_c": 81.5,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:16:15",
+    "npu_c": 67.8,
+    "cpu_c": 81.5,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:16:26",
+    "npu_c": 67.1,
+    "cpu_c": 91.1,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:16:38",
+    "npu_c": 66.3,
+    "cpu_c": 81.5,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:16:47",
+    "npu_c": 65.9,
+    "cpu_c": 78.0,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:17:01",
+    "npu_c": 67.4,
+    "cpu_c": 98.0,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:17:10",
+    "npu_c": 64.3,
+    "cpu_c": 78.8,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:17:21",
+    "npu_c": 65.1,
+    "cpu_c": 81.5,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:17:34",
+    "npu_c": 68.6,
+    "cpu_c": 94.9,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:17:43",
+    "npu_c": 64.7,
+    "cpu_c": 78.8,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:17:55",
+    "npu_c": 66.7,
+    "cpu_c": 82.2,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:18:08",
+    "npu_c": 67.8,
+    "cpu_c": 94.2,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:18:17",
+    "npu_c": 64.7,
+    "cpu_c": 78.8,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:18:28",
+    "npu_c": 65.9,
+    "cpu_c": 76.9,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:18:40",
+    "npu_c": 67.1,
+    "cpu_c": 93.8,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:18:48",
+    "npu_c": 62.8,
+    "cpu_c": 76.9,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:18:58",
+    "npu_c": 65.1,
+    "cpu_c": 83.4,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:19:10",
+    "npu_c": 65.5,
+    "cpu_c": 89.2,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:19:21",
+    "npu_c": 66.3,
+    "cpu_c": 78.4,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:19:33",
+    "npu_c": 66.3,
+    "cpu_c": 90.3,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:19:43",
+    "npu_c": 65.5,
+    "cpu_c": 78.4,
+    "status": "SEVERE"
+   },
+   {
+    "t": "03:19:53",
+    "npu_c": 66.7,
+    "cpu_c": 84.6,
+    "status": "SEVERE"
+   }
+  ]
+ },
+ "constraint": "schema"
+}
