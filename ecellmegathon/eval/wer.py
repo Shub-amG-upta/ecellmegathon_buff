@@ -247,7 +247,7 @@ def run(cases_file: Path, audio_dir: Path, label: str, vocab: str, repeat: int,
     speakers = sorted({r["speaker"] for r in rows})
     whys = sorted({w for r in rows for w in r["why"]})
     return {"label": label, "note": note, "laptop_time": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            "stt_url": voice._cfg("STT_URL", "http://localhost:8082"),
+            "stt_url": voice._cfg("STT_URL", "http://127.0.0.1:8082"),
             "model": rows[0]["model"] if rows else voice._cfg("STT_MODEL", "ggml-base.en.bin"),
             "device": rows[0]["device"] if rows else voice._cfg("STT_DEVICE", "laptop"),
             "vocab_prompt": bool(vocab), "repeat": repeat, "subset": subset is not None,

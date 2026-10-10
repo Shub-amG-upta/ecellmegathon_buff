@@ -12,13 +12,15 @@ repeat, or shows text without audio).
 
 Where the engines live is configuration, not code:
 
-  STT_URL   default http://localhost:8082   whisper.cpp `whisper-server`
+  STT_URL   default http://127.0.0.1:8082   whisper.cpp `whisper-server`
                                             (POST /inference, multipart `file`)
-  TTS_URL   default http://localhost:8083   voice/tts_server.py
+  TTS_URL   default http://127.0.0.1:8083   voice/tts_server.py
                                             (POST /tts {"text": ...} -> audio/wav)
 
 The laptop and the QIDK expose the same API, so moving from one to the other
 only changes the URLs (board/voice_up.sh forwards the board's ports to these).
+Use 127.0.0.1, not localhost: on Windows "localhost" tries IPv6 first and every
+request then waits ~2 s before falling back to IPv4 (measured: 2,050 ms vs 10 ms).
 
 whisper-server does not report which device or model it runs, so STT_DEVICE
 and STT_MODEL label it (board/voice_up.sh prints the values to export). The
@@ -170,7 +172,7 @@ def transcribe(wav: bytes, prompt: str = "") -> SttResult:
     """Speech to text. wav: 16 kHz mono 16-bit PCM WAV. prompt: vocabulary hint
     (the contents of data/vocab.txt). Never raises."""
     t0 = time.perf_counter()
-    url = _cfg("STT_URL", "http://localhost:8082").rstrip("/")
+    url = _cfg("STT_URL", "http://127.0.0.1:8082").rstrip("/")
     device = _cfg("STT_DEVICE", "laptop")
     model = _cfg("STT_MODEL", "ggml-base.en.bin")
 
@@ -213,7 +215,7 @@ def speak(text: str) -> TtsResult:
     """Text to speech: a complete WAV file. Never raises; on failure wav is b""
     and the dialog continues without audio."""
     t0 = time.perf_counter()
-    url = _cfg("TTS_URL", "http://localhost:8083").rstrip("/")
+    url = _cfg("TTS_URL", "http://127.0.0.1:8083").rstrip("/")
     device, model = _cfg("TTS_DEVICE", "unknown"), _cfg("TTS_MODEL", "unknown")
 
     def result(wav: bytes = b"", error: str = "", headers: dict | None = None) -> TtsResult:

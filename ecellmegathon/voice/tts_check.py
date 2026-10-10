@@ -66,7 +66,7 @@ def audio_seconds(wav: bytes) -> float | None:
 
 def fresh_timing(text: str, timeout: float = 60) -> dict:
     """One synthesis that bypasses the TTS server's cache: wall ms, the engine's own ms (if reported)."""
-    url = voice._cfg("TTS_URL", "http://localhost:8083").rstrip("/") + "/tts"
+    url = voice._cfg("TTS_URL", "http://127.0.0.1:8083").rstrip("/") + "/tts"
     req = urllib.request.Request(url, data=json.dumps({"text": text}).encode(), method="POST",
                                  headers={"Content-Type": "application/json", "X-TTS-No-Cache": "1"})
     t0 = time.perf_counter()
@@ -146,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{n:2d} {kind:9s} fresh {fresh['fresh_ms']} ms  engine {fresh['engine_ms']} ms  "
               f"audio {rows[-1]['audio_s']} s  {text[:60]}", flush=True)
     meta = {"label": a.label, "laptop_time": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            "tts_url": voice._cfg("TTS_URL", "http://localhost:8083"),
+            "tts_url": voice._cfg("TTS_URL", "http://127.0.0.1:8083"),
             "device": rows[0]["device"] if rows else None, "model": rows[0]["model"] if rows else None}
     (out / "timings.json").write_text(json.dumps({**meta, "rows": rows}, indent=1), encoding="utf-8")
     (out / "CHECKLIST.md").write_text(checklist(a.label, rows, stamp), encoding="utf-8")

@@ -56,5 +56,5 @@ for port in 8082 8083; do
     curl -sf "http://127.0.0.1:$port/health" > /dev/null \
         && echo "ok   :$port" || { echo "FAIL :$port (see $LOGS)" >&2; exit 1; }
 done
-echo "export STT_URL=http://localhost:8082 STT_DEVICE=laptop STT_MODEL=$MODEL"
-echo "export TTS_URL=http://localhost:8083"
+echo "export STT_URL=http://127.0.0.1:8082 STT_DEVICE=laptop STT_MODEL=$MODEL"
+echo "export TTS_URL=http://127.0.0.1:8083"
