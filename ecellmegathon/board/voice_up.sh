@@ -27,6 +27,9 @@
 #         -DWHISPER_BUILD_TESTS=OFF -DGGML_OPENMP=OFF && cmake --build build-android -j --target whisper-server
 set -euo pipefail
 unset PYTHONPATH   # a QAIRT install exports one that breaks tools (board/board.py has the same rule)
+# Git Bash on Windows rewrites "/data/local/tmp/..." arguments into Windows paths before they reach
+# adb.exe (so `adb push x /data/...` lands in the wrong place). No effect on macOS or Linux.
+export MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*'
 cd "$(dirname "$0")/.."
 REPO=$(pwd)
 ENGINES=${ENGINES:-$(cd "$REPO/../.." && pwd)/engines}
@@ -60,21 +63,33 @@ push() {
     local src=$1 dst=$2 want got
     [ -e "$src" ] || { echo "missing on laptop: $src" >&2; exit 1; }
     want=$(sha256sum "$src" | cut -d' ' -f1)
-    got=$(adb_ shell "sha256sum $dst 2>/dev/null" | cut -d' ' -f1 | tr -d '\r')
+    # Not on the board yet: sha256sum fails, adb passes that exit code on, and set -e would end the script.
+    got=$(adb_ shell "sha256sum $dst 2>/dev/null" | cut -d' ' -f1 | tr -d '\r') || got=""
     if [ "$want" != "$got" ]; then
-        adb_ push "$src" "$dst" > /dev/null
+        # adb.exe needs a Windows path for the laptop side (MSYS_NO_PATHCONV above stops Git Bash doing it).
+        if command -v cygpath > /dev/null; then adb_ push "$(cygpath -m "$src")" "$dst" > /dev/null
+        else adb_ push "$src" "$dst" > /dev/null; fi
         got=$(adb_ shell "sha256sum $dst" | cut -d' ' -f1 | tr -d '\r')
         [ "$want" = "$got" ] || { echo "sha256 mismatch after push: $dst" >&2; exit 1; }
         echo "pushed $dst"
     fi
 }
-push_dir() {   # every regular file under $1 to $2, same relative paths
-    local src=$1 dst=$2 f rel
-    while IFS= read -r -d '' f; do
-        rel=${f#"$src"/}
-        adb_ shell "mkdir -p '$dst/$(dirname "$rel")'" > /dev/null
-        push "$f" "$dst/$rel"
-    done < <(find "$src" -type f -print0)
+dir_sums() {   # "<sha256>  <relative path>" for every file under a laptop dir ($1) or board dir ($2), sorted
+    if [ -n "${1:-}" ]; then (cd "$1" && find . -type f -exec sha256sum {} + | sed 's/ \*/  /')
+    else adb_ shell "cd '$2' 2>/dev/null && find . -type f -exec sha256sum {} +" | tr -d '\r' || true
+    fi | sort -k2
+}
+push_dir() {   # every regular file under $1 to $2, same relative paths; one push and one checksum pass
+    # (per-file pushes took ~25 min for the voice folder's 359 files)
+    local src=$1 dst=$2
+    [ -d "$src" ] || { echo "missing on laptop: $src" >&2; exit 1; }
+    [ "$(dir_sums "$src")" = "$(dir_sums "" "$dst")" ] && return 0
+    adb_ shell "mkdir -p '$dst'" > /dev/null
+    if command -v cygpath > /dev/null; then adb_ push "$(cygpath -m "$src")/." "$dst/" > /dev/null
+    else adb_ push "$src/." "$dst/" > /dev/null; fi
+    diff <(dir_sums "$src") <(dir_sums "" "$dst") > /dev/null \
+        || { echo "sha256 mismatch after push: $dst (extra or changed files on the board?)" >&2; exit 1; }
+    echo "pushed $dst ($(find "$src" -type f | wc -l) files)"
 }
 
 # ---- STT: whisper-server on the board -------------------------------------
