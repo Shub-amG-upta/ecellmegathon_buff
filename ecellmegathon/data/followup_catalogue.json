@@ -1,0 +1,13 @@
+{
+  "_comment": "Recommended follow-up actions by incident type. Code picks these; the model never writes a procedure. Editable at review. Wording is ours, generic workplace practice, not taken from any one standard.",
+  "water_leak": ["Find and repair the source of the leak", "Check nearby electrical points for water exposure", "Dry the area and check for damage"],
+  "fire_smoke": ["Have the fire safety officer inspect the area", "Check and recharge any extinguisher that was used", "Inspect the equipment that caused it before reuse"],
+  "electrical": ["Isolate the circuit until an electrician inspects it", "Tag out the affected equipment", "Review the inspection record for the circuit"],
+  "injury": ["Make sure first aid or medical care was given", "Inform the safety officer and the person's manager", "Investigate the cause and record it"],
+  "slip_trip_fall": ["Remove or mark the hazard", "Check lighting and floor condition in the area", "Make sure first aid was offered"],
+  "equipment_failure": ["Tag the equipment out of service", "Raise a maintenance request", "Check whether similar equipment is affected"],
+  "chemical_spill": ["Contain and clean up with the spill kit, following the safety data sheet", "Ventilate the area", "Inform the safety officer"],
+  "security": ["Inform the security team", "Review access logs and camera footage", "Secure the affected area or asset"],
+  "near_miss": ["Record what could have happened", "Remove or control the hazard", "Share the lesson with the team"],
+  "other": ["Review the incident with the safety officer"]
+}
