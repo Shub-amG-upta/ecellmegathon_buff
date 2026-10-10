@@ -78,29 +78,61 @@ def make_backend():
     raise SystemExit(f"LLM must be mock or llamaserver, not {kind!r}")
 
 
+TTS_WAIT_S = 30.0
+
+
+class _TtsJob:
+    """One turn's speech, being made in the background."""
+
+    def __init__(self):
+        self.done = threading.Event()
+        self.wav: bytes = b""
+        self.ms: float | None = None
+        self.error = ""
+
+    def finish(self, t) -> None:
+        self.wav, self.ms, self.error = t.wav, (t.wall_ms if t.wav else None), t.error
+        self.done.set()
+
+
 class App:
     """One dialog (one user at a time, like the demo) plus the audio of each turn."""
 
     def __init__(self, dialog: Dialog, voice_mod=voice):
         self.dialog = dialog
         self.voice = voice_mod
-        self.audio: dict[int, bytes] = {}
+        self.audio: dict[int, _TtsJob] = {}
         self.lock = threading.Lock()
         self.vocab = VOCAB.read_text() if VOCAB.exists() else ""
 
     def _speak(self, result: dict) -> dict:
+        """Start speech for this turn in the background and return at once: the UI shows the form
+        while TTS runs. `audio_url` waits for the audio (GET blocks until ready, up to TTS_WAIT_S).
+        The TTS time is filled into /api/state when it's done and sent as X-TTS-Ms with the audio;
+        in the turn response itself it is None (not measured yet), never a guess."""
         if self.voice is None or not result.get("say"):
             return result
-        t = self.voice.speak(result["say"])
-        result["timings_ms"]["tts"] = t.wall_ms if t.wav else None
-        result["devices"]["tts"] = t.device
-        if t.wav:
-            self.audio[result["turn_id"]] = t.wav
-            result["audio_url"] = f"/api/audio/{result['turn_id']}.wav"
-            for old in [k for k in self.audio if k < result["turn_id"] - 20]:
-                del self.audio[old]                    # keep memory bounded
-        elif t.error:
-            result["error"] = _join(result["error"], t.error, "tts")
+        job = _TtsJob()
+        tid = result["turn_id"]
+        self.audio[tid] = job
+        for old in [k for k in self.audio if k < tid - 20]:
+            del self.audio[old]                        # keep memory bounded
+        result["audio_url"] = f"/api/audio/{tid}.wav"
+
+        def run(say=result["say"]):
+            t = self.voice.speak(say)
+            job.finish(t)
+            with self.lock:                            # later reads of /api/state see the TTS time
+                last = self.dialog.last
+                if last.get("turn_id") == tid:
+                    last["timings_ms"]["tts"] = t.wall_ms if t.wav else None
+                    last["devices"]["tts"] = t.device
+                    if not t.wav:
+                        last["audio_url"] = None
+                        if t.error:
+                            last["error"] = _join(last["error"], t.error, "tts")
+
+        threading.Thread(target=run, daemon=True).start()
         return result
 
     def turn_text(self, text: str) -> dict:
@@ -159,9 +191,11 @@ def make_handler(app: App):
         def log_message(self, fmt, *args):
             sys.stderr.write(f"[{time.strftime('%H:%M:%S')}] {fmt % args}\n")
 
-        def _send(self, code: int, body: bytes, ctype: str):
+        def _send(self, code: int, body: bytes, ctype: str, headers: dict | None = None):
             self.send_response(code)
             self.send_header("Content-Type", ctype)
+            for k, v in (headers or {}).items():
+                self.send_header(k, v)
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
             self.end_headers()
@@ -203,8 +237,11 @@ def make_handler(app: App):
                 r = report.load(m.group(1), app.dialog.report_dir)
                 return self._json(r) if r else self._json({"error": "no such report"}, 404)
             if (m := re.fullmatch(r"/api/audio/(\d+)\.wav", path)):
-                wav = app.audio.get(int(m.group(1)))
-                return self._send(200, wav, "audio/wav") if wav else self._json({"error": "no audio"}, 404)
+                job = app.audio.get(int(m.group(1)))
+                if job is None or not job.done.wait(TTS_WAIT_S) or not job.wav:
+                    return self._json({"error": (job.error if job else "") or "no audio"}, 404)
+                return self._send(200, job.wav, "audio/wav",
+                                  {"X-TTS-Ms": f"{job.ms:.1f}"} if job.ms is not None else None)
             if path == "/api/proof":
                 return self._json(app.proof())
             return self._static(path)

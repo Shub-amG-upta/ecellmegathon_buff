@@ -102,10 +102,39 @@ def test_wav_turn_with_voice_fills_timings_devices_and_audio(run):
               voice_mod=FAKE_VOICE)
     code, r = call(url, "/api/turn", b"RIFF....", ctype="audio/wav")
     assert r["transcript"] == "water leak in the pantry"
-    assert r["timings_ms"]["stt"] == 800.0 and r["timings_ms"]["tts"] == 300.0
-    assert r["devices"] == {"stt": "cpu", "llm": "laptop", "tts": "cpu"}
-    code, wav = call(url, r["audio_url"])
+    assert r["timings_ms"]["stt"] == 800.0
+    assert r["timings_ms"]["tts"] is None                     # speech is made after the reply
+    assert r["devices"]["stt"] == "cpu" and r["devices"]["llm"] == "laptop"
+    req = urllib.request.Request(url + r["audio_url"])
+    with urllib.request.urlopen(req, timeout=5) as resp:     # waits until the speech is ready
+        assert resp.read() == b"RIFF....WAVEfake" and resp.headers["X-TTS-Ms"] == "300.0"
+    state = call(url, "/api/state")[1]
+    assert state["timings_ms"]["tts"] == 300.0 and state["devices"]["tts"] == "cpu"
+
+
+def test_slow_speech_does_not_delay_the_form(run):
+    import time as _t
+
+    def slow_speak(text):
+        _t.sleep(1.0)
+        return FAKE_VOICE.speak(text)
+    voice = SimpleNamespace(transcribe=FAKE_VOICE.transcribe, speak=slow_speak)
+    url = run([{"tool": "update_report", "args": {"t": "water_leak", "l": "pantry"}}], voice_mod=voice)
+    t0 = _t.perf_counter()
+    code, r = call(url, "/api/turn", {"text": "water leak in the pantry"})
+    assert code == 200 and _t.perf_counter() - t0 < 0.5 and r["audio_url"]
+    code, wav = call(url, r["audio_url"])                     # arrives about 1 s later
     assert code == 200 and wav == b"RIFF....WAVEfake"
+
+
+def test_failed_speech_gives_404_audio_and_an_error_in_state(run):
+    voice = SimpleNamespace(transcribe=FAKE_VOICE.transcribe,
+                            speak=lambda text: Tts(b"", 5.0, "cpu", "piper", "tts: engine missing"))
+    url = run([{"tool": "update_report", "args": {"t": "water_leak", "l": "pantry"}}], voice_mod=voice)
+    code, r = call(url, "/api/turn", {"text": "water leak in the pantry"})
+    assert call(url, r["audio_url"])[0] == 404
+    state = call(url, "/api/state")[1]
+    assert state["audio_url"] is None and "engine missing" in state["error"]
 
 
 def test_edit_reset_state_and_bad_requests(run):

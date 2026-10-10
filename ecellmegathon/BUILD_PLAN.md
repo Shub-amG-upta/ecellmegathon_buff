@@ -204,7 +204,13 @@ Served at `http://localhost:8000`. It also serves `ui/` as static files at `/`.
 
 - `state` is one of `collecting` | `review` | `submitted` | `cancelled`.
 - A timing that was not measured is `null`, never 0.
-- `audio_url` is `null` when TTS failed or is off.
+- `audio_url` is `null` when TTS is off. **Speech is made after the reply (2026-10-10):** the turn response
+  comes back as soon as the form is updated, with `timings_ms.tts: null`; `GET audio_url` waits until the audio
+  is ready (up to 30 s; 404 if TTS failed) and carries the TTS time in an `X-TTS-Ms` header; `GET /api/state` then
+  shows `timings_ms.tts` and `devices.tts`. UI: render the form at once, then play `audio_url`, then read the TTS
+  time from the header or from `/api/state`.
+- `fast_path: true` when code answered the turn without the LLM (bare severity word, exact type name, pure time
+  answer, submit / cancel); the `llm_*` timings are then `null`.
 
 ### 4.3 Shared eval cases: `eval/cases.jsonl`
 
