@@ -24,10 +24,12 @@ from app.timeparse import resolve
 GREETING = "What happened? Tell me in your own words."
 REVIEW_TAIL = "Say submit, or tell me what to change."
 
-_TYPE_SAID = {"water_leak": "Water leak", "fire_smoke": "Fire or smoke", "electrical": "Electrical issue",
-              "injury": "Injury", "slip_trip_fall": "Slip, trip or fall",
-              "equipment_failure": "Equipment failure", "chemical_spill": "Chemical spill",
-              "security": "Security incident", "near_miss": "Near miss", "other": "Other incident"}
+_TYPE_SAID = {"fire": "Fire", "electrical": "Electrical incident", "water_leak": "Water leak",
+              "gas_leak": "Gas leak", "chemical": "Chemical incident", "slip_trip": "Slip or trip",
+              "fall_height": "Fall from height", "struck_by": "Struck by an object",
+              "caught_in": "Caught in machinery", "equipment_failure": "Equipment failure",
+              "lift": "Lift incident", "structural": "Structural collapse", "medical": "Medical emergency",
+              "security": "Security incident", "other": "Other incident"}
 _FIELD_SAID = {"incident_type": "type of incident", "severity": "severity", "location": "location",
                "date_time": "time it happened", "description": "description"}
 
@@ -38,7 +40,7 @@ def _now() -> datetime:
 
 class Dialog:
     def __init__(self, backend, schema: dict | None = None, catalogue: dict | None = None,
-                 clock=_now, report_dir=None, max_tokens: int = 96):
+                 clock=_now, report_dir=None, max_tokens: int = 128):
         self.backend = backend
         self.schema = schema or load_schema()
         self.catalogue = load_catalogue() if catalogue is None else catalogue
@@ -96,7 +98,7 @@ class Dialog:
                 return self._finish_turn(text, call, [], llm, t0, err, say)
             return self._submit(text, call, llm, t0, err)
 
-        dropped, notes = [], []
+        dropped = []
         if tool == "update_report":
             kept, dropped = gate.check(args, " ".join(self.heard))
             if kept:
@@ -105,12 +107,6 @@ class Dialog:
                 self.form.apply(kept)
                 if "d" in kept:
                     self.form.date_time = resolve(kept["d"], self.clock())
-                sev, raised = gate.severity_floor(self.form.values.get("incident_type"),
-                                                  self.form.values.get("severity"))
-                if raised:
-                    self.form.values["severity"] = sev
-                    notes.append(f"I've set the severity to {sev}, the minimum for "
-                                 f"{_TYPE_SAID[self.form.values['incident_type']].lower()}.")
             else:
                 tool = "no_op"                         # nothing survived the gate
 
@@ -119,8 +115,7 @@ class Dialog:
                    + (REVIEW_TAIL if self.state == "review" else self._prompt_line()))
             return self._finish_turn(text, call, dropped, llm, t0, err, say)
 
-        say = " ".join(notes + [self._next_line()])
-        return self._finish_turn(text, call, dropped, llm, t0, err, say)
+        return self._finish_turn(text, call, dropped, llm, t0, err, self._next_line())
 
     def edit(self, field: str, value) -> dict:
         """A direct edit from the review screen (no LLM, no gate: the user typed it)."""
@@ -174,6 +169,10 @@ class Dialog:
                             ("immediate_actions", "Actions taken"), ("witnesses", "Witnesses")):
             if v.get(name):
                 parts.append(f"{label}: {', '.join(v[name])}.")
+        floor = gate.severity_floor(v["incident_type"], v["severity"])
+        if floor:      # never changed by code: the user confirms or corrects it
+            parts.append(f"{_TYPE_SAID[v['incident_type']]} is usually at least {floor} severity; you said "
+                         f"{v['severity']}. Say a new severity to change it.")
         return " ".join(parts + [REVIEW_TAIL])
 
     def _when(self) -> str:

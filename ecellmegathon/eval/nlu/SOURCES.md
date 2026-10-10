@@ -43,7 +43,7 @@ no text is copied from them.
 | S20 | Deccan Herald, IT employee cardiac arrest in Nagpur office (Sept 2024) — https://www.deccanherald.com/india/maharashtra/it-company-employee-dies-of-cardiac-arrest-in-office-in-nagpur-3211718 | medical | ~7 PM, employee found unresponsive in the office washroom | md-02 |
 | S21 | Tribune, roof seepage in Jalandhar government offices (Aug 2025) — https://www.tribuneindia.com/news/jalandhar/roof-seepage-dampness-hit-jalandhar-govt-offices-amid-rain/amp | water leak / structural | rain leaking into record rooms and computer rooms, buckets placed, floors wiped; POP false ceiling fell near staff chairs, no injuries | cl-02, wl-02 |
 | S22 | Sakshi Post, University of Hyderabad laptop theft (Feb 2026) — https://www.sakshipost.com/news/hyderabad/university-hyderabad-laptop-theft-three-arrested-60-laptops-recovered-477481 | security | 60 laptops stolen from a computer lab at night, window broken open, CCTV cables cut, police complaint | sec-01..03 |
-| H | Hand-written, no single source | various | gap fillers for asset names, equipment failure, an ambiguous type, an off-topic turn | wl-03, wl-04, eq-01, oth-01 |
+| H | Hand-written, no single source (not real incidents) | various | gap fillers for asset names, equipment failure, an ambiguous type, an off-topic turn; witness coverage for the 10-field form | wl-03, wl-04, eq-01, oth-01, wit-01..09 |
 
 Grounded: 52 of 56 cases.
 

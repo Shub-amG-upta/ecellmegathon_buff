@@ -122,16 +122,14 @@ class FormState:
         return list(self.catalogue.get(self.values.get("incident_type", ""), []))
 
     def missing(self) -> list[dict]:
-        """Mandatory fields still empty, in schema order (the order we ask in)."""
-        out = []
-        for f in self.schema["fields"]:
-            if not f.get("mandatory"):
-                continue
-            if f["name"] == "description":
-                if not self.description:
-                    out.append(f)
-            elif not self.values.get(f["name"]):
-                out.append(f)
+        """Mandatory fields still empty, in the schema's `ask_order` (the order we
+        ask in), then the description."""
+        order = self.schema.get("ask_order", [])
+        keyed = sorted((f for f in self.schema["fields"] if f.get("mandatory") and f.get("key")),
+                       key=lambda f: order.index(f["key"]) if f["key"] in order else len(order))
+        out = [f for f in keyed if not self.values.get(f["name"])]
+        out += [f for f in self.schema["fields"]
+                if f.get("mandatory") and f["name"] == "description" and not self.description]
         return out
 
     def compact(self) -> dict:

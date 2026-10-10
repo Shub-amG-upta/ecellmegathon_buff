@@ -70,7 +70,7 @@ filler. Everything is still in git at commit `367e9b4`.
                        │ 1. gate: drop any free-text value not supported by the transcript │
                        │ 2. merge into the form (a stated field overwrites, lists append)  │
                        │ 3. time: "around 10 AM" → timestamp from the device clock         │
-                       │ 4. severity floors (injury/fire ≥ high)                           │
+                       │ 4. severity below the usual minimum → asked to confirm at review  │
                        │ 5. MANDATORY CHECK → missing? ask that field's question           │
                        │                    → complete? read back, wait for "submit"       │
                        └───────────────────────────────────────────────────────────────────┘
@@ -115,7 +115,7 @@ string rule in `app/grammar.py`.
 | description | the user's own words, all turns joined. Never generated, so it can't contain hallucinations |
 | free-text values | each value's content words must appear in the transcript (normalised, fuzzy). If not, drop and log it |
 | date/time | the model copies the phrase; code resolves it. If parsing fails, keep the phrase and flag it for review |
-| severity | the model suggests; code applies floors; the user confirms at review |
+| severity | the model takes it from the user's words; code never changes it, but questions a value below the usual minimum for the type at review |
 | follow-up action | from `data/followup_catalogue.json` by incident type. The model never writes a procedure |
 | submit | refused while any mandatory field is empty (the assistant asks for it instead) |
 
@@ -179,7 +179,7 @@ docs/reference/               FieldMind stack, build recipe, numbers, dossier   
 
 app/form.py                   load the schema; json_schema for the LLM; form state + merge        TODO
 app/prompt.py                 system prompt (fixed) + per-turn user message                         TODO
-app/gate.py                   transcript-support check, severity floors, submit guard               TODO
+app/gate.py                   transcript-support check, severity check, submit guard                TODO
 app/timeparse.py              "around 10 AM", "yesterday evening", "just now" → timestamp           TODO
 app/dialog.py                 the turn loop (§3.1); text in → (say, form, log) out                  TODO
 app/stt.py                    client for the §4 contract                                            TODO
@@ -232,7 +232,7 @@ The milestones are in order. Hours depend on the event schedule, which isn't kno
       relative times, and nothing to extract. The teammate records them (3 voices if possible).
 - [ ] Write the decision rules down **before** looking at the results: 3B vs 1.7B, and narrowing the schema to the
       asked field vs not.
-- [ ] Run each configuration twice (temperature-0 drift). Fix from failures: prompt examples, vocab, floors.
+- [ ] Run each configuration twice (temperature-0 drift). Fix from failures: prompt examples, vocab, severity check.
 - [ ] A results table, every number labelled BOARD.
 
 ### M5: stretch, then freeze

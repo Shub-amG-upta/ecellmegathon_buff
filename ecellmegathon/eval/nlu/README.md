@@ -1,35 +1,44 @@
-# Text eval set v0 (NLU)
+# Text eval set v1 (NLU)
 
-> **Status:** labelled against `schema/incident_form_v2.json` (draft, 17 fields). The app still runs on the
-> frozen v1 form (`schema/incident_form.json`, 8 fields). Adopting v2 is a contract change both tracks must agree
-> on (BUILD_PLAN §3) before `app/` and `eval/run_eval.py` use this set.
-
-A starter dataset for the extraction model: 56 scripted dialogs, 219 user turns, a 17-field form, and a gold
-tool call for every turn. 52 of the 56 cases are rewrites of real, publicly reported incidents (OSHA accident
-summaries and Indian news reports); every case links to its source.
+The extraction model's eval set: 65 scripted dialogs, 250 user turns, labelled for the problem statement's
+**10-field form** (`schema/incident_form.json`), with a gold tool call for every turn. 52 of the 65 cases are
+rewrites of real, publicly reported incidents (OSHA accident summaries and Indian news reports); every case links
+to its source. The other 13 are hand-written (source `H`) to cover gaps, such as witnesses.
 
 ```
-schema/incident_form_v2.json   the form: 17 LLM-filled fields + description (code), enums, mandatory, ask order
 eval/nlu/build_cases.py        source of truth; edit cases here, then run it to regenerate cases.jsonl
-eval/nlu/cases.jsonl           one dialog per line (generated)
+eval/nlu/cases.jsonl           one dialog per line (generated; regenerating is byte-identical)
 eval/nlu/validate_cases.py     schema + copy-from-transcript checks, coverage, run-time estimate
 eval/nlu/LABELING.md           the rules behind every gold label
-eval/nlu/SOURCES.md            the source for every case, and for every form field
+eval/nlu/SOURCES.md            the source for every case
 ```
 
 ```
-python eval/nlu/build_cases.py && python eval/nlu/validate_cases.py
+.venv/bin/python eval/nlu/build_cases.py && .venv/bin/python eval/nlu/validate_cases.py
 ```
 
 ## What's in it
 
 | | |
 |---|---|
-| splits | demo 1 · dev 37 · test 18 (test is locked) |
-| turn tools | update_report 158 · submit_report 55 · no_op 4 · cancel_report 2 |
-| incident types | all 15; fire 6, water_leak 7, slip_trip 6, chemical 5, … other 1 |
-| field coverage | every one of the 17 fields is exercised; weakest are `w` witnesses (2) and `k` damage (6) |
-| traps | negation (8), corrections (3), severity changes and negations, count traps, two incidents in one turn, premature submit, questions and noise that must be `no_op` |
+| splits | demo 1 · dev 43 · test 21 (test is locked) |
+| turn tools | update_report 177 · submit_report 64 · no_op 7 · cancel_report 2 |
+| incident types | all 15; fire 7, water_leak 7, slip_trip 7, chemical 6, structural 5, … |
+| field coverage (turns) | t 64 · s 65 · l 66 · d 63 · p 27 · e 31 · a 39 · w 9 |
+| traps | negation, corrections, severity changes and negations, two incidents in one turn, premature submit, questions and noise that must be `no_op`, "nobody else saw it" |
+
+## Changes from v0 (17 fields)
+
+- The 9 fields outside the problem statement's 10 were removed from every label (injured count, injury, body
+  part, medical care, activity, cause, notified, hazard status, damage). That information still reaches the
+  report through the description.
+- One rule for actions (LABELING.md): a response, a notification, or sending someone for care is an action
+  taken; a responder only arriving is accepted but not required. Fixes `lf-03` (its only action was lost),
+  `ch-03` / `sec-03` (informing someone was labelled two ways), `gs-03`.
+- Turns left with no 10-field content became `no_op` ("she's in hospital now", "the forklift mast is bent",
+  "they're out now"), except "sent to the government hospital", which is an action.
+- `md-01`: the colleagues who gave CPR are persons involved, not witnesses.
+- 9 hand-written witness dialogs (`wit-01..09`): witness turns went from 2 to 9.
 
 ## One case line
 
@@ -41,20 +50,14 @@ python eval/nlu/build_cases.py && python eval/nlu/validate_cases.py
  "gold_final": {...}, "final_tool": "submit_report", "accept": {"l": ["Conference Room 2"], ...}}
 ```
 
-## Running it (what `run_eval.py` should do)
+## Running it (`eval/run_eval.py`)
 
 1. **Teacher-forced** (per turn): set the form to `form_before`, send `Asked:` + `User:`, compare the tool call
    to `gold`. Measures extraction (E4) and mapping (E5) without errors cascading.
 2. **Free-running** (per dialog): start from an empty form, feed the scripted user lines through the real
    dialog loop, compare the final form to `gold_final`. Measures the conversation (E2).
 3. Score with the rules in `LABELING.md`: enums exact (or in `accept`), strings by normalised containment
-   against gold or `accept`, lists per item, plus hallucination (a value not in gold and not in the turn's
-   words), before and after the gate.
+   against gold or `accept`, lists per item, plus extra values (not in gold or `accept`) after the gate.
 
-**Time (ESTIMATE from BOARD screening rates, not yet measured on this task):** one pass of all 219 turns takes
-about 6 min on Llama 3.2 3B with the system prompt cached, 10 min without. Teacher-forced + free-running, each run
-twice for the temperature-0 drift, is **24–40 min**. Adding one teacher-forced pass on Qwen3 1.7B (4–7 min) for
-the model comparison fills the 40–50 min slot. Replace the rates in `validate_cases.py` with the M0 measurement.
-
-The longest gold output is about 106 tokens, so raise the LLM cap from ~80 to **150 tokens** (`n_predict`).
-At ~50 ms per token on the 3B, a full first narration costs ~5 s of decode.
+Run-time and answer-length estimates: `validate_cases.py` prints them (ESTIMATE, from BOARD screening rates; the
+longest gold answer is about 72 tokens).

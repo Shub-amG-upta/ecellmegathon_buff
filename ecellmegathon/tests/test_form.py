@@ -21,8 +21,8 @@ def test_json_schema_enums_lengths_and_tools_come_from_the_form():
 
 def test_missing_in_schema_order_then_filled():
     f = FormState(S)
-    assert [m["name"] for m in f.missing()] == ["incident_type", "severity", "location",
-                                                "date_time", "description"]
+    assert [m["name"] for m in f.missing()] == ["incident_type", "location", "date_time",
+                                                "severity", "description"]          # ask_order t, l, d, s
     f.add_transcript("There was a water leak near Conference Room 2 around 10 AM.")
     f.apply({"t": "water_leak", "l": "near Conference Room 2", "d": "around 10 AM"})
     assert [m["name"] for m in f.missing()] == ["severity"]
@@ -39,7 +39,7 @@ def test_correction_overwrites_and_lists_append_without_duplicates():
     assert set(changed) == {"date_time", "immediate_actions"}
     assert f.apply({"d": "around 11 AM"}) == []                 # no change, nothing reported
     f.apply({"a": ["x", "y", "z"]})
-    assert len(f.values["immediate_actions"]) == 3              # max_items
+    assert len(f.values["immediate_actions"]) == 4              # max_items
 
 
 def test_description_is_the_users_words_and_follow_up_comes_from_the_catalogue():

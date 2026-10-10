@@ -19,27 +19,27 @@ _KEY_MEANING = {
     "s": "severity",
     "l": "location, as the user said it",
     "d": "when it happened: copy the user's time phrase exactly (e.g. \"around 10 AM\", \"yesterday evening\")",
-    "p": "people involved or hurt",
+    "p": "people hurt, nearly hurt, or who helped on the spot",
     "e": "equipment or assets involved",
-    "a": "actions already taken",
-    "w": "witnesses",
+    "a": "actions already taken, by anyone, including calling or informing someone",
+    "w": "witnesses: only people said to have seen it (never the speaker)",
 }
 
 _EXAMPLES = """\
 Example 1
 Form: {}
 Asked: none
-User: there's smoke coming out of the printer on the third floor, I unplugged it, nobody's hurt
-Answer: {"tool":"update_report","args":{"t":"fire_smoke","l":"third floor","e":["printer"],"a":["unplugged the printer"]}}
+User: there's smoke coming out of the printer on the third floor, I unplugged it and told the floor warden, nobody's hurt
+Answer: {"tool":"update_report","args":{"t":"fire","l":"third floor","e":["printer"],"a":["unplugged it","told the floor warden"]}}
 
 Example 2
-Form: {"t":"slip_trip_fall","l":"main staircase","d":"this morning"}
+Form: {"t":"slip_trip","l":"main staircase","d":"this morning"}
 Asked: s
-User: uh I'd say medium, Ravi saw it happen
-Answer: {"tool":"update_report","args":{"s":"medium","w":["Ravi"]}}
+User: uh I'd say medium, Imran saw it happen
+Answer: {"tool":"update_report","args":{"s":"medium","w":["Imran"]}}
 
 Example 3
-Form: {"t":"water_leak","s":"low","l":"pantry","d":"just now"}
+Form: {"t":"water_leak","s":"low","l":"loading dock","d":"just now"}
 Asked: none
 User: yes that's right, go ahead and submit
 Answer: {"tool":"submit_report"}"""
@@ -70,6 +70,10 @@ def system_prompt(schema: dict) -> str:
               "- \"Asked\" is the field the assistant just asked about: a short answer belongs there.",
               "- If the user corrects something, send the corrected field again.",
               "- Only pick a severity if the user says how serious it is.",
+              "- Type: if someone was hurt or nearly hurt, pick how (slip_trip, fall_height, struck_by, caught_in).",
+              "  fire if there were flames or smoke; gas_leak only without fire; chemical for spills, splashes",
+              "  and fumes; structural when something cracks or collapses; equipment_failure when something",
+              "  broke and nobody was hurt; medical when someone fell ill.",
               "",
               _EXAMPLES]
     return "\n".join(lines)

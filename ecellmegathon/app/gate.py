@@ -25,9 +25,11 @@ SUPPORT_THRESHOLD = 0.6
 WORD_MATCH = 0.85
 
 SEVERITY_ORDER = ["low", "medium", "high", "critical"]
-# DESIGN CHOICE: the minimum severity per incident type. Shown to the user at
-# review when it raised their answer.
-SEVERITY_FLOOR = {"injury": "high", "fire_smoke": "high", "chemical_spill": "medium"}
+# DESIGN CHOICE: the severity an incident type usually has at least. Code never
+# changes the user's answer: below this, the read-back asks them to confirm it.
+# (Raising it silently overrode explicit answers in 3 eval dialogs: ch-02,
+# gs-02, lb-02.)
+SEVERITY_FLOOR = {"fire": "high", "gas_leak": "high", "chemical": "medium"}
 
 TEXT_KEYS = ("l", "d", "p", "e", "a", "w")
 
@@ -87,11 +89,9 @@ def check(args: dict, transcript: str) -> tuple[dict, list[dict]]:
     return kept, dropped
 
 
-def severity_floor(incident_type: str | None, severity: str | None) -> tuple[str | None, bool]:
-    """(severity after the floor, whether the floor raised it)."""
+def severity_floor(incident_type: str | None, severity: str | None) -> str | None:
+    """The usual minimum when the given severity is below it, else None."""
     floor = SEVERITY_FLOOR.get(incident_type or "")
-    if not severity or not floor:
-        return severity, False
-    if SEVERITY_ORDER.index(severity) < SEVERITY_ORDER.index(floor):
-        return floor, True
-    return severity, False
+    if severity and floor and SEVERITY_ORDER.index(severity) < SEVERITY_ORDER.index(floor):
+        return floor
+    return None

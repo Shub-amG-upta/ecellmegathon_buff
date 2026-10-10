@@ -32,9 +32,10 @@ def test_small_spelling_differences_still_count():
     assert support("the", T) == 0.0                         # no content words → unsupported
 
 
-def test_severity_floors():
-    assert severity_floor("injury", "low") == ("high", True)
-    assert severity_floor("injury", "critical") == ("critical", False)
-    assert severity_floor("chemical_spill", "low") == ("medium", True)
-    assert severity_floor("water_leak", "low") == ("low", False)
-    assert severity_floor("injury", None) == (None, False)   # still asked, not invented
+def test_severity_floor_reports_but_never_decides():
+    assert severity_floor("fire", "low") == "high"
+    assert severity_floor("fire", "critical") is None
+    assert severity_floor("chemical", "low") == "medium"
+    assert severity_floor("gas_leak", "medium") == "high"
+    assert severity_floor("water_leak", "low") is None
+    assert severity_floor("fire", None) is None

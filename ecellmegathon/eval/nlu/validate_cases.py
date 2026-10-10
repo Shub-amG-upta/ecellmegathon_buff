@@ -12,19 +12,37 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 CASES = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "cases.jsonl"
-SCHEMA = Path(sys.argv[2]) if len(sys.argv) > 2 else HERE.parents[1] / "schema" / "incident_form_v2.json"
+SCHEMA = Path(sys.argv[2]) if len(sys.argv) > 2 else HERE.parents[1] / "schema" / "incident_form.json"
 TOOLS = {"update_report", "submit_report", "cancel_report", "no_op"}
 
 # BOARD screening numbers from PLAN.md §2 (700-token prompt). Grammar-constrained decode may be slower.
 MODELS = {"Llama 3.2 3B": (986, 21), "Qwen3 1.7B": (1432, 32)}
-SYSTEM_PROMPT_TOKENS = 1100   # ESTIMATE: 17 fields + enums + rules + 2 examples
+SYSTEM_PROMPT_TOKENS = 600    # ESTIMATE: 8 LLM fields + 15 types + rules + 3 examples (app/prompt.py)
 CALL_OVERHEAD_S = 0.3         # ESTIMATE: HTTP + grammar setup + code
+
+
+def load_fields(schema: dict) -> dict:
+    """The LLM-filled fields keyed by their one-letter key, from the app's form
+    layout (schema/incident_form.json: a list of fields with key/kind/max_chars)."""
+    out = {}
+    for f in schema["fields"]:
+        if not f.get("key"):
+            continue                                   # description, follow_up: built by code
+        d = {"name": f["name"], "mandatory": f.get("mandatory", False)}
+        if f["kind"] == "enum":
+            d.update(type="enum", values=f["values"])
+        elif f["kind"] == "text":
+            d.update(type="string", maxLength=f["max_chars"])
+        elif f["kind"] == "text_list":
+            d.update(type="array", maxItems=f["max_items"], item_maxLength=f["max_chars"])
+        out[f["key"]] = d
+    return out
 
 
 def main():
     schema = json.loads(SCHEMA.read_text())
-    fields = {k: v for k, v in schema["fields"].items() if v["type"] != "code"}
-    mandatory = [k for k, v in schema["fields"].items() if v.get("mandatory") and v["type"] != "code"]
+    fields = load_fields(schema)
+    mandatory = [k for k, v in fields.items() if v["mandatory"]]
     errors = []
     cases = [json.loads(l) for l in CASES.read_text().splitlines() if l.strip()]
 
@@ -100,7 +118,7 @@ def main():
     print("\nincident types (final form):")
     for v in fields["t"]["values"]:
         print(f"  {v:18s} {type_use.get(v, 0)}")
-    print("\nfield fills across all turns (17 LLM fields):")
+    print(f"\nfield fills across all turns ({len(fields)} LLM fields):")
     for k in fields:
         print(f"  {k} {fields[k]['name']:24s} {field_use.get(k, 0)}")
     unused = [k for k in fields if field_use.get(k, 0) == 0]

@@ -86,19 +86,21 @@ model call costs another 1–3 s per turn. Code is faster and can't hallucinate 
 
 ## 3. The form
 
-Source of truth: `schema/incident_form.json`. It's **frozen**: change it only when both humans agree.
+Source of truth: `schema/incident_form.json` (version 2). It's **frozen**: change it only when both humans agree.
+The problem statement's 10 fields, no more. Mandatory fields are asked in the order **type → location → time →
+severity** (`ask_order`). Labelling rules for every field: `eval/nlu/LABELING.md`.
 
 | field | LLM key | mandatory | kind | filled by |
 |---|---|---|---|---|
-| incident_type | `t` | yes | enum: water_leak, fire_smoke, electrical, injury, slip_trip_fall, equipment_failure, chemical_spill, security, near_miss, other | LLM |
-| severity | `s` | yes | enum: low, medium, high, critical | LLM, then code applies floors |
+| incident_type | `t` | yes | enum: fire, electrical, water_leak, gas_leak, chemical, slip_trip, fall_height, struck_by, caught_in, equipment_failure, lift, structural, medical, security, other | LLM |
+| severity | `s` | yes | enum: low, medium, high, critical | LLM; never changed by code |
 | location | `l` | yes | text ≤ 60 | LLM |
 | date_time | `d` | yes | text ≤ 40 (the phrase) → code resolves it to ISO | LLM + code |
 | persons_involved | `p` | no | list ≤ 4 × 40 | LLM |
 | equipment_involved | `e` | no | list ≤ 3 × 40 | LLM |
 | description | — | yes | the user's own words, all turns joined | code |
-| immediate_actions | `a` | no | list ≤ 3 × 60 | LLM |
-| witnesses | `w` | no | list ≤ 3 × 40 | LLM |
+| immediate_actions | `a` | no | list ≤ 4 × 60 | LLM |
+| witnesses | `w` | no | list ≤ 4 × 40 | LLM |
 | follow_up | — | no | from `data/followup_catalogue.json` by type | code |
 
 Tools the LLM may call: `update_report` (args = any subset of the keys above), `submit_report`, `cancel_report`,
@@ -193,15 +195,19 @@ Served at `http://localhost:8000`. It also serves `ui/` as static files at `/`.
 
 ### 4.3 Shared eval cases: `eval/cases.jsonl`
 
-A writes the cases and gold labels. B records the audio. One JSON object per line:
+A writes the cases and gold labels. B records the audio. The source is the text eval set in `eval/nlu/` (65
+dialogs, 250 turns, `build_cases.py`); running it also writes `eval/cases.jsonl` in this shared format, one
+dialog per line (generated: don't edit it by hand):
 
 ```json
-{"id": "c001", "turns": [
+{"id": "ps-01", "split": "demo", "turns": [
    {"say": "There was a water leak near Conference Room 2 around 10 AM. Maintenance has already isolated the area.",
-    "gold": {"t": "water_leak", "l": "Conference Room 2", "d": "around 10 AM", "a": ["area isolated"]}},
-   {"say": "Medium.", "gold": {"s": "medium"}},
-   {"say": "Submit.", "gold_tool": "submit_report"}]}
+    "gold": {"t": "water_leak", "l": "near Conference Room 2", "d": "around 10 AM", "a": ["isolated the area"]}},
+   {"say": "it's medium", "gold": {"s": "medium"}},
+   {"say": "submit", "gold": {}, "gold_tool": "submit_report"}]}
 ```
+
+Splits: `demo` and `dev` are for tuning; `test` (21 dialogs) is locked until the M4 decision rules are written.
 
 Audio files: `eval/audio/<case_id>_t<turn>_<speaker>.wav` (16 kHz mono). The reference text for WER is `say`.
 `eval/audio/` is gitignored; share the recordings outside git.
@@ -234,7 +240,7 @@ The full form (full field names, as in `TurnResult.form`) plus `id`, `submitted_
 | `board/voice_up.sh` | **B** | start STT (:8082) and TTS (:8083) on the board, forward their ports, health check |
 | `data/followup_catalogue.json` | A | incident type → 2–4 follow-up actions |
 | `data/vocab.txt` | **B** | room, asset and team names; used by STT and by A's gate |
-| `eval/cases.jsonl`, `eval/run_eval.py` | A | extraction accuracy, mandatory recall, hallucination rate, LLM latency |
+| `eval/nlu/*`, `eval/cases.jsonl` (generated), `eval/run_eval.py` | A | the text eval set; extraction accuracy per turn and per dialog, extra values, LLM latency |
 | `eval/wer.py`, `eval/audio/` | **B** | WER per STT model, STT/TTS latency |
 | `tests/test_<module>.py` | owner of the module | |
 
@@ -246,7 +252,7 @@ points (§8). Since no file has two owners, merges shouldn't conflict.
 ## 6. Track A details (extraction core)
 
 **LLM call.** `LlamaServerBackend(url="http://localhost:8080", lane="npu").generate(prompt, system=SYSTEM,
-json_schema=schema, max_tokens=96)`, at temperature 0. The schema is built from `incident_form.json` as an object
+json_schema=schema, max_tokens=128)`, at temperature 0. The schema is built from `incident_form.json` as an object
 with `tool` (an enum of the 4 tools) and `args` (optional properties `t`/`s` as enums, `l`/`d` as strings with
 `maxLength`, `p`/`e`/`a`/`w` as arrays with `maxItems`, each item a string with `maxLength`). Target output:
 
@@ -271,8 +277,9 @@ User: it's medium I think
 - For `d`, the phrase must appear in the transcript.
 - Enums are already valid because of the schema.
 
-**Severity floors:** `injury` → at least `high`; `fire_smoke` → at least `high`; `chemical_spill` → at least `medium`.
-When a floor raises a value, the read-back says so.
+**Severity:** code never changes the user's answer. Below the usual minimum for the type (`fire` and `gas_leak`:
+high; `chemical`: medium), the read-back asks them to confirm it ("Fire is usually at least high severity; you said
+low. Say a new severity to change it."). Raising it silently overrode explicit answers in 3 eval dialogs.
 
 **Time:** handle "around 10 AM", "10:30", "at 3 pm", "this morning/afternoon/evening", "yesterday evening",
 "just now", "an hour ago", "20 minutes ago". Use the laptop clock (the board's clock is wrong). If a phrase can't be
@@ -295,7 +302,7 @@ Every sentence the assistant says comes from a template in code; the model never
 1. `form.py`, `prompt.py`, `dialog.py` (+ `gate.py`, `timeparse.py`), on `MockBackend` and then on llama-server on
    the Mac (`brew install llama.cpp`, using the same GGUF pulled from the board).
 2. `server.py` **early**, even with `MockBackend`, so B can build the UI against the real API.
-3. `report.py`, the follow-up catalogue, then `eval/cases.jsonl` (15 cases first, 40 later) and `run_eval.py`.
+3. `report.py`, the follow-up catalogue, then the eval set (`eval/nlu/`) and `run_eval.py`.
 4. `board/up.sh`, then the M-board milestone (§8).
 
 ---

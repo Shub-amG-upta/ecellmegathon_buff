@@ -80,7 +80,7 @@ def test_submit_is_refused_while_a_mandatory_field_is_missing(make, tmp_path):
     d.turn(EXAMPLE)
     r = d.turn("just submit it")
     assert r["state"] == "collecting" and r["report_id"] is None
-    assert r["say"].startswith("I still need the severity.")
+    assert r["say"] == "I still need the time it happened. When did it happen?"   # ask order t, l, d, s
     assert list(tmp_path.glob("*.json")) == []
 
 
@@ -103,12 +103,13 @@ def test_correction_in_review_overwrites_and_reads_back_again(make):
     assert r["form"]["date_time"]["phrase"] == "11 AM"
 
 
-def test_severity_floor_raises_and_says_so(make):
-    d, _ = make({"tool": "update_report", "args": {"t": "injury", "s": "low", "l": "workshop",
-                                                    "d": "just now", "p": ["Arjun"]}})
-    r = d.turn("Arjun cut his hand in the workshop just now, it's low")
-    assert r["form"]["severity"] == "high"
-    assert r["say"].startswith("I've set the severity to high, the minimum for injury.")
+def test_low_severity_for_a_fire_is_kept_but_questioned(make):
+    d, _ = make({"tool": "update_report", "args": {"t": "fire", "s": "low", "l": "workshop",
+                                                    "d": "just now"}})
+    r = d.turn("small fire in the workshop just now, it's low")
+    assert r["form"]["severity"] == "low"                      # the user's answer stands
+    assert ("Fire is usually at least high severity; you said low. Say a new severity to change it."
+            in r["say"])
 
 
 def test_no_op_empty_text_and_llm_failure_reask_without_changing_anything(make):
