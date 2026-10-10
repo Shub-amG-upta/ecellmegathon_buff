@@ -3,7 +3,7 @@
 # start the app. BUILD_PLAN §9.
 #
 #   board/up.sh [model.gguf]       default: Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf
-#   CTX=2048 board/up.sh           context size (default 4096); compare speed before changing it
+#   CTX=4096 board/up.sh           context size (default 2048, human decision 2026-10-10)
 #
 # Exit 1 if the board isn't there or placement isn't confirmed: nothing measured
 # after a failed check counts as NPU.

@@ -36,7 +36,7 @@ def test_lane_command_env_offload_and_fixed_flags():
     npu, cpu = board.lane_command("npu", "m.gguf"), board.lane_command("cpu", "m.gguf", threads=6)
     for cmd in (npu, cpu):
         assert f"LD_LIBRARY_PATH={lib} " in cmd and f"ADSP_LIBRARY_PATH={lib} " in cmd
-        assert " -c 4096 -np 1 " in cmd and "-m /data/local/tmp/llm/m.gguf " in cmd
+        assert " -c 2048 -np 1 " in cmd and "-m /data/local/tmp/llm/m.gguf " in cmd
         assert cmd.endswith("-fit off --cache-ram 0 -lv 4")
     assert "--device HTP0 -ngl 99" in npu and "--port 8080" in npu
     assert "--device none -ngl 0 -t 6" in cpu and "--port 8081" in cpu
@@ -100,9 +100,9 @@ def test_meminfo_parsing():
     assert m == {"MemTotal_kB": 11633360, "MemAvailable_kB": 6290000}
 
 
-def test_context_size_is_4096_unless_asked_and_bounded(monkeypatch):
-    assert " -c 4096 " in board.lane_command("npu", "m.gguf")
-    assert " -c 2048 " in board.lane_command("npu", "m.gguf", ctx=2048)
+def test_context_size_is_2048_unless_asked_and_bounded(monkeypatch):
+    assert " -c 2048 " in board.lane_command("npu", "m.gguf")          # human decision 2026-10-10
+    assert " -c 4096 " in board.lane_command("npu", "m.gguf", ctx=4096)
     name = "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf"
     fake, calls = _fake_adb(board.CANDIDATES[name])
     monkeypatch.setattr(board, "_adb", fake)

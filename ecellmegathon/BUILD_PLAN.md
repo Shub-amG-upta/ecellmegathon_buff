@@ -453,11 +453,11 @@ field accuracy doesn't drop):**
 |---|---|---|---|
 | fast path | on | off | `eval/run_eval.py --label BOARD --no-fast-path` (shows what the fast path saves) |
 | answer constraint | `LLM_CONSTRAINT=schema` | `LLM_CONSTRAINT=gbnf` (no whitespace) | same eval with the env var; first run `eval/smoke_llm.py` to check llama-server accepts the grammar |
-| context size | `-c 4096` | `-c 2048` | `CTX=2048 board/up.sh`, then the same eval |
+| context size | `-c 2048` (default, human decision) | `-c 4096` (FieldMind's value), only if 2048 shows problems | `CTX=4096 board/up.sh`, then the same eval |
 
 Compare the eval's `decode_tokens` and `wall_ms` per LLM call, and the field accuracy.
 
-**Fixed facts:** llama-server flags `-c 4096 -np 1 -fit off --cache-ram 0 -lv 4` + `--device HTP0 -ngl 99`
+**Fixed facts:** llama-server flags `-c 2048 -np 1 -fit off --cache-ram 0 -lv 4` + `--device HTP0 -ngl 99`
 (`--cache-ram 0` is required: without it board memory ran out after ~36 calls). `LD_LIBRARY_PATH` and
 `ADSP_LIBRARY_PATH` on every launch (`board.py` does it). USB can drop: the servers keep running, rerun the step.
 Temperature-0 replies can differ between server launches, so evals run twice. Log laptop time, never board time.

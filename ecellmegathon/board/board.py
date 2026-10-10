@@ -50,11 +50,11 @@ DEVICE_PKG = "/data/local/tmp/llm/llama.cpp"
 DEVICE_MODELS = "/data/local/tmp/llm"
 DEVICE_LOGS = "/data/local/tmp/llm/logs"
 
-# FieldMind's fixed launch settings. -c 4096 is larger than this project's
-# prompts need (~600-token instructions + a short turn); context size changes NPU
-# speed, so -c 2048 is an option (--ctx / CTX=2048 board/up.sh) to compare on the
-# board, not the default until measured.
-CTX_SIZE = 4096
+# HUMAN DECISION 2026-10-10: -c 2048 (FieldMind used 4096 for ~2,500-token prompts).
+# Our largest call is ~960 tokens with the answer (ESTIMATE, chars/3.5, longest eval
+# turn), so 2048 leaves ~2x headroom. 1024 was considered and left out: the worst
+# case (every field at its limit + a long sentence) is ~1,260. --ctx overrides it.
+CTX_SIZE = 2048
 N_PARALLEL = 1
 LANE_PORT = {"npu": 8080, "cpu": 8081}
 
