@@ -99,7 +99,7 @@ push "$ENGINES/android/stt/bin/whisper-server" "$STT_DIR/bin/whisper-server"
 push "$ENGINES/whisper/$MODEL" "$STT_DIR/$MODEL"
 adb_ shell "chmod 755 $STT_DIR/bin/whisper-server"
 adb_ shell "pkill whisper-server" || true
-adb_ shell -n "cd $STT_DIR && nohup sh -c 'LD_LIBRARY_PATH=$STT_DIR/lib ./bin/whisper-server -m $STT_DIR/$MODEL \
+adb_ shell -n "cd $STT_DIR; nohup sh -c 'LD_LIBRARY_PATH=$STT_DIR/lib ./bin/whisper-server -m $STT_DIR/$MODEL \
     --host 127.0.0.1 --port 8082 -t $STT_THREADS' > $STT_DIR/stt.log 2>&1 < /dev/null &"
 adb_ forward tcp:8082 tcp:8082 > /dev/null
 
