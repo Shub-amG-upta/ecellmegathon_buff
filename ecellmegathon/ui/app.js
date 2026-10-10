@@ -32,6 +32,9 @@ const $ = id => document.getElementById(id);
 let last = null;          // the last TurnResult
 let busy = false;
 let player = null;        // the assistant audio currently playing
+// "voice" = play each reply (TTS) and show it; "text" = show it only. Chosen when the page opens.
+let replyMode = "voice";
+const MODE_KEY = "reply-mode";
 
 // ---------------------------------------------------------------- API
 async function api(method, path, body, contentType) {
@@ -79,7 +82,7 @@ function render(r) {
   renderLatency(r);
   if (r.tool_call || (r.dropped && r.dropped.length)) addTool(r);
   if (r.state === "submitted") loadReports();
-  if (r.audio_url) play(r.audio_url);
+  if (r.audio_url && replyMode === "voice") play(r.audio_url);
 }
 
 function addChat(who, text, meta, audioUrl) {
@@ -269,6 +272,33 @@ function play(url) {
   player.play().catch(() => { /* autoplay blocked: the replay button still works */ });
 }
 
+// ---------------------------------------------------------------- reply mode
+// Only changes what this page does with the reply: in "text" mode nothing plays. The server still
+// makes the audio unless it runs with VOICE=off (the HTTP API has no per-request switch).
+function setReplyMode(mode) {
+  replyMode = mode === "text" ? "text" : "voice";
+  document.body.classList.toggle("text-only", replyMode === "text");
+  $("reply-mode").textContent = replyMode === "text" ? "💬 Text only" : "🔊 Voice";
+  if (replyMode === "text" && player) player.pause();
+  try { localStorage.setItem(MODE_KEY, replyMode); } catch { /* storage blocked: still works this session */ }
+}
+
+function savedReplyMode() {
+  try { return localStorage.getItem(MODE_KEY); } catch { return null; }
+}
+
+function askReplyMode() {
+  const dlg = $("mode-dialog");
+  if (typeof dlg.showModal !== "function") {   // very old WebView: no <dialog>, keep the saved/default mode
+    setReplyMode(savedReplyMode() || "voice");
+    return;
+  }
+  const saved = savedReplyMode();
+  dlg.showModal();
+  const pick = dlg.querySelector(`[data-mode="${saved === "text" ? "text" : "voice"}"]`);
+  if (pick) pick.focus();
+}
+
 // ---------------------------------------------------------------- proof + reports
 async function loadProof() {
   const box = $("proof");
@@ -404,10 +434,20 @@ function wire() {
   });
   $("proof-refresh").addEventListener("click", loadProof);
   $("reports-refresh").addEventListener("click", loadReports);
+  $("reply-mode").addEventListener("click", askReplyMode);
+  const dlg = $("mode-dialog");
+  dlg.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => {
+    setReplyMode(b.dataset.mode);
+    dlg.close();
+  }));
+  // Esc closes the dialog: keep whatever mode is current.
+  dlg.addEventListener("cancel", () => setReplyMode(replyMode));
 }
 
 async function init() {
   wire();
+  setReplyMode(savedReplyMode() || "voice");
+  askReplyMode();
   renderForm({ form: {}, missing: [], state: "collecting" }, null);
   renderLatency({});
   try {
