@@ -119,10 +119,12 @@ def test_edit_reset_state_and_bad_requests(run):
     assert call(url, "/api/reset", {})[1]["form"]["location"] is None
 
 
-def test_static_files_fallback_page_and_no_path_escape(run):
+def test_static_ui_files_and_no_path_escape(run):
     url = run([])
     code, page = call(url, "/")
-    assert code == 200 and b"/api/turn" in page
+    assert code == 200 and b"<html" in page.lower()        # Track B's ui/index.html (or the dev page)
+    code, js = call(url, "/app.js")
+    assert code == 200 and b"/api/turn" in js
     assert call(url, "/../app/server.py")[0] == 404
     assert call(url, "/%2e%2e/app/server.py")[0] == 404
 

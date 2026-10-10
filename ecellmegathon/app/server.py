@@ -10,6 +10,7 @@ Environment:
   LLM_LANE   npu | cpu | laptop                     (label only: where that server runs)
   LLM_MODEL  model file name, for the report and the proof panel
   PORT       8000
+  VOICE      on | off   off = text only, even when app/voice.py is present
 
 Speech is Track B's `app/voice.py` (§4.1). Until it exists, the server runs
 text-only: WAV turns return an error and no audio is produced.
@@ -32,9 +33,11 @@ from app.backends import LlamaServerBackend, MockBackend
 from app.dialog import Dialog
 from app.form import ROOT
 
-try:                                    # Track B's module; optional until it lands
+try:                                    # Track B's module; VOICE=off runs text-only
     from app import voice
 except ImportError:
+    voice = None
+if os.environ.get("VOICE", "on") == "off":
     voice = None
 
 UI_DIR = ROOT / "ui"
@@ -53,6 +56,12 @@ const j=await r.json();document.getElementById('o').textContent=j.say+'\\n\\n'+J
 function go(e){e.preventDefault();const t=document.getElementById('t');post('/api/turn',{text:t.value});t.value='';}
 post('/api/reset',{});
 </script>"""
+
+
+def _join(errors: str, new: str, stage: str) -> str:
+    """Append one stage's error, prefixed once (voice.py may already prefix it)."""
+    new = new if new.startswith(f"{stage}:") else f"{stage}: {new}"
+    return f"{errors}; {new}" if errors else new
 
 
 def make_backend():
@@ -91,7 +100,7 @@ class App:
             for old in [k for k in self.audio if k < result["turn_id"] - 20]:
                 del self.audio[old]                    # keep memory bounded
         elif t.error:
-            result["error"] = (result["error"] + "; " if result["error"] else "") + f"tts: {t.error}"
+            result["error"] = _join(result["error"], t.error, "tts")
         return result
 
     def turn_text(self, text: str) -> dict:
@@ -111,7 +120,7 @@ class App:
                 r["timings_ms"]["total"] += stt.wall_ms
             r["devices"]["stt"] = stt.device
             if stt.error:
-                r["error"] = (r["error"] + "; " if r["error"] else "") + f"stt: {stt.error}"
+                r["error"] = _join(r["error"], stt.error, "stt")
             return self._speak(r)
 
     def edit(self, field: str, value) -> dict:
