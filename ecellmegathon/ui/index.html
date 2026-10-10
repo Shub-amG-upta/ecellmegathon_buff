@@ -23,24 +23,25 @@
 <main class="grid">
   <!-- Conversation -->
   <section class="card convo" aria-label="Conversation">
-    <h2>Conversation</h2>
+    <h2 class="sr-only">Conversation</h2>
     <ol id="chat" class="chat" aria-live="polite"></ol>
+    <p id="error" class="error" role="alert" hidden></p>
 
-    <div class="talk">
+    <div class="composer">
+      <form id="text-form" class="text-form" autocomplete="off">
+        <label for="text-in" class="sr-only">Type your message</label>
+        <input id="text-in" type="text" placeholder="Type your message…">
+        <button type="submit" class="send">Send</button>
+      </form>
       <button id="ptt" class="ptt" type="button" aria-describedby="ptt-hint">
-        <span class="ptt-dot" aria-hidden="true"></span>
-        <span id="ptt-label">Hold to talk</span>
+        <svg class="mic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect>
+          <path d="M5 11a7 7 0 0 0 14 0"></path><path d="M12 18v3"></path></svg>
+        <span id="ptt-label">Hold to speak</span>
       </button>
       <div class="level" aria-hidden="true"><div id="level-bar"></div></div>
-      <p id="ptt-hint" class="hint">Hold the button (or the Space bar) while you speak, then release.</p>
+      <p id="ptt-hint" class="sr-only">Hold the button (or the Space bar) while you speak, then release.</p>
     </div>
-
-    <form id="text-form" class="text-form" autocomplete="off">
-      <label for="text-in" class="sr-only">Type instead</label>
-      <input id="text-in" type="text" placeholder="…or type what happened">
-      <button type="submit">Send</button>
-    </form>
-    <p id="error" class="error" role="alert" hidden></p>
   </section>
 
   <!-- Live form -->

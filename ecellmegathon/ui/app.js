@@ -27,6 +27,8 @@ const LATENCY_ROWS = [
   ["total", "Total turn", null],
 ];
 const MIN_RECORD_MS = 300;
+// Shown under the severity question as a reminder; the user answers by voice or text.
+const SEVERITY_CHOICES = ["Low", "Medium", "High", "Critical"];
 
 const $ = id => document.getElementById(id);
 let last = null;          // the last TurnResult
@@ -73,9 +75,10 @@ function render(r) {
   $("state").dataset.state = r.state;
   $("report-id").textContent = r.report_id ? `Report ${r.report_id}` : "";
 
+  hideTyping();
   if (r.transcript) addChat("user", r.transcript, r.timings_ms && r.timings_ms.stt != null
     ? `heard in ${fmt(r.timings_ms.stt)} ms` : "");
-  if (r.say) addChat("bot", r.say, "", r.audio_url);
+  if (r.say) addChat("bot", r.say, "", r.audio_url, r.asked === "s" ? SEVERITY_CHOICES : null);
   if (r.error) showError(r.error);
 
   renderForm(r, prev);
@@ -85,10 +88,28 @@ function render(r) {
   if (r.audio_url && replyMode === "voice") play(r.audio_url);
 }
 
-function addChat(who, text, meta, audioUrl) {
+// One chat message: the bubble, optional choices shown under it (not clickable: answer by voice or text),
+// then a line with the time and any meta.
+function addChat(who, text, meta, audioUrl, choices) {
   const li = document.createElement("li");
   li.className = who;
-  li.textContent = text;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+  li.appendChild(bubble);
+  if (choices) {
+    const row = document.createElement("div");
+    row.className = "choices";
+    for (const c of choices) {
+      const chip = document.createElement("span");
+      chip.className = "choice";
+      chip.textContent = c;
+      row.appendChild(chip);
+    }
+    li.appendChild(row);
+  }
+  const line = document.createElement("div");
+  line.className = "meta";
   if (audioUrl) {
     const b = document.createElement("button");
     b.className = "replay";
@@ -96,16 +117,36 @@ function addChat(who, text, meta, audioUrl) {
     b.textContent = "▶ replay";
     b.setAttribute("aria-label", "Replay this reply");
     b.onclick = () => play(audioUrl);
-    li.appendChild(b);
+    line.appendChild(b);
   }
-  if (meta) {
-    const m = document.createElement("span");
-    m.className = "meta";
-    m.textContent = meta;
-    li.appendChild(m);
-  }
+  line.appendChild(document.createTextNode([meta, clock()].filter(Boolean).join(" · ")));
+  li.appendChild(line);
   $("chat").appendChild(li);
   li.scrollIntoView({ block: "nearest" });
+}
+
+function clock() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+// ". . . ." while the assistant works on a turn; render() removes it when the answer arrives.
+function showTyping() {
+  if ($("typing")) return;
+  const li = document.createElement("li");
+  li.id = "typing";
+  li.className = "bot typing";
+  li.setAttribute("role", "status");
+  li.setAttribute("aria-label", "The assistant is thinking");
+  li.innerHTML = '<div class="bubble"><span class="dot"></span><span class="dot"></span>'
+    + '<span class="dot"></span><span class="dot"></span></div>';
+  $("chat").appendChild(li);
+  li.scrollIntoView({ block: "nearest" });
+}
+
+function hideTyping() {
+  const t = $("typing");
+  if (t) t.remove();
 }
 
 function isMissing(r, f) {
@@ -261,9 +302,10 @@ function showError(msg) {
 
 function setBusy(on) {
   busy = on;
+  if (on) showTyping(); else hideTyping();
   $("ptt").classList.toggle("busy", on);
   $("ptt").setAttribute("aria-busy", on ? "true" : "false");
-  if (!Mic.isActive()) $("ptt-label").textContent = on ? "Thinking…" : "Hold to talk";
+  if (!Mic.isActive()) $("ptt-label").textContent = on ? "Thinking…" : "Hold to speak";
 }
 
 function play(url) {
@@ -397,7 +439,7 @@ async function stopRecording() {
   const clip = await Mic.stop();
   $("ptt").classList.remove("recording");
   $("level-bar").style.width = "0";
-  $("ptt-label").textContent = "Hold to talk";
+  $("ptt-label").textContent = "Hold to speak";
   if (tooShort || !clip) {
     showError("That was too short. Hold the button while you speak.");
     return;
