@@ -30,7 +30,20 @@ press **Enter** to stop. It checks the clip (16 kHz mono, not silent, long enoug
 macOS asks once for microphone permission for the terminal: allow it. Uses `ffmpeg` (already on Shubham's Mac;
 `brew install ffmpeg` otherwise). If the wrong mic is picked: `MIC=":1" eval/record_lines.sh shubham`.
 
-**B. The UI's record mode** (Sarthak is building it; also works on Windows): same lines, same file names.
+**B. The UI's record mode (any OS, including Windows; Chrome or Edge):**
+
+```
+cd ecellmegathon
+.venv/bin/python -m ui_dev.record_server        # Windows: .venv/Scripts/python -m ui_dev.record_server
+```
+
+Open **http://localhost:8001/record.html**, type your speaker name, **Load lines**. Press **Space** (or ● Record),
+speak, **Space** again to stop; listen to the playback, then **Enter** saves and moves on, or **Re-record**. The
+take goes straight into `eval/audio/` after the same checks as the terminal (16 kHz mono, at least 0.6 s, not
+silent). Warnings under the playback: **"very quiet"** means move closer, **"clipping"** means move back. Saved
+lines are ticked, so you can stop and resume. For the noisy pass tick **Noisy pass** and **Load lines** again.
+The first take asks for microphone permission: allow it. (The "Record mode" link in the main app opens the same
+page without the record server; then each take downloads and you move it into `eval/audio/` yourself.)
 
 ## 3. How to read
 
@@ -60,6 +73,14 @@ ls eval/audio/*_shubham-noisy.wav | wc -l    # must be 10
 cd eval && zip audio_shubham.zip audio/*_shubham.wav audio/*_shubham-noisy.wav
 ```
 
+Windows (PowerShell, from `ecellmegathon/`):
+
+```
+(Get-ChildItem eval\audio\*_sarthak.wav).Count           # must be 36
+(Get-ChildItem eval\audio\*_sarthak-noisy.wav).Count     # must be 10
+Compress-Archive -Path eval\audio\*_sarthak.wav, eval\audio\*_sarthak-noisy.wav -DestinationPath eval\audio_sarthak.zip
+```
+
 Share the zip in our shared drive. **Never commit `eval/audio/`** (it's gitignored): recordings of our voices
 don't go on GitHub. Whoever runs the eval unzips everyone's files into `eval/audio/`.
 
@@ -67,9 +88,12 @@ don't go on GitHub. Whoever runs the eval unzips everyone's files into `eval/aud
 
 ```
 voice/laptop_up.sh                                   # STT + TTS on the laptop (or board/voice_up.sh on the QIDK)
-.venv/bin/python eval/wer.py --label LAPTOP          # word error rate (Track B)
+.venv/bin/python eval/wer.py --label LAPTOP --subset --vocab data/vocab.txt   # WER + key-word errors (Track B)
 LLM=llamaserver .venv/bin/python eval/run_eval.py --label LAPTOP --audio eval/audio   # typed vs spoken (Track A)
 ```
+
+The STT model comparison (tiny / base / small, vocabulary prompt off and on) and the rule that picks the model,
+written before any result: `eval/STT_DECISION.md`.
 
 ## 7. The script
 

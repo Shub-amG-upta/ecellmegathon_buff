@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Record Mode</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .rec-wrap { max-width: 860px; margin: 0 auto; padding: 14px 16px 40px; display: flex; flex-direction: column; gap: 14px; }
+  .setup { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .6rem 1rem; align-items: end; }
+  .setup label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: .25rem; }
+  .toggle { display: flex; align-items: center; gap: .45rem; font-size: .95rem; color: var(--ink); }
+  .toggle input { width: auto; }
+  .say { font-size: 1.35rem; line-height: 1.5; margin: .6rem 0 1rem; overflow-wrap: anywhere; }
+  .meta { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+  .row .grow { flex: 1; }
+  .rec-btn { min-width: 11rem; font-weight: 600; }
+  .rec-btn.recording { background: var(--rec); border-color: var(--rec); }
+  .take { margin-top: .9rem; display: none; flex-direction: column; gap: .5rem; }
+  .take.show { display: flex; }
+  .take audio { width: 100%; }
+  .warn { color: var(--warn); font-size: .85rem; }
+  .ok { color: var(--ok); font-size: .85rem; }
+  .lines { list-style: none; margin: 0; padding: 0; max-height: 340px; overflow-y: auto; }
+  .lines button { width: 100%; text-align: left; background: none; color: var(--ink); border: 0;
+                  border-bottom: 1px solid var(--line); border-radius: 0; padding: .4rem .2rem;
+                  display: flex; gap: .5rem; }
+  .lines button[aria-current="true"] { background: var(--user-bg); }
+  .lines .mark { width: 1.2rem; flex: none; color: var(--ok); }
+  .lines .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  kbd { font-family: var(--mono); font-size: .8rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; }
+  @media (max-width: 600px) { .setup { grid-template-columns: minmax(0, 1fr); } .say { font-size: 1.15rem; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>Record Mode</h1>
+    <span class="sub">Speech eval recordings · 16 kHz mono WAV</span>
+  </div>
+  <div class="top-right"><a class="ghost-link" href="index.html">Back to the assistant</a></div>
+</header>
+
+<main class="rec-wrap">
+  <section class="card" aria-label="Setup">
+    <h2>Setup</h2>
+    <div class="setup">
+      <div>
+        <label for="speaker">Your first name (lowercase letters and digits)</label>
+        <input id="speaker" type="text" autocomplete="off" placeholder="e.g. sarthak" pattern="[a-z0-9]+">
+      </div>
+      <button id="load" type="button">Load lines</button>
+      <label class="toggle"><input id="noisy" type="checkbox"> Noisy pass (only the noisy lines, saved as <code>name-noisy</code>)</label>
+      <span></span>
+      <div id="picker-wrap" hidden>
+        <label for="picker">No record server here: pick <code>eval/speech_subset.jsonl</code>. Files will download instead of saving to <code>eval/audio/</code>.</label>
+        <input id="picker" type="file" accept=".jsonl,application/json">
+      </div>
+    </div>
+    <p id="mode" class="hint"></p>
+    <p id="setup-error" class="error" role="alert" hidden></p>
+  </section>
+
+  <section class="card" id="line-card" aria-label="Current line" hidden>
+    <div class="card-head">
+      <h2 id="progress">Line</h2>
+      <span id="done-count" class="muted"></span>
+    </div>
+    <div class="meta" id="meta"></div>
+    <p class="say" id="say"></p>
+    <div class="row">
+      <button id="rec" class="rec-btn" type="button">● Record</button>
+      <div class="level grow" aria-hidden="true"><div id="level-bar"></div></div>
+    </div>
+    <p class="hint">Read it naturally, at your normal speed. <kbd>Space</kbd> starts and stops, <kbd>Enter</kbd> saves, <kbd>←</kbd> <kbd>→</kbd> move between lines.</p>
+    <div class="take" id="take">
+      <audio id="playback" controls></audio>
+      <p id="take-info" class="muted"></p>
+      <div class="row">
+        <button id="save" type="button">Save &amp; next</button>
+        <button id="redo" class="ghost" type="button">Re-record</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:1rem">
+      <button id="prev" class="ghost small" type="button">← Previous</button>
+      <button id="next" class="ghost small" type="button">Next →</button>
+    </div>
+    <p id="line-error" class="error" role="alert" hidden></p>
+  </section>
+
+  <section class="card" id="list-card" aria-label="All lines" hidden>
+    <h2>All lines</h2>
+    <ol class="lines" id="lines"></ol>
+  </section>
+</main>
+
+<script src="audio.js"></script>
+<script src="record.js"></script>
+</body>
+</html>

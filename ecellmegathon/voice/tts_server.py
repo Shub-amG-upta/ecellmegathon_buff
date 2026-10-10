@@ -234,8 +234,10 @@ def make_handler(runner, lock: threading.Lock, cache: Cache | None = None):
                 return self._json(400, {"error": "empty text"})
             if len(text) > MAX_TEXT_CHARS:
                 return self._json(413, {"error": f"text longer than {MAX_TEXT_CHARS} chars"})
+            # X-TTS-No-Cache: 1 forces a fresh synthesis (timing checks); the result is still cached.
+            fresh = self.headers.get("X-TTS-No-Cache", "") == "1"
             with lock:  # one synthesis at a time; the board is shared with the LLM
-                hit = cache.get(text)
+                hit = None if fresh else cache.get(text)
                 s = Synth(wav=hit) if hit is not None else runner.synth(text)
                 if hit is None and not s.error:
                     cache.put(text, s.wav)

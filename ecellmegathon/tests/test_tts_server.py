@@ -150,6 +150,22 @@ def test_cache_hit_skips_the_engine_and_says_so(serve):
     assert "X-TTS-Ms" in h1 and "X-TTS-Ms" not in h2                # no engine time on a hit
 
 
+def test_no_cache_header_forces_a_fresh_synthesis():
+    runner = FakeRunner()
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), ts.make_handler(runner, threading.Lock(), ts.Cache(4)))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    url = f"http://127.0.0.1:{srv.server_address[1]}/tts"
+    try:
+        post(url[:-4], b'{"text":"hi"}')
+        req = urllib.request.Request(url, data=b'{"text":"hi"}', method="POST",
+                                     headers={"Content-Type": "application/json", "X-TTS-No-Cache": "1"})
+        with urllib.request.urlopen(req, timeout=5) as r:
+            h = dict(r.headers.items())
+    finally:
+        srv.shutdown()
+    assert runner.texts == ["hi", "hi"] and h["X-TTS-Cache"] == "miss"
+
+
 def test_engine_errors_are_not_cached(serve):
     runner = FakeRunner(ts.Synth(error="boom"))
     cache = ts.Cache(4)
