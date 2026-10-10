@@ -16,7 +16,7 @@ import json
 import time
 from datetime import datetime
 
-from app import gate, report
+from app import fastpath, gate, report
 from app.form import FormState, llm_json_schema, load_catalogue, load_schema
 from app.prompt import system_prompt, user_message
 from app.timeparse import resolve
@@ -40,7 +40,7 @@ def _now() -> datetime:
 
 class Dialog:
     def __init__(self, backend, schema: dict | None = None, catalogue: dict | None = None,
-                 clock=_now, report_dir=None, max_tokens: int = 128):
+                 clock=_now, report_dir=None, max_tokens: int = 128, use_fast_path: bool = True):
         self.backend = backend
         self.schema = schema or load_schema()
         self.catalogue = load_catalogue() if catalogue is None else catalogue
@@ -49,6 +49,8 @@ class Dialog:
         self.max_tokens = max_tokens
         self.system = system_prompt(self.schema)
         self.json_schema = llm_json_schema(self.schema)
+        self.type_values = next(f for f in self.schema["fields"] if f.get("key") == "t")["values"]
+        self.use_fast_path = use_fast_path
         self.turn_id = 0
         self.last: dict = {}
         self.reset()
@@ -73,17 +75,22 @@ class Dialog:
                                 t0=t0)
 
         self.heard.append(text)
-        reply = self.backend.generate(user_message(self.form.compact(), self.asked, text),
-                                      system=self.system, json_schema=self.json_schema,
-                                      max_tokens=self.max_tokens)
-        llm = {"llm_prefill": reply.prefill_ms, "llm_decode": reply.decode_ms,
-               "llm_wall": reply.latency_ms, "device": reply.backend, "model": reply.model,
-               "prefill_tokens": reply.prefill_tokens, "decode_tokens": reply.decode_tokens}
-        if reply.status != "ok":
-            self.heard.pop()
-            return self._result(transcript=text, llm=llm, t0=t0, error=reply.error or reply.status,
-                                say="Sorry, I had trouble with that. Could you say it again?")
-        call, err = self._parse(reply.text)
+        fast = (fastpath.answer(text, self.asked, self.state, self.type_values)
+                if self.use_fast_path else None)
+        if fast is not None:                   # answered by code: no LLM call, no LLM timings
+            call, err, llm = dict(fast), "", {"fast_path": True}
+        else:
+            reply = self.backend.generate(user_message(self.form.compact(), self.asked, text),
+                                          system=self.system, json_schema=self.json_schema,
+                                          max_tokens=self.max_tokens)
+            llm = {"llm_prefill": reply.prefill_ms, "llm_decode": reply.decode_ms,
+                   "llm_wall": reply.latency_ms, "device": reply.backend, "model": reply.model,
+                   "prefill_tokens": reply.prefill_tokens, "decode_tokens": reply.decode_tokens}
+            if reply.status != "ok":
+                self.heard.pop()
+                return self._result(transcript=text, llm=llm, t0=t0, error=reply.error or reply.status,
+                                    say="Sorry, I had trouble with that. Could you say it again?")
+            call, err = self._parse(reply.text)
         tool, args = call["tool"], call.get("args") or {}
 
         if tool == "cancel_report":
@@ -222,6 +229,7 @@ class Dialog:
             "devices": {"stt": None, "llm": llm.get("device"), "tts": None},
             "llm": {"model": llm.get("model"), "prefill_tokens": llm.get("prefill_tokens"),
                     "decode_tokens": llm.get("decode_tokens")},
+            "fast_path": bool(llm.get("fast_path")),
             "error": error,
         }
         return self.last
