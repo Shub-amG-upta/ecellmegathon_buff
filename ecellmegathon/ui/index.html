@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Incident Report Assistant</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>Incident Report Assistant</h1>
+    <span class="sub">On-device · Snapdragon QIDK · no cloud</span>
+  </div>
+  <div class="top-right">
+    <span id="state" class="badge" data-state="collecting">collecting</span>
+    <button id="reset" class="ghost" type="button">New report</button>
+  </div>
+</header>
+
+<main class="grid">
+  <!-- Conversation -->
+  <section class="card convo" aria-label="Conversation">
+    <h2>Conversation</h2>
+    <ol id="chat" class="chat" aria-live="polite"></ol>
+
+    <div class="talk">
+      <button id="ptt" class="ptt" type="button" aria-describedby="ptt-hint">
+        <span class="ptt-dot" aria-hidden="true"></span>
+        <span id="ptt-label">Hold to talk</span>
+      </button>
+      <div class="level" aria-hidden="true"><div id="level-bar"></div></div>
+      <p id="ptt-hint" class="hint">Hold the button (or the Space bar) while you speak, then release.</p>
+    </div>
+
+    <form id="text-form" class="text-form" autocomplete="off">
+      <label for="text-in" class="sr-only">Type instead</label>
+      <input id="text-in" type="text" placeholder="…or type what happened">
+      <button type="submit">Send</button>
+    </form>
+    <p id="error" class="error" role="alert" hidden></p>
+  </section>
+
+  <!-- Live form -->
+  <section class="card" aria-label="Incident report form">
+    <div class="card-head">
+      <h2>Report</h2>
+      <span id="report-id" class="muted"></span>
+    </div>
+    <p class="hint" id="form-hint">Fields fill in as you talk. <span class="req">*</span> = mandatory.</p>
+    <dl id="form" class="form"></dl>
+  </section>
+
+  <!-- Latency -->
+  <section class="card" aria-label="Latency">
+    <h2>Latency (last turn)</h2>
+    <table class="latency">
+      <thead><tr><th>stage</th><th>device</th><th class="num">ms</th></tr></thead>
+      <tbody id="latency"></tbody>
+    </table>
+    <p class="hint">Measured per turn. "—" means not measured, never zero.</p>
+  </section>
+
+  <!-- Tool calls -->
+  <section class="card" aria-label="Tool calls">
+    <h2>Tool calls</h2>
+    <ol id="tools" class="tools"></ol>
+  </section>
+
+  <!-- NPU proof -->
+  <section class="card" aria-label="On-device proof">
+    <div class="card-head">
+      <h2>On-device proof</h2>
+      <button id="proof-refresh" class="ghost small" type="button">Refresh</button>
+    </div>
+    <div id="proof"></div>
+  </section>
+
+  <!-- Reports -->
+  <section class="card" aria-label="Submitted reports">
+    <div class="card-head">
+      <h2>Submitted reports</h2>
+      <button id="reports-refresh" class="ghost small" type="button">Refresh</button>
+    </div>
+    <ul id="reports" class="reports"></ul>
+    <pre id="report-view" class="json" hidden></pre>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
