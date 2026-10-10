@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Monitor</title>
+<style>
+:root {
+  --bg: #f4f5f7; --card: #fff; --ink: #15171c; --muted: #6b7280; --line: #e2e4e9;
+  --llm: #7c3aed; --stt: #0891b2; --tts: #16a34a; --board: #b45309; --err: #dc2626;
+  --pre: #a78bfa; --dec: #7c3aed; --out: #d1d5db; --code: #f1f2f5;
+  --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1015; --card: #171a21; --ink: #e7e9ee; --muted: #9aa1ad; --line: #2a2f3a;
+  --llm: #b794f6; --stt: #22d3ee; --tts: #4ade80; --board: #fbbf24; --err: #f87171;
+  --pre: #6d28d9; --dec: #b794f6; --out: #3a3f4b; --code: #1f232c; } }
+:root[data-theme="dark"] {
+  --bg: #0e1015; --card: #171a21; --ink: #e7e9ee; --muted: #9aa1ad; --line: #2a2f3a;
+  --llm: #b794f6; --stt: #22d3ee; --tts: #4ade80; --board: #fbbf24; --err: #f87171;
+  --pre: #6d28d9; --dec: #b794f6; --out: #3a3f4b; --code: #1f232c; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, "Segoe UI", sans-serif; }
+header { position: sticky; top: 0; z-index: 2; background: var(--card); border-bottom: 1px solid var(--line);
+         padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+h1 { font-size: 1.05rem; margin: 0 8px 0 0; }
+.chip { border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; font-size: .82rem; white-space: nowrap; }
+.chip b { font-variant-numeric: tabular-nums; }
+.chip.ok { border-color: var(--tts); color: var(--tts); }
+.chip.bad { border-color: var(--err); color: var(--err); font-weight: 700; }
+.chip.warm { border-color: var(--board); color: var(--board); }
+main { max-width: 1200px; margin: 0 auto; padding: 12px 16px 40px; display: flex; flex-direction: column; gap: 12px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.where { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; }
+.where div { border-left: 3px solid var(--line); padding: 2px 10px; }
+.where .t { font-weight: 600; } .where .s { color: var(--muted); font-size: .82rem; overflow-wrap: anywhere; }
+.where .llm { border-color: var(--llm); } .where .stt { border-color: var(--stt); }
+.where .tts { border-color: var(--tts); } .where .lap { border-color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.stat .n { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat .l { color: var(--muted); font-size: .8rem; }
+.bar-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.bar-tools button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+                    border-radius: 7px; padding: 4px 11px; cursor: pointer; }
+.bar-tools button[aria-pressed="true"] { background: var(--ink); color: var(--card); border-color: var(--ink); }
+.bar-tools .grow { flex: 1; }
+#feed { display: flex; flex-direction: column; gap: 8px; }
+.ev { border-left: 4px solid var(--line); }
+.ev.llm { border-left-color: var(--llm); } .ev.stt { border-left-color: var(--stt); }
+.ev.tts { border-left-color: var(--tts); } .ev.board { border-left-color: var(--board); }
+.ev.err { border-left-color: var(--err); background: color-mix(in srgb, var(--err) 7%, var(--card)); }
+.ev .head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.ev .time { color: var(--muted); font-family: var(--mono); font-size: .8rem; }
+.ev .title { font-weight: 600; }
+.tag { font-size: .72rem; font-weight: 700; border-radius: 4px; padding: 0 6px; border: 1px solid currentColor; }
+.tag.llm { color: var(--llm); } .tag.stt { color: var(--stt); } .tag.tts { color: var(--tts); }
+.said { font-size: 1.08rem; margin: 6px 0 4px; overflow-wrap: anywhere; }
+.said::before { content: "“"; color: var(--muted); } .said::after { content: "”"; color: var(--muted); }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 2px 10px; font-size: .86rem; margin-top: 4px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; overflow-wrap: anywhere; }
+code, .code { font-family: var(--mono); font-size: .8rem; background: var(--code); border-radius: 5px; padding: 1px 5px; overflow-wrap: anywhere; }
+.timing { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 8px 0 3px; background: var(--code); }
+.timing span { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: .78rem; }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+.lines { margin: 4px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: .84rem; }
+.empty { color: var(--muted); text-align: center; padding: 30px; }
+@media (max-width: 600px) { .kv { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Live Monitor</h1>
+  <span class="chip" id="c-link">connecting…</span>
+  <span class="chip" id="c-llm">LLM server ?</span>
+  <span class="chip" id="c-npu">NPU ? °C</span>
+  <span class="chip" id="c-cpu">CPU ? °C</span>
+  <span class="chip" id="c-mem">free ? GiB</span>
+  <span class="chip" id="c-err">0 errors</span>
+</header>
+
+<main>
+  <section class="card" aria-label="Where each part runs">
+    <div class="where" id="where">
+      <div class="lap"><div class="t">Your laptop</div><div class="s">eval / app (dialog, gate, scoring), this monitor, adb</div></div>
+      <div class="llm"><div class="t">QIDK NPU: LLM</div><div class="s" id="w-llm">…</div></div>
+      <div class="stt"><div class="t">Speech to text</div><div class="s" id="w-stt">…</div></div>
+      <div class="tts"><div class="t">Text to speech</div><div class="s" id="w-tts">…</div></div>
+    </div>
+  </section>
+
+  <section class="card stats" aria-label="Totals">
+    <div class="stat"><div class="n" id="s-llm">0</div><div class="l">LLM calls</div></div>
+    <div class="stat"><div class="n" id="s-wall">–</div><div class="l">median LLM call (ms)</div></div>
+    <div class="stat"><div class="n" id="s-tok">–</div><div class="l">median decode (tok/s, NPU)</div></div>
+    <div class="stat"><div class="n" id="s-out">–</div><div class="l">median time outside the model (ms)</div></div>
+    <div class="stat"><div class="n" id="s-stt">0</div><div class="l">STT calls</div></div>
+    <div class="stat"><div class="n" id="s-tts">0</div><div class="l">TTS calls</div></div>
+  </section>
+
+  <div class="bar-tools" role="toolbar" aria-label="Filter">
+    <button type="button" data-f="all" aria-pressed="true">All</button>
+    <button type="button" data-f="llm" aria-pressed="false">LLM</button>
+    <button type="button" data-f="stt" aria-pressed="false">STT</button>
+    <button type="button" data-f="tts" aria-pressed="false">TTS</button>
+    <button type="button" data-f="board" aria-pressed="false">Board</button>
+    <button type="button" data-f="err" aria-pressed="false">Errors</button>
+    <span class="grow"></span>
+    <button type="button" id="pause" aria-pressed="false">Pause</button>
+  </div>
+
+  <div id="feed" aria-live="polite"><div class="empty">Waiting for calls… point the eval or the app at this monitor.</div></div>
+</main>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+let after = 0, filter = "all", paused = false, failures = 0;
+const all = [];                // every event received, oldest first
+const stats = { wall: [], tok: [], out: [] };
+const MAX_SHOWN = 400;
+
+function median(a) {
+  if (!a.length) return null;
+  const s = [...a].sort((x, y) => x - y);
+  return s[Math.floor(s.length / 2)];
+}
+const fmt = v => v == null ? "–" : Math.round(v).toLocaleString();
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+function kv(pairs) {
+  const dl = el("dl", "kv");
+  for (const [k, v, mono] of pairs) {
+    if (v == null || v === "") continue;
+    dl.append(el("dt", null, k));
+    const dd = el("dd");
+    dd.append(mono ? el("span", "code", String(v)) : document.createTextNode(String(v)));
+    dl.append(dd);
+  }
+  return dl;
+}
+
+function timingBar(d) {
+  const parts = [["prefill (read prompt)", d.prefill_ms, "var(--pre)"], ["decode (write answer)", d.decode_ms, "var(--dec)"],
+                 ["outside the model", d.outside_ms, "var(--out)"]];
+  const total = parts.reduce((n, p) => n + (p[1] || 0), 0);
+  const frag = document.createDocumentFragment();
+  if (!total) return frag;
+  const bar = el("div", "timing");
+  bar.setAttribute("role", "img");
+  bar.setAttribute("aria-label", parts.map(p => `${p[0]} ${fmt(p[1])} ms`).join(", "));
+  for (const [, ms, color] of parts) {
+    if (!ms) continue;
+    const s = el("span");
+    s.style.width = `${(ms / total) * 100}%`;
+    s.style.background = color;
+    bar.append(s);
+  }
+  const legend = el("div", "legend");
+  for (const [name, ms, color] of parts) {
+    const i = el("i"); i.style.background = color;
+    const span = el("span"); span.append(i, `${name} ${fmt(ms)} ms`);
+    legend.append(span);
+  }
+  frag.append(bar, legend);
+  return frag;
+}
+
+function card(ev) {
+  const d = ev.data || {};
+  const c = el("article", `card ev ${ev.kind}`);
+  c.dataset.kind = ev.kind;
+  const head = el("div", "head");
+  head.append(el("span", "time", ev.t));
+  if (["llm", "stt", "tts"].includes(ev.kind)) head.append(el("span", `tag ${ev.kind}`, d.where || ev.kind.toUpperCase()));
+  head.append(el("span", "title", ev.title));
+  c.append(head);
+
+  if (ev.kind === "llm" || (ev.kind === "err" && d.user)) {
+    c.append(el("div", "said", d.user || ""));
+    c.append(kv([["asked about", d.asked], ["form so far", d.form, true], ["model reply", d.reply, true],
+                 ["prompt tokens", d.new_tokens != null ? `${d.new_tokens} new + ${d.cached_tokens ?? 0} cached` : null],
+                 ["decode", d.decode_tokens != null && d.decode_ms ? `${d.decode_tokens} tokens · ${(d.decode_tokens / d.decode_ms * 1000).toFixed(1)} tok/s` : null],
+                 ["whole call", d.wall_ms != null ? `${fmt(d.wall_ms)} ms` : null]]));
+    c.append(timingBar(d));
+  } else if (ev.kind === "stt") {
+    c.append(el("div", "said", d.heard || ""));
+    c.append(kv([["audio in", d.audio_s != null ? `${d.audio_s} s` : null], ["whole call", `${fmt(d.wall_ms)} ms`]]));
+  } else if (ev.kind === "tts") {
+    c.append(el("div", "said", d.text || ""));
+    c.append(kv([["runs on", d.device], ["cache", d.cache], ["audio out", d.audio_s != null ? `${d.audio_s} s` : null],
+                 ["engine time", d.engine_ms ? `${d.engine_ms} ms` : "not reported"], ["whole call", `${fmt(d.wall_ms)} ms`]]));
+  } else if (ev.lines && ev.lines.length) {
+    const ul = el("ul", "lines");
+    for (const l of ev.lines) ul.append(el("li", null, l));
+    c.append(ul);
+  }
+  return c;
+}
+
+function visible(ev) { return filter === "all" || ev.kind === filter; }
+
+function render() {
+  const feed = $("feed");
+  feed.replaceChildren();
+  const shown = all.filter(visible).slice(-MAX_SHOWN).reverse();
+  if (!shown.length) { feed.append(el("div", "empty", "Nothing here yet.")); return; }
+  for (const ev of shown) feed.append(card(ev));
+}
+
+function addEvents(evs) {
+  for (const ev of evs) {
+    all.push(ev);
+    const d = ev.data || {};
+    if (ev.kind === "llm") {
+      if (d.wall_ms != null) stats.wall.push(d.wall_ms);
+      if (d.decode_tokens && d.decode_ms) stats.tok.push(d.decode_tokens / d.decode_ms * 1000);
+      if (d.outside_ms != null) stats.out.push(d.outside_ms);
+    }
+  }
+  if (all.length > 3000) all.splice(0, all.length - 3000);
+  $("s-wall").textContent = fmt(median(stats.wall));
+  const t = median(stats.tok);
+  $("s-tok").textContent = t == null ? "–" : t.toFixed(1);
+  $("s-out").textContent = fmt(median(stats.out));
+  if (!paused && evs.length) render();
+}
+
+function chip(id, text, cls) { const c = $(id); c.textContent = text; c.className = `chip ${cls || ""}`; }
+
+function renderState(s) {
+  const b = s.board || {};
+  if (b.alive === true) chip("c-llm", "LLM server running", "ok");
+  else if (b.alive === false) chip("c-llm", "LLM server NOT running", "bad");
+  else chip("c-llm", b.error ? `board: ${b.error}` : "board: waiting for first reading", b.error ? "bad" : "");
+  chip("c-npu", `NPU ${b.npu_c ?? "?"} °C`, b.npu_c >= 80 ? "bad" : b.npu_c >= 65 ? "warm" : "");
+  chip("c-cpu", `CPU ${b.cpu_c ?? "?"} °C`, b.cpu_c >= 85 ? "bad" : b.cpu_c >= 70 ? "warm" : "");
+  chip("c-mem", `free ${b.free_gib ?? "?"}`);
+  chip("c-err", `${s.errors || 0} errors`, s.errors ? "bad" : "");
+  $("s-llm").textContent = s.counts.llm; $("s-stt").textContent = s.counts.stt; $("s-tts").textContent = s.counts.tts;
+  const r = s.routes || {};
+  if (r.llm) $("w-llm").textContent = `${s.placement || r.llm.where} · monitor ${r.llm.listen} → ${r.llm.target}`;
+  if (r.stt) $("w-stt").textContent = `monitor ${r.stt.listen} → ${r.stt.target}`;
+  if (r.tts) $("w-tts").textContent = `monitor ${r.tts.listen} → ${r.tts.target}`;
+}
+
+async function poll() {
+  try {
+    const res = await fetch(`/api/events?after=${after}`, { cache: "no-store" });
+    const d = await res.json();
+    if (d.events.length) after = d.events[d.events.length - 1].id;
+    addEvents(d.events);
+    renderState(d.state);
+    failures = 0;
+    chip("c-link", `live · started ${d.state.started}`, "ok");
+  } catch (e) {
+    failures += 1;
+    chip("c-link", "monitor not reachable (is live_monitor running?)", "bad");
+  }
+  setTimeout(poll, failures ? 2000 : 700);
+}
+
+document.querySelectorAll("[data-f]").forEach(b => b.addEventListener("click", () => {
+  filter = b.dataset.f;
+  document.querySelectorAll("[data-f]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  render();
+}));
+$("pause").addEventListener("click", e => {
+  paused = !paused;
+  e.currentTarget.setAttribute("aria-pressed", String(paused));
+  e.currentTarget.textContent = paused ? "Resume" : "Pause";
+  if (!paused) render();
+});
+poll();
+</script>
+</body>
+</html>

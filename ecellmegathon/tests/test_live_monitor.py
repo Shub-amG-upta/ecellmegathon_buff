@@ -89,6 +89,29 @@ def test_proxy_passes_the_call_through_unchanged_and_logs_it(proxy):
     assert "LLM #" in text and 'user said: "medium"' in text
 
 
+def test_dashboard_serves_the_page_and_new_events(proxy):
+    url, _ = proxy
+    body = json.dumps({"messages": [{"role": "user", "content": user_message({}, None, "fire in Lab 4")}]}).encode()
+    urllib.request.urlopen(urllib.request.Request(f"{url}/v1/chat/completions", data=body, method="POST",
+                                                  headers={"Content-Type": "application/json"}), timeout=5).read()
+    dash = ThreadingHTTPServer(("127.0.0.1", 0), lm.make_dashboard())
+    threading.Thread(target=dash.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{dash.server_address[1]}"
+    try:
+        with urllib.request.urlopen(f"{base}/", timeout=5) as r:
+            assert b"Live Monitor" in r.read()
+        with urllib.request.urlopen(f"{base}/api/events?after=0", timeout=5) as r:
+            d = json.loads(r.read())
+        llm = [e for e in d["events"] if e["kind"] == "llm"][-1]
+        assert llm["data"]["user"] == "fire in Lab 4" and llm["data"]["decode_tokens"] == 7
+        last = d["events"][-1]["id"]
+        with urllib.request.urlopen(f"{base}/api/events?after={last}", timeout=5) as r:
+            assert json.loads(r.read())["events"] == []
+        assert "counts" in d["state"]
+    finally:
+        dash.shutdown()
+
+
 def test_proxy_reports_a_dead_target_as_502(tmp_path, monkeypatch):
     monkeypatch.setattr(lm, "LOG", tmp_path / "live.log")
     dead = ThreadingHTTPServer(("127.0.0.1", 0), Target)
