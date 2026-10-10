@@ -69,6 +69,8 @@ PY eval/smoke_llm.py --label LAPTOP --model <model>.gguf                        
 | `STT_TRIM` | `on` | `off` = don't cut silence before STT |
 | `TTS_SPLIT` | `off` | `on` = also serve `audio_parts` (needs §7 in the UI) |
 | `PORT` | `8000` | the app's port |
+| `POSTFIX` | `on` | the v4 post-model fixes (`app/postfix.py`) |
+| `PROMPT` | `1` (`2` on the v5 branch) | system prompt version |
 
 ## 5. Record the speech eval
 
@@ -140,3 +142,24 @@ Then the evals with `--label BOARD`, and the speed comparisons in §9 (`SPEC=1`,
 Only edit Track B files (`BUILD_PLAN.md` §5); ask before touching `app/server.py`, `app/dialog.py`, the schema or
 `eval/nlu/`. No cloud APIs. Label every number LAPTOP or BOARD. Never commit recordings. Run the tests before every
 commit, and push your own branch.
+
+## 10. v4 and v5 on the board (rules: `eval/DECISION_v4_v5.md`, written before these runs)
+
+`v4` = v3 + post-model fixes (`POSTFIX=on`). `v5` = v4 + prompt v2 (`PROMPT=2`). Both branches contain the same
+code; the `v5` branch only switches the prompt default. Any version can be run from either branch with the
+switches, so check out `v5` and run all of them:
+
+```
+git fetch origin && git checkout v5
+EVAL_HEAT_PAUSE=90:80 POSTFIX=on PROMPT=1 PY benchmarks/run_bench.py --tag v4 --runs 2
+EVAL_HEAT_PAUSE=90:80 POSTFIX=on PROMPT=2 PY benchmarks/run_bench.py --tag v5 --runs 2
+EVAL_HEAT_PAUSE=90:80 COOL_CPU=1 PROMPT=2 PY benchmarks/run_bench.py --tag v5-coolcpu --runs 2   # on the kept one
+EVAL_PACE=4 EVAL_HEAT_PAUSE=90:80 PROMPT=2 PY benchmarks/run_bench.py --tag v5-paced --runs 1      # realistic load
+PY benchmarks/compare.py                   # the table
+PY benchmarks/analyze.py <run.json> --compare <other run.json> --out <file.md>   # the detailed report
+```
+
+PowerShell: set each variable first, e.g. `$env:POSTFIX='on'; $env:PROMPT='2'; $env:EVAL_HEAT_PAUSE='90:80'`.
+The eval result records `postfix`, `prompt` and `throttle` (pauses, NPU peak); `COOL_CPU` shows in the server
+command saved by run_bench. **Use the same cooling (fan) for every run you compare, and write it down.**
+`python -m board.board temp` now also prints Android's thermal status (NONE … SHUTDOWN).
