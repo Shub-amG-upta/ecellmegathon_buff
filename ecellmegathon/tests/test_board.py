@@ -109,3 +109,22 @@ def test_context_size_is_2048_unless_asked_and_bounded(monkeypatch):
     assert board.start_lane("npu", name, ctx=2048)["ctx"] == 2048
     with pytest.raises(ValueError):
         board.start_lane("npu", name, ctx=64)
+
+
+def test_copy_ahead_decoding_is_off_unless_asked_and_checked_on_the_board(monkeypatch):
+    assert "--spec-type" not in board.lane_command("npu", "m.gguf")
+    cmd = board.lane_command("npu", "m.gguf", spec=True)
+    assert "--spec-type ngram-simple --spec-ngram-simple-size-n 3 --spec-ngram-simple-size-m 8" in cmd
+    name = "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf"
+    sha = board.CANDIDATES[name]
+
+    def fake(help_text):
+        def run(*args, serial="", timeout=60):
+            out = f"{sha}  x\n" if "sha256sum" in args[-1] else (help_text if "--help" in args[-1] else "")
+            return subprocess.CompletedProcess(args, 0, out, "")
+        return run
+    monkeypatch.setattr(board, "_adb", fake("usage ... --spec-type ... (no ngram-simple sizes)"))
+    with pytest.raises(RuntimeError):
+        board.start_lane("npu", name, spec=True)                 # older build: refuse, don't guess
+    monkeypatch.setattr(board, "_adb", fake("--spec-ngram-simple-size-n N ..."))
+    assert board.start_lane("npu", name, spec=True)["spec"] is True
