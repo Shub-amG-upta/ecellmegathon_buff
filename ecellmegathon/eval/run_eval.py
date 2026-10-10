@@ -4,6 +4,7 @@ Extraction eval on eval/nlu/cases.jsonl (65 dialogs, 250 turns; rules in eval/nl
   .venv/bin/python eval/run_eval.py --label LAPTOP                     # LLM=llamaserver in env
   .venv/bin/python eval/run_eval.py --label BOARD --split dev
   .venv/bin/python eval/run_eval.py --label ORACLE --backend oracle   # scorer self-check: must be 100%
+  .venv/bin/python eval/run_eval.py --label LAPTOP --audio eval/audio  # recordings: typed vs spoken
 
 Two modes (both by default; --mode picks one):
   teacher-forced  each turn starts from its gold `form_before` and `asked`: one LLM call per turn, scored
@@ -17,6 +18,10 @@ locked: it runs only with --split test, and only after the decision rules are
 written down (PLAN.md, M4). Run each configuration twice: temperature-0 replies
 drift between server launches.
 
+--audio DIR scores recordings named <case>_t<turn>_<speaker>.wav (BUILD_PLAN §4.5): each clip goes
+through app/voice.py, then the same teacher-forced path, next to the typed text of the same turns.
+Per speaker: how many gold values survive STT (no LLM involved), and tool / field accuracy typed -> spoken.
+
 Scoring (LABELING.md)
   tool            the right tool for the turn
   field           per gold field: enums exact or in accept; text by content words against gold or any
@@ -29,6 +34,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import statistics
 import sys
 import tempfile
@@ -143,23 +149,30 @@ class Oracle:
 
 
 # ---- the two modes ------------------------------------------------------------
-def teacher_forced(cases, backend) -> list[dict]:
+def teacher_forced(cases, backend, said: dict | None = None, only: set | None = None) -> list[dict]:
+    """One LLM call per turn from its gold form_before. `said` replaces what the
+    user said for some turns ({(case, i): text}, e.g. STT transcripts); `only`
+    limits the turns scored. Earlier turns stay as typed (teacher forcing)."""
     out = []
+    said = said or {}
     with tempfile.TemporaryDirectory() as tmp:
         d = Dialog(backend, report_dir=Path(tmp))
         for c in cases:
             heard = []
             for t in c["turns"]:
-                heard.append(t["user"])
+                text = said.get((c["id"], t["i"]), t["user"])
+                heard.append(text)
+                if only is not None and (c["id"], t["i"]) not in only:
+                    continue
                 d.reset()
                 d.form.apply(t["form_before"])
-                reply = backend.generate(user_message(d.form.compact(), t["asked"], t["user"]),
+                reply = backend.generate(user_message(d.form.compact(), t["asked"], text),
                                          system=d.system, json_schema=d.json_schema,
                                          max_tokens=d.max_tokens)
                 call, err = d._parse(reply.text) if reply.status == "ok" else ({"tool": None}, reply.error)
                 kept, dropped = gated(call, " ".join(heard))
                 gold = t["gold"]
-                out.append({"case": c["id"], "turn": t["i"], "user": t["user"], "asked": t["asked"],
+                out.append({"case": c["id"], "turn": t["i"], "user": text, "asked": t["asked"],
                             "gold_tool": gold["tool"], "pred_tool": call.get("tool"),
                             **score_args(kept if call.get("tool") == "update_report" else {},
                                          gold["args"], c.get("accept", {})),
@@ -186,6 +199,97 @@ def free_running(cases, backend) -> list[dict]:
                         "state_ok": d.state == ended if ended else True,
                         "missing": [f["name"] for f in d.form.missing()]})
     return out
+
+
+# ---- audio: the same turns, spoken ---------------------------------------------
+AUDIO_NAME = re.compile(r"^(?P<case>[a-z]+-\d+)_t(?P<turn>\d+)_(?P<speaker>[A-Za-z0-9_-]+)\.wav$")
+
+
+def find_audio(audio_dir: Path, cases: list[dict]) -> dict:
+    """{speaker: {(case, turn index): path}} for files named <case>_t<turn from 1>_<speaker>.wav
+    (BUILD_PLAN §4.5) whose turn is in `cases`. Files for other splits are ignored."""
+    known = {(c["id"], t["i"]) for c in cases for t in c["turns"]}
+    out: dict = {}
+    for f in sorted(Path(audio_dir).glob("*.wav")):
+        m = AUDIO_NAME.match(f.name)
+        if m and (m["case"], int(m["turn"]) - 1) in known:
+            out.setdefault(m["speaker"], {})[(m["case"], int(m["turn"]) - 1)] = f
+    return out
+
+
+def survival(cases: list[dict], said: dict) -> dict:
+    """Model-free: of the gold text values in these turns (location, time, people,
+    equipment, actions, witnesses), how many are still in the transcript? This is
+    the damage STT does before the LLM sees anything."""
+    total = kept = 0
+    lost = []
+    for c in cases:
+        for t in c["turns"]:
+            text = said.get((c["id"], t["i"]))
+            if text is None:
+                continue
+            for k, v in t["gold"]["args"].items():
+                if k in ENUMS:
+                    continue
+                for item in (v if isinstance(v, list) else [v]):
+                    total += 1
+                    if gate.support(item, text) >= gate.SUPPORT_THRESHOLD:
+                        kept += 1
+                    else:
+                        lost.append({"case": c["id"], "turn": t["i"], "field": k, "value": item, "heard": text})
+    return {"values": total, "survived": kept,
+            "rate": round(kept / total, 3) if total else None, "lost": lost}
+
+
+def _acc(rows: list[dict]) -> dict:
+    fields = [f["ok"] for r in rows for f in r["fields"].values()]
+    return {"turns": len(rows),
+            "tool": round(sum(r["gold_tool"] == r["pred_tool"] for r in rows) / len(rows), 3) if rows else None,
+            "field": round(sum(fields) / len(fields), 3) if fields else None}
+
+
+def audio_eval(cases, backend, audio_dir: Path, voice_mod, vocab: str = "") -> dict:
+    """Per speaker: transcribe each clip, score the transcripts through the same
+    teacher-forced path, and set them next to the typed text of the same turns."""
+    by_speaker = find_audio(audio_dir, cases)
+    if not by_speaker:
+        raise SystemExit(f"no recordings for these cases in {audio_dir} "
+                         f"(names: <case>_t<turn>_<speaker>.wav, BUILD_PLAN §4.5)")
+    all_keys = {k for files in by_speaker.values() for k in files}
+    typed = {(r["case"], r["turn"]): r for r in teacher_forced(cases, backend, only=all_keys)}
+    speakers = {}
+    for spk, files in sorted(by_speaker.items()):
+        said, clips = {}, []
+        for key, path in sorted(files.items()):
+            r = voice_mod.transcribe(path.read_bytes(), prompt=vocab)
+            said[key] = r.text
+            clips.append({"case": key[0], "turn": key[1], "file": path.name, "heard": r.text,
+                          "stt_wall_ms": r.wall_ms, "stt_ms": r.stt_ms, "device": r.device,
+                          "model": r.model, "error": r.error})
+        spoken = teacher_forced(cases, backend, said=said, only=set(files))
+        speakers[spk] = {
+            "clips": len(files), "stt_errors": sum(bool(c["error"]) for c in clips),
+            "survival": survival(cases, said),
+            "spoken": _acc(spoken), "typed": _acc([typed[k] for k in sorted(files)]),
+            "stt_wall_ms": _stat([c["stt_wall_ms"] for c in clips]),
+            "stt_model": next((c["model"] for c in clips if c["model"]), None),
+            "stt_device": next((c["device"] for c in clips if c["device"]), None),
+            "clip_results": clips, "turns": spoken}
+    return speakers
+
+
+def print_audio(res: dict) -> None:
+    print(f"\n[{res['label']}] audio · split {res['split']} · LLM {res['model']} on {res['lane']} · {res['laptop_time']}")
+    print(f"  {'speaker':<16}{'clips':>6}{'survived':>10}{'tool typed -> spoken':>22}"
+          f"{'field typed -> spoken':>23}{'STT median ms':>15}")
+    for spk, r in res["audio"].items():
+        ty, sp = r["typed"], r["spoken"]
+        tool = f"{ty['tool']} -> {sp['tool']}"
+        field = f"{ty['field']} -> {sp['field']}"
+        med = (r["stt_wall_ms"] or {}).get("median")
+        print(f"  {spk:<16}{r['clips']:>6}{str(r['survival']['rate']):>10}{tool:>22}{field:>23}{str(med):>15}")
+        for x in r["survival"]["lost"][:5]:
+            print(f"     lost {x['case']}#{x['turn']} {x['field']}={x['value']!r} heard {x['heard']!r}")
 
 
 # ---- summary ------------------------------------------------------------------
@@ -268,6 +372,9 @@ def main() -> int:
     ap.add_argument("--split", choices=["dev", "test", "all"], default="dev",
                     help="dev includes the demo case; test is locked until the M4 rules exist")
     ap.add_argument("--mode", choices=["both", "teacher", "free"], default="both")
+    ap.add_argument("--audio", metavar="DIR", help="score recordings in DIR (BUILD_PLAN §4.5) instead "
+                    "of typed text; STT through app/voice.py (STT_URL)")
+    ap.add_argument("--no-vocab", action="store_true", help="--audio: don't pass data/vocab.txt to STT")
     ap.add_argument("--cases", default=str(CASES))
     ap.add_argument("--out", default=str(ROOT / "results"))
     a = ap.parse_args()
@@ -279,6 +386,20 @@ def main() -> int:
         backend = make_backend()
         if os.environ.get("LLM", "mock") == "mock" and a.label != "MOCK":
             raise SystemExit("LLM=mock: use --label MOCK")
+    if a.audio:
+        from app import voice
+        vocab_file = ROOT / "data" / "vocab.txt"
+        vocab = "" if a.no_vocab or not vocab_file.exists() else vocab_file.read_text()
+        res = summarise([], [], a.label, backend, a.split)
+        res["audio"] = audio_eval(cases, backend, Path(a.audio), voice, vocab)
+        res["vocab_prompt"] = bool(vocab)
+        print_audio(res)
+        out = Path(a.out)
+        out.mkdir(parents=True, exist_ok=True)
+        path = out / f"eval_audio_{a.label}_{a.split}_{time.strftime('%Y%m%d_%H%M%S')}.json"
+        path.write_text(json.dumps(res, indent=1, ensure_ascii=False))
+        print(f"  saved {path}")
+        return 0
     tf = teacher_forced(cases, backend) if a.mode in ("both", "teacher") else []
     fr = free_running(cases, backend) if a.mode in ("both", "free") else []
     res = summarise(tf, fr, a.label, backend, a.split)
