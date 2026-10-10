@@ -95,3 +95,84 @@ def severity_floor(incident_type: str | None, severity: str | None) -> str | Non
     if severity and floor and SEVERITY_ORDER.index(severity) < SEVERITY_ORDER.index(floor):
         return floor
     return None
+
+
+# ---- severity fallback --------------------------------------------------------------------------
+# When the model leaves severity empty although the user stated it (seen on long first descriptions:
+# "... This is critical."), code fills the blank from the user's own words. It never changes a value
+# the model gave or one the form already has. Mapping (eval/nlu/LABELING.md, "Severity"): explicit
+# words only, a later statement overwrites, never inferred from injuries or the incident type.
+
+_LEVEL = {"minor": "low", "low": "low", "notserious": "low",
+          "medium": "medium", "moderate": "medium",
+          "high": "high", "serious": "high", "bad": "high",
+          "critical": "critical", "veryserious": "critical", "emergency": "critical"}
+_LEVEL_WORD = "|".join(sorted(_LEVEL, key=len, reverse=True))
+
+# A level word that is part of another noun phrase says nothing about the incident's severity.
+_NOT_SEVERITY = re.compile(
+    r"\bemergency\s+(?:room|ward|stop|exit|services?|team|number|department|vehicle|lights?|button|alarm|"
+    r"door|staircase|stairs|response|contact)s?\b"
+    r"|\bhigh\s+(?:voltage|shelf|shelves|ladder|rack|racks|pressure|level|temperature|speed|ceiling|up)\b"
+    r"|\blow\s+(?:voltage|level|wall|height|pressure|speed|light|ceiling)\b"
+    r"|\b(?:minor|bad|serious|critical)\s+(?:burns?|injur(?:y|ies)|cuts?|bruises?|wounds?|fractures?|damage)\b"
+    r"|\bcritical\s+condition\b")
+
+# Words that can open a statement about the incident just before the level word.
+_STATEMENT = (r"(?:it'?s|it\s+is|it\s+was|this\s+is|this\s+was|that'?s|that\s+is|i'?d\s+say|i\s+would\s+say|"
+              r"i\s+think(?:\s+it'?s)?|make\s+it|mark\s+it|put\s+it|call\s+it|severity(?:\s+(?:is|was|level))?:?)"
+              r"\s+(?:(?:really|quite|pretty|definitely|probably|very)\s+)?")
+# After a level word that opens a short answer, what may follow when there is no punctuation.
+_OPENERS = {"he", "she", "it", "they", "someone", "somebody", "we", "i", "nobody", "no", "not", "but", "and",
+            "because", "since", "so", "there", "there's", "its", "it's", "he's", "she's", "they're", "severity"}
+_LINKING = {"is", "was", "are", "were", "be", "been", "being", "seems", "seemed", "looks", "looked", "got",
+            "getting", "too", "very", "so", "quite", "pretty", "really"}
+
+
+def _prepare(text: str) -> str:
+    t = (text or "").lower().replace("\u2019", "'")
+    t = _NOT_SEVERITY.sub(" ~ ", t)                              # a noun phrase, not a severity
+    t = re.sub(r"\bnot\s+serious\b", "notserious", t)            # "not serious" IS low (LABELING.md)
+    t = re.sub(r"\bvery\s+serious\b", "veryserious", t)
+    t = re.sub(rf"\bnot\s+(?:(?:really|very|that)\s+)?(?:{_LEVEL_WORD})\b", " ~ ", t)   # "not high" cancels
+    return t
+
+
+def severity_from_words(text: str) -> str | None:
+    """The severity the user explicitly states in `text` (low / medium / high / critical), or None.
+
+    Only a level word used as a statement about the incident counts: on its own or opening a short
+    answer ("high", "critical, he can't move his leg", "Critical."), "<level> severity",
+    "severity (is) <level>", "it's / this is / I'd say <level>", "a <level> incident". Part of another
+    noun phrase ("emergency room", "high shelf", "bad burns", "critical condition") or negated ("not
+    high") does not count; "not serious" is low. If several levels are stated, the last one wins.
+    Works on raw STT text: any case, punctuation present or missing."""
+    t = _prepare(text)
+    found: list[tuple[int, str]] = []
+    lv = rf"(?P<lv>{_LEVEL_WORD})"
+    for pat in (rf"\b{lv}\s+severity\b",                                   # "medium severity"
+                rf"\b{_STATEMENT}{lv}\b",                                  # "it's critical", "severity high"
+                rf"\ban?\s+{lv}\s+(?:incident|accident|issue|problem|situation|case|one)\b"):
+        found += [(m.start("lv"), _LEVEL[m.group("lv")]) for m in re.finditer(pat, t)]
+    # A level word opening a sentence or clause: "Critical." / "high, he has a fracture" / "critical he can't".
+    for seg in re.finditer(r"[^.!?;,:\n]+", t):
+        words = seg.group().split()
+        if not words or words[0] not in _LEVEL:
+            continue
+        if len(words) == 1 or words[1] in _OPENERS or words[1] in _LEVEL:
+            found.append((seg.start() + seg.group().index(words[0]), _LEVEL[words[0]]))
+    # Raw STT with no punctuation at all: a level word appended at the very end ("... to hospital critical").
+    words = re.findall(r"[a-z'~]+", t)
+    if words and words[-1] in _LEVEL and not re.search(r"[.!?;,:]", text or "") \
+            and (len(words) == 1 or words[-2] not in _LINKING):
+        found.append((t.rfind(words[-1]), _LEVEL[words[-1]]))
+    return max(found)[1] if found else None
+
+
+def fill_severity(kept: dict, text: str, form_has_severity: bool) -> dict:
+    """Fill a blank severity from this turn's words: only when the model gave no `s` this turn and the
+    form has no severity yet. Never changes a value. Returns `kept`, with `s` added if it was filled."""
+    if "s" in kept or form_has_severity:
+        return kept
+    level = severity_from_words(text)
+    return {**kept, "s": level} if level else kept

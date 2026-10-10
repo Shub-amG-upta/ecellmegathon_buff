@@ -129,8 +129,10 @@ def score_args(pred: dict, gold: dict, accept: dict) -> dict:
             "extra": extras(pred, gold, accept)}
 
 
-def gated(call: dict, transcript: str) -> tuple[dict, list]:
-    return gate.check(dict(call.get("args") or {}), transcript)
+def gated(call: dict, transcript: str, text: str = "", form_has_severity: bool = True) -> tuple[dict, list]:
+    """The gate, then the severity fallback exactly as app/dialog.py applies it (this turn's text only)."""
+    kept, dropped = gate.check(dict(call.get("args") or {}), transcript)
+    return gate.fill_severity(kept, text, form_has_severity), dropped
 
 
 # ---- backends -----------------------------------------------------------------
@@ -179,7 +181,7 @@ def teacher_forced(cases, backend, said: dict | None = None, only: set | None = 
                     reply = backend.generate(user_message(d.form.compact(), t["asked"], text),
                                              system=d.system, max_tokens=d.max_tokens, **d.constrain())
                 call, err = d._parse(reply.text) if reply.status == "ok" else ({"tool": None}, reply.error)
-                kept, dropped = gated(call, " ".join(heard))
+                kept, dropped = gated(call, " ".join(heard), text, bool(t["form_before"].get("s")))
                 gold = t["gold"]
                 out.append({"case": c["id"], "turn": t["i"], "user": text, "asked": t["asked"],
                             "gold_tool": gold["tool"], "pred_tool": call.get("tool"),

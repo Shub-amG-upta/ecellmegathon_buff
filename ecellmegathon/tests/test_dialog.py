@@ -176,3 +176,36 @@ def test_gbnf_constraint_sends_the_grammar_instead_of_the_schema(tmp_path, monke
     monkeypatch.setenv("LLM_CONSTRAINT", "regex")
     with pytest.raises(ValueError):
         Dialog(b, clock=CLOCK, report_dir=tmp_path)
+
+
+# ---- severity fallback (code fills a blank severity the user stated) ----------------------------
+CV01 = ("One of the mechanics got his finger caught in the conveyor chain at the tyre line around 1:45. "
+        "We stopped the conveyor. Critical.")
+
+
+def test_stated_severity_fills_the_blank_and_the_dialog_reaches_review(make):
+    d, _ = make({"tool": "update_report", "args": {"t": "caught_in", "l": "tyre line", "d": "around 1:45"}})
+    r = d.turn(CV01)
+    assert r["form"]["severity"] == "critical"
+    assert r["state"] == "review" and r["missing"] == []
+
+
+def test_the_models_severity_is_never_changed(make):
+    d, _ = make({"tool": "update_report",
+                 "args": {"t": "caught_in", "s": "high", "l": "tyre line", "d": "around 1:45"}})
+    assert d.turn(CV01)["form"]["severity"] == "high"
+
+
+def test_a_severity_already_on_the_form_is_never_changed(tmp_path):
+    b = Scripted({"tool": "update_report", "args": {"t": "caught_in", "s": "low", "l": "tyre line"}},
+                 {"tool": "update_report", "args": {"d": "around 1:45"}})
+    d = Dialog(b, clock=CLOCK, report_dir=tmp_path, use_fast_path=False)
+    d.turn("A finger caught in the conveyor at the tyre line, low severity")
+    r = d.turn("it was around 1:45, honestly it's critical")
+    assert r["form"]["severity"] == "low"
+
+
+def test_no_stated_severity_leaves_it_blank_and_asks(make):
+    d, _ = make({"tool": "update_report", "args": {"t": "caught_in", "l": "tyre line", "d": "around 1:45"}})
+    r = d.turn("One of the mechanics got his finger caught in the conveyor at the tyre line around 1:45.")
+    assert r["form"]["severity"] is None and r["asked"] == "s"

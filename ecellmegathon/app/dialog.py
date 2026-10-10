@@ -117,6 +117,7 @@ class Dialog:
         dropped = []
         if tool == "update_report":
             kept, dropped = gate.check(args, " ".join(self.heard))
+            kept = gate.fill_severity(kept, text, bool(self.form.values.get("severity")))
             if kept:
                 if self.asked is None or not self.form.transcripts:
                     self.form.add_transcript(text)     # narration → description
