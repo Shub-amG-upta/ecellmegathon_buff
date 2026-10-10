@@ -17,7 +17,7 @@ from app.form import keyed_fields
 
 # Which system prompt: "1" (v1-v4) or "2" (v5: field definitions with "never" rules, type rules with
 # contrasting cases, a dense worked example). PROMPT=1|2 overrides it for comparisons.
-DEFAULT_PROMPT = "2"
+DEFAULT_PROMPT = "1"     # v6 = v4 + compact answers: prompt v2 (v5) failed its rule on the board (DECISION_v4_v5.md)
 
 _KEY_MEANING = {
     "t": "incident type",

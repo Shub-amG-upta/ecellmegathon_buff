@@ -25,7 +25,7 @@ TOOLS = ("update_report", "submit_report", "cancel_report", "no_op")
 # grammar forces anyway, and every forced token still costs a decode step on the NPU. Code turns a compact
 # answer back into the same tool call (to_tool_call), so everything after the model is unchanged.
 COMPACT_CODES = {"S": "submit_report", "C": "cancel_report", "N": "no_op"}
-DEFAULT_ANSWER = "compact"                               # v6 (ANSWER=full: v5 and earlier)
+DEFAULT_ANSWER = "compact"                               # v6 (ANSWER=full: v4 and earlier)
 
 
 def answer_mode() -> str:

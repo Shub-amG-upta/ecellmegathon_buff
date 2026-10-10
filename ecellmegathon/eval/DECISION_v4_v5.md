@@ -64,3 +64,35 @@ it, and accuracy identical (every field count). Otherwise leave it off and recor
 The final configuration and v3 on the **locked test split** (21 dialogs), one run each, reported as they come.
 No change after seeing them. This checks that the v4 rules, written after reading dev-split failures, were
 not fitted to the dev split.
+
+## Result (BOARD, recorded after the runs; PROVISIONAL: 1 run each, cooling not recorded)
+
+Runs by Sarthak, branch `v5` at `267e52e`, QIDK SM8750P, ctx 2048, fast path on, dev split,
+`EVAL_HEAT_PAUSE=90:80` (0 pauses; NPU peak 81.8 °C, CPU ~100–101 °C). Files:
+`benchmarks/2026-10-11_board_SM8750P/eval_BOARD_dev_v4_run1_*` and `…_v5_run1_*`; reports `ANALYSIS_v4_run1.md`,
+`ANALYSIS_v5_run1.md`. v3 = sevfill #1.
+
+| | v3 | **v4** | v5 |
+|---|---|---|---|
+| fields right /242 | 165 | **190** | 180 |
+| t · l · d · p · e · a · w | 33 · 35 · 29 · 7 · 6 · 12 · 1 | 33 · 41 · 39 · 9 · 8 · 12 · 6 | 31 · 38 · 40 · 9 · 4 · 10 · 6 |
+| tool right /157 | 153 | 153 | 153 |
+| ended right /44 | 34 | **41** | 39 |
+| turns with an extra value | 51 | 37 | 37 |
+| LLM ms per turn (avg) | 717 | 743 | 786 |
+
+**v4: KEEP. Passes all 6 rules.** 190/242 equals the offline projection exactly; the model's replies were
+identical to v3's, so the whole gain is the post-model fixes.
+
+**v5 (prompt v2): DROP. Fails rules 1, 2, 3, 4 and 6.** It changed 58 of 68 LLM answers: 17 fields fixed (type 6:
+theft → security ×2, slip vs fall, struck-by ×2, electrical), 27 broken. Causes found in the answers:
+(1) **copying from an example**: `ps-02` answered `"l":"pump room"`, which exists only in Example 5 of the prompt;
+(2) the type line that put `equipment_failure` and `lift` together: **lift → equipment_failure 3 times**;
+(3) the stricter equipment definition: equipment 8 → 4.
+
+**Next prompt attempt (if any):** prompt v1 plus only the type rules that fixed things (theft = security; slip
+vs fall from height; struck-by; electrical), `lift` on its own line, and no new examples (no copyable content).
+Measure as its own version.
+
+A second run of v4 is still owed by this file's rule (2 runs). Replies were identical across launches in every
+earlier pair on this board, so one run is very likely representative; it stays marked provisional until then.

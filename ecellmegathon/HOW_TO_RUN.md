@@ -70,7 +70,7 @@ PY eval/smoke_llm.py --label LAPTOP --model <model>.gguf                        
 | `TTS_SPLIT` | `off` | `on` = also serve `audio_parts` (needs §7 in the UI) |
 | `PORT` | `8000` | the app's port |
 | `POSTFIX` | `on` | the v4 post-model fixes (`app/postfix.py`) |
-| `PROMPT` | `1` (`2` on the v5 and v6 branches) | system prompt version |
+| `PROMPT` | `1` (`2` on the v5 branch) | system prompt version (v5's prompt v2 was dropped on the board) |
 | `ANSWER` | `full` (`compact` on the v6 branch) | how the model writes its answer: the full tool call, or only the fields object / `"S"` `"C"` `"N"` (code turns it back into the same tool call) |
 
 ## 5. Record the speech eval
@@ -167,7 +167,7 @@ command saved by run_bench. **Use the same cooling (fan) for every run you compa
 
 ## 11. v6 on the board (rule: `eval/DECISION_v6.md`, written before these runs)
 
-`v6` = v5 + compact answers: the model writes `{"t":"fire","l":"lab"}` instead of
+`v6` = **v4** + compact answers (v5's prompt v2 failed its rule, so v6 uses prompt v1): the model writes `{"t":"fire","l":"lab"}` instead of
 `{"tool":"update_report","args":{"t":"fire","l":"lab"}}`, and `"S"` / `"C"` / `"N"` for submit / cancel / nothing.
 Half of a full answer was that forced wrapper, and each forced token still costs ~48 ms of decoding on the NPU.
 Compare it with the configuration DECISION_v4_v5.md kept, in the same session, same cooling:
@@ -179,5 +179,5 @@ EVAL_HEAT_PAUSE=90:80 ANSWER=compact PY benchmarks/run_bench.py --tag v6 --runs 
 PY benchmarks/compare.py
 ```
 
-(Add `PROMPT=1` or `POSTFIX=off` to both lines if DECISION_v4_v5.md dropped v5 or v4.) The eval output records
+The baseline is v4 (`ANSWER=full`); v6 changes only `ANSWER`. The eval output records
 `answer`; compare `decode_tokens` per LLM call as well as accuracy.
