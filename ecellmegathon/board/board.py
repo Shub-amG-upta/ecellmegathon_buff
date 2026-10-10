@@ -4,7 +4,7 @@ QIDK helpers, host side: shells out to adb and talks HTTP to llama-server.
 Ported from FieldMind (bench/board.py), where every function here ran against
 the same board (SM8650). Dropped: the multi-lane campaign helpers.
 
-  python -m board.board start npu <model.gguf> [--ctx 2048] [--spec]   start llama-server on HTP0, forward :8080
+  python -m board.board start npu <model.gguf> [--ctx 2048] [--spec] [--cool-cpu]   start llama-server on HTP0
                                                  (--spec: copy-ahead speculative decoding, to compare)
   python -m board.board start cpu <model.gguf>   same model on the CPU, :8081 (comparison only)
   python -m board.board check npu                prove NPU placement from the startup log
@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -67,6 +68,13 @@ LANE_PORT = {"npu": 8080, "cpu": 8081}
 # (they were renamed in recent llama.cpp builds), then measure decode tok/s and field accuracy.
 SPEC_FLAGS = ("--spec-type ngram-simple --spec-ngram-simple-size-n {n} --spec-ngram-simple-size-m {m}")
 SPEC_N, SPEC_M = 3, 8
+
+# Cooler CPU (COOL_CPU=1 or --cool-cpu), off by default until measured. On the NPU lane the CPU only samples
+# tokens and checks the grammar, but llama-server starts a thread per core and busy-polls them (--poll 50):
+# in every board run the CPU ran as hot as the NPU (~104 °C) and the board rebooted once at 105.8 °C.
+# 2 threads and no polling should cut CPU heat; it may add a little per-token delay. Measure CPU °C,
+# decode tok/s and accuracy against the same run without it (eval/DECISION_v4_v5.md).
+COOL_CPU_FLAGS = "-t 2 -tb 2 --poll 0"
 
 # The only model files a lane may load, built by board/build_candidate_gguf.sh
 # (every matrix Q4_0, token embedding and output Q8_0). start_lane() checks the
@@ -112,7 +120,8 @@ def check_model(model_file: str, serial: str = "") -> str:
 
 
 def lane_command(lane: str, model_file: str, threads: int = 6,
-                 log_level: int | None = 4, ctx: int = CTX_SIZE, spec: bool = False) -> str:
+                 log_level: int | None = 4, ctx: int = CTX_SIZE, spec: bool = False,
+                 cool_cpu: bool = False) -> str:
     """The board-side shell command for one llama-server (no redirection, no &).
 
     -fit off      the server may not change the context or the offload itself
@@ -132,6 +141,7 @@ def lane_command(lane: str, model_file: str, threads: int = 6,
             f"-m {DEVICE_MODELS}/{model_file} --host 0.0.0.0 --port {LANE_PORT[lane]} "
             f"-c {ctx} -np {N_PARALLEL} {offload} -fit off --cache-ram 0"
             + (" " + SPEC_FLAGS.format(n=SPEC_N, m=SPEC_M) if spec else "")
+            + (" " + COOL_CPU_FLAGS if cool_cpu and lane == "npu" else "")
             + (f" -lv {log_level}" if log_level is not None else ""))
 
 
@@ -147,7 +157,8 @@ def server_has_flag(flag: str, serial: str = "") -> bool:
 
 
 def start_lane(lane: str, model_file: str, threads: int = 6, serial: str = "",
-               log_level: int | None = 4, ctx: int = CTX_SIZE, spec: bool = False) -> dict:
+               log_level: int | None = 4, ctx: int = CTX_SIZE, spec: bool = False,
+               cool_cpu: bool | None = None) -> dict:
     """Start llama-server in the background on the board and forward its port."""
     sha = check_model(model_file, serial)
     if not 512 <= ctx <= 32768:
@@ -155,12 +166,17 @@ def start_lane(lane: str, model_file: str, threads: int = 6, serial: str = "",
     if spec and not server_has_flag("--spec-ngram-simple-size-n", serial):
         raise RuntimeError("the board's llama-server has no --spec-type ngram-simple flags "
                            "(older build); start without SPEC=1")
-    cmd = lane_command(lane, model_file, threads, log_level, ctx, spec)
+    if cool_cpu is None:                                  # COOL_CPU=1 reaches run_bench.py's start_lane too
+        cool_cpu = os.environ.get("COOL_CPU", "0") == "1"
+    if cool_cpu and not server_has_flag("--poll", serial):
+        raise RuntimeError("the board's llama-server has no --poll flag; start without COOL_CPU=1")
+    cmd = lane_command(lane, model_file, threads, log_level, ctx, spec, cool_cpu)
     port = LANE_PORT[lane]
     _adb("shell", f"mkdir -p {DEVICE_LOGS}", serial=serial)
     _adb("shell", f"nohup sh -c '{cmd}' > {lane_log_path(lane)} 2>&1 &", serial=serial)
     _adb("forward", f"tcp:{port}", f"tcp:{port}", serial=serial)
     return {"lane": lane, "started_laptop_time": laptop_time(), "command": cmd, "ctx": ctx, "spec": spec,
+            "cool_cpu": cool_cpu,
             "model_file": model_file, "model_sha256": sha,
             "board_log": lane_log_path(lane), "url": f"http://localhost:{port}"}
 
@@ -228,13 +244,27 @@ def summarise(zones: list[tuple[str, float]]) -> dict:
             "n_zones": len(zones)}
 
 
+# Android's own thermal status (dumpsys thermalservice): 0 NONE … 6 SHUTDOWN. Logged next to the
+# temperatures to see when the system throttles, and to tell a thermal shutdown from other reboots.
+THERMAL_STATUS = ["NONE", "LIGHT", "MODERATE", "SEVERE", "CRITICAL", "EMERGENCY", "SHUTDOWN"]
+
+
+def parse_thermal_status(text: str) -> int | None:
+    m = re.search(r"(?:Current\s+)?[Tt]hermal\s+[Ss]tatus:?\s*(\d)", text)
+    return int(m.group(1)) if m else None
+
+
 def chip_temperature(serial: str = "", raw: bool = False) -> dict:
     try:
         p = _adb("shell", _ZONE_CMD, serial=serial, timeout=20)
+        st = _adb("shell", "dumpsys thermalservice 2>/dev/null | head -20", serial=serial, timeout=20)
     except (OSError, subprocess.TimeoutExpired) as e:
         return {"error": str(e)}
     zones = parse_zones(p.stdout)
     out = summarise(zones)
+    status = parse_thermal_status(st.stdout)
+    out["thermal_status"] = status
+    out["thermal_status_name"] = THERMAL_STATUS[status] if status is not None and status < 7 else None
     if raw:
         out["zones"] = zones
     return out
@@ -267,7 +297,7 @@ if __name__ == "__main__":
     a = sys.argv[1:]
     if len(a) >= 3 and a[0] == "start":
         ctx = int(a[a.index("--ctx") + 1]) if "--ctx" in a else CTX_SIZE
-        info = start_lane(a[1], a[2], ctx=ctx, spec="--spec" in a)
+        info = start_lane(a[1], a[2], ctx=ctx, spec="--spec" in a, cool_cpu=True if "--cool-cpu" in a else None)
         info["ready_after_s"] = wait_health(info["url"])
         print(json.dumps(info, indent=1))
     elif len(a) >= 2 and a[0] == "check":

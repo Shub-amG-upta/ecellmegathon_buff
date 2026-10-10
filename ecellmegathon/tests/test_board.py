@@ -128,3 +128,26 @@ def test_copy_ahead_decoding_is_off_unless_asked_and_checked_on_the_board(monkey
         board.start_lane("npu", name, spec=True)                 # older build: refuse, don't guess
     monkeypatch.setattr(board, "_adb", fake("--spec-ngram-simple-size-n N ..."))
     assert board.start_lane("npu", name, spec=True)["spec"] is True
+
+
+def test_cool_cpu_option_and_thermal_status(monkeypatch):
+    assert "--poll" not in board.lane_command("npu", "m.gguf")
+    assert board.lane_command("npu", "m.gguf", cool_cpu=True).endswith("-t 2 -tb 2 --poll 0 -lv 4")
+    assert "--poll" not in board.lane_command("cpu", "m.gguf", cool_cpu=True)    # NPU lane only
+    assert board.parse_thermal_status("Thermal Status: 3\n") == 3
+    assert board.parse_thermal_status("Current thermal status: 0") == 0
+    assert board.parse_thermal_status("") is None
+    name = "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf"
+    sha = board.CANDIDATES[name]
+
+    def fake(help_text):
+        def run(*args, serial="", timeout=60):
+            out = f"{sha}  x\n" if "sha256sum" in args[-1] else (help_text if "--help" in args[-1] else "")
+            return subprocess.CompletedProcess(args, 0, out, "")
+        return run
+    monkeypatch.setattr(board, "_adb", fake("usage: no polling flag here"))
+    monkeypatch.setenv("COOL_CPU", "1")
+    with pytest.raises(RuntimeError):
+        board.start_lane("npu", name)                        # env asks for it, the build can't: refuse
+    monkeypatch.setattr(board, "_adb", fake("--poll <0...100>"))
+    assert board.start_lane("npu", name)["cool_cpu"] is True

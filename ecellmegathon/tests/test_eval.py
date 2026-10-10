@@ -130,3 +130,35 @@ def test_eval_uses_the_fast_path_like_the_live_dialog_and_can_switch_it_off():
     assert on["answered_by_code"] > 100 and on["llm_calls"] + on["answered_by_code"] == 250
     assert off["answered_by_code"] == 0 and off["llm_calls"] == 250
     assert on["field_accuracy"] == off["field_accuracy"] == 1.0
+
+
+# ---- pacing and heat pause ----------------------------------------------------------------
+from run_eval import Throttled, throttle_from  # noqa: E402
+
+
+def test_heat_pause_waits_until_cool_and_pacing_sleeps():
+    temps = iter([95.0, 92.0, 85.0, 79.0, 70.0, 70.0, 70.0])
+    slept = []
+    inner = Oracle(ALL)
+    th = Throttled(inner, pace_s=2.0, hot=90.0, cool=80.0, every_s=0.0,
+                   read_temp=lambda: {"npu_max_c": next(temps), "cpu_max_c": 60.0}, sleep=slept.append)
+    user = ALL[0]["turns"][0]["user"]
+    th.generate(f"Form: {{}}\nAsked: none\nUser: {user}")
+    assert th.pauses == 1 and th.calls == 1
+    assert slept[0] == 2.0 and len(slept) == 1 + 2          # pace; 95 triggers; waits at 92 and 85; 79 ≤ 80 goes
+    th.generate(f"Form: {{}}\nAsked: none\nUser: {user}")     # 70 °C: no pause
+    assert th.pauses == 1 and th.calls == 2
+    s = th.summary()
+    assert s["npu_peak_c"] == 95.0 and s["heat_pause"] == [90.0, 80.0]
+
+
+def test_throttle_only_when_asked(monkeypatch):
+    b = Oracle(ALL)
+    monkeypatch.delenv("EVAL_PACE", raising=False)
+    monkeypatch.delenv("EVAL_HEAT_PAUSE", raising=False)
+    assert throttle_from(None, None, b) is b
+    monkeypatch.setenv("EVAL_HEAT_PAUSE", "90:80")
+    assert isinstance(throttle_from(None, None, b), Throttled)
+    import pytest
+    with pytest.raises(SystemExit):
+        throttle_from(None, "80:90", b)

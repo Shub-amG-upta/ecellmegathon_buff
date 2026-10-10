@@ -5,6 +5,7 @@
 #   board/up.sh [model.gguf]       default: Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf
 #   CTX=4096 board/up.sh           context size (default 2048, human decision 2026-10-10)
 #   SPEC=1 board/up.sh             copy-ahead speculative decoding (off by default; compare on the board)
+#   COOL_CPU=1 board/up.sh         2 CPU threads, no busy-polling (cooler CPU; off by default until measured)
 #
 # Exit 1 if the board isn't there or placement isn't confirmed: nothing measured
 # after a failed check counts as NPU.
@@ -22,7 +23,7 @@ $PY -m board.board temp | grep -E '"(t|cpu_max_c|npu_max_c)"'
 
 echo "== LLM on the NPU: $MODEL"
 $PY -m board.board stop >/dev/null || true
-$PY -m board.board start npu "$MODEL" ${CTX:+--ctx "$CTX"} ${SPEC:+--spec} | grep -E '"(url|model_sha256|ready_after_s|ctx|spec)"'
+$PY -m board.board start npu "$MODEL" ${CTX:+--ctx "$CTX"} ${SPEC:+--spec} | grep -E '"(url|model_sha256|ready_after_s|ctx|spec|cool_cpu)"'
 $PY -m board.board check npu || { echo "STOP: LLM placement not confirmed"; exit 1; }
 $PY -m board.board log npu | grep -E 'offloaded [0-9]+/[0-9]+ layers|HTP0 .*buffer size' || true
 

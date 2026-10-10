@@ -153,6 +153,78 @@ class Oracle:
         return LLMReply(text=json.dumps(call), backend="oracle", model="oracle")
 
 
+# ---- pacing and heat (thermal) ---------------------------------------------------
+class Throttled:
+    """Wraps the LLM backend: waits `pace_s` before each call (a paced run, like a real conversation),
+    and when the board's NPU is at or above `hot` °C, waits until it is back at or below `cool` °C
+    (or `max_wait_s`) before the call. The board is read through board.board.chip_temperature at most
+    every `every_s` seconds. Every pause and reading is recorded in the results (`throttle`).
+    EVAL_PACE / EVAL_HEAT_PAUSE="90:80" set it from the environment (so run_bench.py passes it on)."""
+
+    def __init__(self, inner, pace_s: float = 0.0, hot: float | None = None, cool: float | None = None,
+                 every_s: float = 10.0, max_wait_s: float = 600.0, read_temp=None, sleep=time.sleep):
+        self.inner, self.pace_s, self.hot, self.cool = inner, pace_s, hot, cool
+        self.every_s, self.max_wait_s, self.sleep = every_s, max_wait_s, sleep
+        self.read_temp = read_temp or _board_temp
+        self.lane, self.model_file = getattr(inner, "lane", "?"), getattr(inner, "model_file", "?")
+        self.calls = self.pauses = 0
+        self.paused_s = 0.0
+        self.samples: list[dict] = []
+        self._last_read, self._last_npu = -1e9, None
+
+    def _npu(self, force: bool = False):
+        now = time.monotonic()
+        if force or now - self._last_read >= self.every_s:
+            t = self.read_temp() or {}
+            self._last_read, self._last_npu = now, t.get("npu_max_c")
+            self.samples.append({"t": time.strftime("%H:%M:%S"), "npu_c": t.get("npu_max_c"),
+                                 "cpu_c": t.get("cpu_max_c"), "status": t.get("thermal_status_name")})
+        return self._last_npu
+
+    def generate(self, prompt, **kw):
+        if self.pace_s:
+            self.sleep(self.pace_s)
+        if self.hot is not None and (npu := self._npu()) is not None and npu >= self.hot:
+            self.pauses += 1
+            t0 = time.monotonic()
+            while (npu := self._npu(force=True)) is not None and npu > self.cool \
+                    and time.monotonic() - t0 < self.max_wait_s:
+                self.sleep(min(10.0, self.every_s))
+            self.paused_s += time.monotonic() - t0
+        self.calls += 1
+        return self.inner.generate(prompt, **kw)
+
+    def summary(self) -> dict:
+        npus = [x["npu_c"] for x in self.samples if x["npu_c"] is not None]
+        return {"pace_s": self.pace_s, "heat_pause": [self.hot, self.cool] if self.hot is not None else None,
+                "llm_calls": self.calls, "pauses": self.pauses, "paused_s": round(self.paused_s, 1),
+                "npu_peak_c": max(npus) if npus else None, "samples": self.samples}
+
+
+def _board_temp() -> dict:
+    try:
+        sys.path.insert(0, str(ROOT))
+        from board.board import chip_temperature
+        return chip_temperature()
+    except Exception:                                   # noqa: BLE001 (no board, no adb)
+        return {}
+
+
+def throttle_from(pace: str | None, heat: str | None, backend):
+    """A Throttled backend if pacing or a heat pause is asked for (flags first, then EVAL_PACE /
+    EVAL_HEAT_PAUSE), else the backend itself."""
+    pace = pace if pace is not None else os.environ.get("EVAL_PACE")
+    heat = heat if heat is not None else os.environ.get("EVAL_HEAT_PAUSE")
+    if not pace and not heat:
+        return backend
+    hot = cool = None
+    if heat:
+        hot, cool = (float(x) for x in heat.split(":"))
+        if cool >= hot:
+            raise SystemExit("--heat-pause HOT:COOL needs COOL below HOT, e.g. 90:80")
+    return Throttled(backend, pace_s=float(pace or 0), hot=hot, cool=cool)
+
+
 # ---- the two modes ------------------------------------------------------------
 def teacher_forced(cases, backend, said: dict | None = None, only: set | None = None,
                    fast: bool = True) -> list[dict]:
@@ -398,6 +470,9 @@ def main() -> int:
     ap.add_argument("--no-vocab", action="store_true", help="--audio: don't pass data/vocab.txt to STT")
     ap.add_argument("--no-fast-path", action="store_true", help="send every turn to the LLM (for comparison)")
     ap.add_argument("--no-trim", action="store_true", help="--audio: don't cut silence before STT")
+    ap.add_argument("--pace", help="seconds to wait before each LLM call (a paced run; env EVAL_PACE)")
+    ap.add_argument("--heat-pause", help="HOT:COOL °C, e.g. 90:80: pause when the NPU reaches HOT until it "
+                    "is back to COOL (reads the board over adb; env EVAL_HEAT_PAUSE)")
     ap.add_argument("--cases", default=str(CASES))
     ap.add_argument("--out", default=str(ROOT / "results"))
     a = ap.parse_args()
@@ -409,6 +484,7 @@ def main() -> int:
         backend = make_backend()
         if os.environ.get("LLM", "mock") == "mock" and a.label != "MOCK":
             raise SystemExit("LLM=mock: use --label MOCK")
+    backend = throttle_from(a.pace, a.heat_pause, backend)
     if a.audio:
         from app import voice
         vocab_file = ROOT / "data" / "vocab.txt"
@@ -430,6 +506,11 @@ def main() -> int:
     res = summarise(tf, fr, a.label, backend, a.split)
     res["fast_path"] = fast
     res["postfix"] = postfix.enabled()
+    if isinstance(backend, Throttled):
+        res["throttle"] = backend.summary()
+        t = res["throttle"]
+        print(f"  throttle: pace {t['pace_s']} s · heat pause {t['heat_pause']} · {t['pauses']} pauses, "
+              f"{t['paused_s']} s paused · NPU peak {t['npu_peak_c']} °C")
     res["constraint"] = Dialog(backend).constraint
     print_summary(res)
     out = Path(a.out)
