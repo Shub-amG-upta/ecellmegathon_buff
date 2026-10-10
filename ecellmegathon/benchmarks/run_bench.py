@@ -183,8 +183,11 @@ def main() -> int:
            "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
     git = git_info()
     failures = 0
-    for i in range(1, a.runs + 1):
-        log(f"===== run {i} of {a.runs} ({a.tag}) =====")
+    # Run numbers continue from the runs already saved under this tag in this folder.
+    first = 1 + sum(1 for f in out.glob("eval_BOARD_*.meta.json")
+                    if json.loads(f.read_text(encoding="utf-8")).get("tag") == a.tag)
+    for i in range(first, first + a.runs):
+        log(f"===== run {i} ({a.tag}; {i - first + 1} of {a.runs} in this session) =====")
         bb.stop_lanes()
         cool = cool_down(bb, a.cool_to, a.cool_timeout)
         server = start_server(bb, a.model, ctx, a.spec)
