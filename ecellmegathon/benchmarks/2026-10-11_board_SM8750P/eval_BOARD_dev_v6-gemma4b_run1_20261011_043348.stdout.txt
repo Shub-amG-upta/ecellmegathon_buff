@@ -1,0 +1,33 @@
+  throttle: pace 0.0 s · heat pause [90.0, 80.0] · 0 pauses, 0.0 s paused · NPU peak 64.7 °C
+
+[BOARD] split dev · model gemma-3-4b-it-Q4_0-pure-embq8.gguf on npu · 2026-10-11T04:51:43+0530
+  teacher-forced  157 turns · tool 0.949 · field 0.793 · turns with extra 38 · dropped by gate 12 · errors 0
+                  answered by code (fast path) 89 · LLM calls 68
+                  by field {'a': '14/27', 'd': '38/42', 'e': '7/20', 'l': '34/44', 'p': '13/18', 's': '41/42', 't': '39/43', 'w': '6/6'}
+                  prefill_ms  {'mean': 666.3, 'median': 660.2, 'n': 68}
+                  decode_ms   {'mean': 1890.0, 'median': 1714.3, 'n': 68}
+                  wall_ms     {'mean': 2600.6, 'median': 2408.8, 'n': 68}
+                  tokens {'prefill_tokens': {'mean': 494.6, 'median': 494.0, 'n': 68}, 'decode_tokens': {'mean': 32.1, 'median': 29.5, 'n': 68}}
+   ✗ ps-02#0 tool update_report (want update_report) wrong {'a': ['maintenance guys have isolated it']} extra {'a': ['maintenance guys have isolated it']}
+   ✗ ps-03#1 tool update_report (want submit_report) wrong {} extra {}
+   ✗ el-01#0 tool update_report (want update_report) wrong {'s': 'critical', 'e': None} extra {}
+   ✗ el-03#4 tool update_report (want update_report) wrong {'e': None} extra {}
+   ✗ sl-01#0 tool update_report (want update_report) wrong {'p': ['staff']} extra {'p': ['staff'], 'e': ['medical equipment', 'metal cabinet']}
+   ✗ sl-03#0 tool update_report (want update_report) wrong {'t': 'fall_height', 'p': ['housekeeping staff']} extra {'p': ['housekeeping staff'], 'a': ['mopping']}
+   ✗ na-01#0 tool update_report (want update_report) wrong {} extra {'s': 'critical', 'e': ['metal strip'], 'a': ['floor is still wet']}
+   ✗ na-01#2 tool update_report (want no_op) wrong {} extra {'t': 'medical'}
+   ✗ na-02#0 tool update_report (want update_report) wrong {'a': None} extra {'s': 'medium', 'p': ['resident']}
+   ✗ fk-01#0 tool update_report (want update_report) wrong {'e': None} extra {}
+   ✗ fk-03#0 tool update_report (want update_report) wrong {'e': ['rack', 'forklift']} extra {'e': ['rack']}
+   ✗ fk-03#3 tool update_report (want no_op) wrong {} extra {'t': 'equipment_failure', 'e': ['forklift mast']}
+   ✗ lw-01#0 tool update_report (want update_report) wrong {'e': ['ladder', 'concrete']} extra {'s': 'critical', 'e': ['ladder', 'concrete'], 'a': ['shut it', 'slipped', 'fell']}
+   ✗ lw-03#0 tool update_report (want update_report) wrong {'e': None} extra {}
+   ✗ ld-01#0 tool update_report (want update_report) wrong {'e': ['extension ladder', 'base', 'tie wires'], 'd': 'twenty minutes ago'} extra {'s': 'critical', 'e': ['extension ladder', 'base', 'tie wires']}
+   ✗ ld-02#0 tool update_report (want no_op) wrong {} extra {'t': 'fall_height', 'p': ['Rakesh']}
+   ✗ ld-02#1 tool update_report (want cancel_report) wrong {} extra {'t': 'equipment_failure'}
+   ✗ ch-01#0 tool update_report (want update_report) wrong {'a': ['checked vapour cleaning', 'pressurised valve', 'flushed eyes']} extra {'a': ['checked vapour cleaning', 'pressurised valve', 'flushed eyes']}
+   ✗ ch-03#0 tool update_report (want update_report) wrong {'l': None} extra {'s': 'high'}
+   ✗ ch-03#3 tool update_report (want update_report) wrong {'a': ['flushed his eyes', 'EHS informed']} extra {'a': ['flushed his eyes']}
+  free-running    44 dialogs · final field 0.733 · exact 4 · ended right 37/44 · with extra 27
+                  by field {'a': '8/26', 'd': '37/42', 'e': '7/20', 'l': '34/43', 'p': '13/18', 's': '36/42', 't': '35/43', 'w': '6/6'}
+  saved C:\Users\xitsp\Downloads\mega\wt-v6\ecellmegathon\results\eval_BOARD_dev_20261011_045143.json
