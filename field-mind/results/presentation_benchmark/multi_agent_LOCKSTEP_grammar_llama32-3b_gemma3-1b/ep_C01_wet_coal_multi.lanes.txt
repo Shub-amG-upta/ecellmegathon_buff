@@ -1,0 +1,12 @@
+== npu (Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf)
+0.00.287.452 I load_tensors: offloading output layer to GPU
+0.00.287.509 I load_tensors: offloading 27 repeating layers to GPU
+0.00.287.511 I load_tensors: offloaded 29/29 layers to GPU
+0.00.287.522 I load_tensors:         HTP0 model buffer size =  1911.90 MiB
+0.01.707.442 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 4096, kv_unified = 'false'
+== cpu (gemma-3-1b-it-qat-Q4_0-pure-embq8.gguf)
+0.00.026.072 I cmn  common_param: system_info: n_threads = 6 (n_threads_batch = 6) / 8 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | REPACK = 1 | 
+0.00.283.342 I load_tensors: offloading 0 repeating layers to GPU
+0.00.283.347 I load_tensors: offloaded 0/27 layers to GPU
+0.00.557.851 I cmn          init: llama threadpool init, n_threads = 6
+0.00.609.341 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 4096, kv_unified = 'false'

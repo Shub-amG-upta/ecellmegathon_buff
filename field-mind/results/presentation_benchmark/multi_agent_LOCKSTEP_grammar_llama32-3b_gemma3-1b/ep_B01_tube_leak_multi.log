@@ -1,0 +1,166 @@
+=== ep_B01_tube_leak  started 2026-10-05T23:24:13+0530  BACK TO BACK (lockstep)  backend llamaserver
+backend = llamaserver
+
+--- ep_B01_tube_leak  (B/tier C) truth: Water wall tube erosion and split
+  t  40 NORMAL        QUIET       All six parameters within band; balances close.            | -
+  t  51 ALARM         INVESTIGATE water balance residual +1.6 TPH (feed 66.3, steam 63.7, le | Seat leakage of the attemperator spray control
+  t  52 ALARM         INVESTIGATE water balance residual +1.7 TPH (feed 66.4, steam 63.8, le | Two independent failures in sequence: PA fan m
+  t  53 ALARM         INVESTIGATE water balance residual +1.8 TPH (feed 66.6, steam 63.9, le | Two independent failures in sequence: PA fan m
+  t  54 ALARM         INVESTIGATE water balance residual +1.9 TPH (feed 66.9, steam 64.1, le | Two independent failures in sequence: PA fan m
+  t  55 ALARM         INVESTIGATE water balance residual +1.9 TPH (feed 67.0, steam 64.2, le | Total loss of fuel input from a degraded conne
+  t  56 ALARM         INVESTIGATE water balance residual +2.0 TPH (feed 67.2, steam 64.2, le | Total loss of fuel input from a degraded conne
+  t  57 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.3, steam 64.2, le | Total loss of fuel input from a degraded conne
+  t  58 ALARM         INVESTIGATE water balance residual +2.0 TPH (feed 67.4, steam 64.2, le | Total loss of fuel input from a degraded conne
+  t  59 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.3, le | Total loss of fuel input from a degraded conne
+  t  60 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.3, le | Total loss of fuel input from a degraded conne
+  t  61 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.3, le | Total loss of fuel input from a degraded conne
+  t  62 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.6, steam 64.4, le | Seat leakage of the attemperator spray control
+  t  63 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.6, steam 64.4, le | Seat leakage of the attemperator spray control
+  t  64 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Seat leakage of the attemperator spray control
+  t  65 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Two independent failures in sequence: PA fan m
+  t  66 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.5, le | Loss of a stable light-up flame from degraded 
+  t  67 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Loss of a stable light-up flame from degraded 
+  t  68 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Loss of a stable light-up flame from degraded 
+  t  69 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Seat leakage of the attemperator spray control
+  t  70 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.9, steam 64.7, le | Seat leakage of the attemperator spray control
+  t  71 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.0, steam 64.8, le | Seat leakage of the attemperator spray control
+  t  72 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.0, steam 64.8, le | Seat leakage of the attemperator spray control
+  t  73 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.1, steam 64.9, le | Seat leakage of the attemperator spray control
+  t  74 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.2, steam 64.9, le | Seat leakage of the attemperator spray control
+  t  75 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.3, steam 65.1, le | Seat leakage of the attemperator spray control
+  t  76 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.4, steam 65.2, le | Loss of a stable light-up flame from degraded 
+  t  77 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.5, steam 65.3, le | Loss of a stable light-up flame from degraded 
+  t  78 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Loss of a stable light-up flame from degraded 
+  t  79 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Loss of a stable light-up flame from degraded 
+  t  80 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.8, steam 65.6, le | Loss of a stable light-up flame from degraded 
+  t  81 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.8, steam 65.6, le | Loss of a stable light-up flame from degraded 
+  t  82 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.8, steam 65.6, le | Loss of a stable light-up flame from degraded 
+  t  83 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.8, steam 65.5, le | Deflagration on re-ignition of an accumulated 
+  t  84 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.7, steam 65.5, le | Deflagration on re-ignition of an accumulated 
+  t  85 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Deflagration on re-ignition of an accumulated 
+  t  86 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Insufficient primary air velocity in one branc
+  t  87 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Insufficient primary air velocity in one branc
+  t  88 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Insufficient primary air velocity in one branc
+  t  89 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.5, steam 65.4, le | Insufficient primary air velocity in one branc
+  t  90 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Insufficient primary air velocity in one branc
+  t  91 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Insufficient primary air velocity in one branc
+  t  92 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.5, le | Insufficient primary air velocity in one branc
+  t  93 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Insufficient primary air velocity in one branc
+  t  94 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Insufficient primary air velocity in one branc
+  t  95 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Insufficient primary air velocity in one branc
+  t  96 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.8, steam 65.6, le | Insufficient primary air velocity in one branc
+  t  97 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.8, steam 65.6, le | Insufficient primary air velocity in one branc
+  t  98 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.9, steam 65.7, le | Insufficient primary air velocity in one branc
+  t  99 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.9, steam 65.7, le | Seat leakage of the attemperator spray control
+  t 100 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.9, steam 65.6, le | Seat leakage of the attemperator spray control
+  t 101 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.8, steam 65.5, le | Loss of a stable light-up flame from degraded 
+  t 102 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.7, steam 65.5, le | Deflagration on re-ignition of an accumulated 
+  t 103 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.6, steam 65.4, le | Deflagration on re-ignition of an accumulated 
+  t 104 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Deflagration on re-ignition of an accumulated 
+  t 105 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.5, steam 65.3, le | Two independent failures in sequence: PA fan m
+  t 106 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.4, steam 65.2, le | Two independent failures in sequence: PA fan m
+  t 107 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.3, steam 65.0, le | Two independent failures in sequence: PA fan m
+  t 108 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.1, steam 64.9, le | Two independent failures in sequence: PA fan m
+  t 109 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.0, steam 64.8, le | Two independent failures in sequence: PA fan m
+  t 110 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.9, steam 64.7, le | Two independent failures in sequence: PA fan m
+  t 111 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.7, le | Total loss of fuel input from a degraded conne
+  t 112 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Total loss of fuel input from a degraded conne
+  t 113 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Total loss of fuel input from a degraded conne
+  t 114 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Total loss of fuel input from a degraded conne
+  t 115 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Total loss of fuel input from a degraded conne
+  t 116 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.6, le | Total loss of fuel input from a degraded conne
+  t 117 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Total loss of fuel input from a degraded conne
+  t 118 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Seat leakage of the attemperator spray control
+  t 119 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Seat leakage of the attemperator spray control
+  t 120 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.6, steam 64.5, le | Seat leakage of the attemperator spray control
+  t 121 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.6, steam 64.4, le | Seat leakage of the attemperator spray control
+  t 122 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.4, le | Deflagration on re-ignition of an accumulated 
+  t 123 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.3, le | Deflagration on re-ignition of an accumulated 
+  t 124 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.4, steam 64.2, le | Deflagration on re-ignition of an accumulated 
+  t 125 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.3, steam 64.1, le | Deflagration on re-ignition of an accumulated 
+  t 126 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.3, steam 64.1, le | Seat leakage of the attemperator spray control
+  t 127 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.2, steam 64.1, le | Seat leakage of the attemperator spray control
+  t 128 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.1, le | Seat leakage of the attemperator spray control
+  t 129 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Seat leakage of the attemperator spray control
+  t 130 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Fireside erosion of a water wall tube by circu
+  t 131 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 132 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 133 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 134 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 64.0, le | Seat leakage of the attemperator spray control
+  t 135 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 64.0, le | Seat leakage of the attemperator spray control
+  t 136 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 137 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Fireside erosion of a water wall tube by circu
+  t 138 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 64.0, le | Fireside erosion of a water wall tube by circu
+  t 139 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Insufficient primary air velocity in one branc
+  t 140 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Insufficient primary air velocity in one branc
+  t 141 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 64.0, le | Insufficient primary air velocity in one branc
+  t 142 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.1, steam 64.0, le | Insufficient primary air velocity in one branc
+  t 143 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.1, steam 64.0, le | Insufficient primary air velocity in one branc
+  t 144 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Insufficient primary air velocity in one branc
+  t 145 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.8, le | Insufficient primary air velocity in one branc
+  t 146 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.0, steam 63.8, le | Insufficient primary air velocity in one branc
+  t 147 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 66.9, steam 63.7, le | Fireside erosion of a water wall tube by circu
+  t 148 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.9, steam 63.7, le | Insufficient primary air velocity in one branc
+  t 149 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.9, steam 63.7, le | Fireside erosion of a water wall tube by circu
+  t 150 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.9, steam 63.8, le | Fireside erosion of a water wall tube by circu
+  t 151 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.0, steam 63.8, le | Fireside erosion of a water wall tube by circu
+  t 152 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.0, steam 63.8, le | Deflagration on re-ignition of an accumulated 
+  t 153 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Deflagration on re-ignition of an accumulated 
+  t 154 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Insufficient primary air velocity in one branc
+  t 155 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Insufficient primary air velocity in one branc
+  t 156 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Insufficient primary air velocity in one branc
+  t 157 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 63.9, le | Insufficient primary air velocity in one branc
+  t 158 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 67.1, steam 63.9, le | Insufficient primary air velocity in one branc
+  t 159 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.0, steam 63.7, le | Insufficient primary air velocity in one branc
+  t 160 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.8, steam 63.6, le | Deflagration on re-ignition of an accumulated 
+  t 161 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.6, steam 63.4, le | Deflagration on re-ignition of an accumulated 
+  t 162 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.4, steam 63.2, le | Fireside erosion of a water wall tube by circu
+  t 163 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.2, steam 63.0, le | Fireside erosion of a water wall tube by circu
+  t 164 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.0, steam 62.8, le | Fireside erosion of a water wall tube by circu
+  t 165 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 65.9, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 166 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 65.8, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 167 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 65.8, steam 62.7, le | Seat leakage of the attemperator spray control
+  t 168 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 65.8, steam 62.7, le | Seat leakage of the attemperator spray control
+  t 169 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.9, steam 62.7, le | Seat leakage of the attemperator spray control
+  t 170 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.9, steam 62.8, le | Seat leakage of the attemperator spray control
+  t 171 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 65.9, steam 62.7, le | Seat leakage of the attemperator spray control
+  t 172 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 66.0, steam 62.7, le | Seat leakage of the attemperator spray control
+  t 173 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.9, steam 62.7, le | Seat leakage of the attemperator spray control
+  t 174 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.9, steam 62.7, le | Seat leakage of the attemperator spray control
+  t 175 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.8, steam 62.6, le | Seat leakage of the attemperator spray control
+  t 176 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.7, steam 62.5, le | Deflagration on re-ignition of an accumulated 
+  t 177 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.6, steam 62.4, le | Deflagration on re-ignition of an accumulated 
+  t 178 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.5, steam 62.3, le | Deflagration on re-ignition of an accumulated 
+  chip temp start {'t': '2026-10-05T23:24:17+0530', 'cpu_max_c': 43.0, 'npu_max_c': 42.4, 'n_zones': 75}  end {'t': '2026-10-05T23:28:16+0530', 'cpu_max_c': 67.8, 'npu_max_c': 65.6, 'n_zones': 75}
+ep_B01_tube_leak               F1=0.49 top1=0.125 top3=0.664 faith=1.00 llm=0.40 lead=- p95=4882ms
+
+==================================================================
+AGGREGATE
+==================================================================
+  n_episodes                         1
+  Q1_macro_f1                        0.494
+  Q2_top1                            0.125
+  Q2_top3                            0.664
+  Q2_n_episodes_scored               1
+  Q2_library                         {'n_episodes': 1, 'top1': 0.125, 'top3': 0.664, 'group_top1': 0.125, 'sep_named': 0.125, 'belief_top1': 0.555, 'belief_top1_tiefair': 0.326, 'belief_top3': 0.703, 'belief_group': 0.555, 'belief_group_tiefair': 0.326, 'belief_top_tie_rate': 0.492, 'low_conf_rate': None, 'low_conf_rate_decision': None}
+  Q2_heldout                         {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}
+  Q2_by_family                       {'A': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'B': {'library': {'n_episodes': 1, 'top1': 0.125, 'top3': 0.664, 'group_top1': 0.125, 'sep_named': 0.125, 'belief_top1': 0.555, 'belief_top1_tiefair': 0.326, 'belief_top3': 0.703, 'belief_group': 0.555, 'belief_group_tiefair': 0.326, 'belief_top_tie_rate': 0.492, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'C': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'D': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'E': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}}
+  Q2_heldout_cases_with_episodes     []
+  Q2_heldout_cases_without_episodes  ['RCA-02', 'RCA-06', 'RCA-08', 'RCA-12', 'RCA-17']
+  Q2_episodes_not_applicable         []
+  Q3_faithfulness                    1.0
+  Q3_rel                             0.879
+  Q4_action_precision                0.571
+  Q4_action_recall                   1.0
+  Q4_n_episodes_scored               1
+  Q5_fp_per_hour                     None
+  Q6_lead_time_min_mean              None
+  Q6_n_faults_caught_before_trip     0
+  S4_llm_invocation_rate             0.4
+  S7_deadline_miss_rate              0.0
+  constraints:
+    C1_hard_deadline_misses_zero     PASS
+    C3_top3_ge_0.85                  FAIL
+    C4_faithfulness_ge_0.95          PASS
+
+written to results/presentation_benchmark/multi_agent_LOCKSTEP_grammar_llama32-3b_gemma3-1b/tmp/summary_llamaserver_ep_B01_tube_leak.json

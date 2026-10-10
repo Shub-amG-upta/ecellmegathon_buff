@@ -1,0 +1,83 @@
+=== ep_C01_wet_coal  started 2026-10-05T23:31:52+0530  BACK TO BACK (lockstep)  backend llamaserver
+backend = llamaserver
+
+--- ep_C01_wet_coal  (C/tier C) truth: Wet coal bridging in the hopper
+  t  40 NORMAL        QUIET       All six parameters within band; balances close.            | -
+  t  48 DEVIATION     WATCH       drum_pressure -0.23 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  49 DEVIATION     WATCH       drum_pressure -0.36 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  50 DEVIATION     WATCH       drum_pressure -0.50 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  51 DEVIATION     WATCH       drum_pressure -0.66 kg/cm2/min sustained 5 min (noise MAD  | Insufficient primary air velocity in one branc
+  t  52 DEVIATION     WATCH       drum_pressure -0.83 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  53 DEVIATION     WATCH       drum_pressure -1.02 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  54 DEVIATION     WATCH       drum_pressure -1.18 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  55 DEVIATION     WATCH       drum_pressure -1.30 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  56 DEVIATION     WATCH       drum_pressure -1.38 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  57 DEVIATION     WATCH       drum_pressure -1.39 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  58 DEVIATION     WATCH       drum_pressure -1.34 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  59 DEVIATION     WATCH       drum_pressure -1.25 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  60 DEVIATION     WATCH       drum_pressure -1.16 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  61 DEVIATION     WATCH       drum_pressure -1.06 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  62 DEVIATION     WATCH       drum_pressure -0.95 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  63 DEVIATION     WATCH       drum_pressure -0.84 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  64 DEVIATION     WATCH       drum_pressure -0.73 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  65 DEVIATION     WATCH       drum_pressure -0.64 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  66 DEVIATION     WATCH       drum_pressure -0.54 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  67 DEVIATION     WATCH       drum_pressure -0.44 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  68 DEVIATION     WATCH       drum_pressure -0.34 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  69 DEVIATION     WATCH       drum_pressure -0.23 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  70 DEVIATION     WATCH       bed rising +1.45 degC/min with flat steam and flat pressur | Total loss of fuel input from a degraded conne
+  t  76 DEVIATION     WATCH       drum_pressure -0.18 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t  77 DEVIATION     WATCH       drum_pressure -0.22 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t  78 DEVIATION     WATCH       drum_pressure -0.25 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t  79 DEVIATION     WATCH       drum_pressure -0.25 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t  80 DEVIATION     WATCH       drum_pressure -0.23 kg/cm2/min sustained 5 min (noise MAD  | Deflagration on re-ignition of an accumulated 
+  t  81 DEVIATION     WATCH       drum_pressure -0.18 kg/cm2/min sustained 5 min (noise MAD  | Insufficient primary air velocity in one branc
+  t 120 NORMAL        QUIET       All six parameters within band; balances close.            | -
+  t 136 DEVIATION     WATCH       drum_pressure -0.20 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t 137 DEVIATION     WATCH       drum_pressure -0.25 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t 138 DEVIATION     WATCH       drum_pressure -0.29 kg/cm2/min sustained 5 min (noise MAD  | Two independent failures in sequence: PA fan m
+  t 139 DEVIATION     WATCH       drum_pressure -0.29 kg/cm2/min sustained 5 min (noise MAD  | Two independent failures in sequence: PA fan m
+  t 140 DEVIATION     WATCH       drum_pressure -0.26 kg/cm2/min sustained 5 min (noise MAD  | Two independent failures in sequence: PA fan m
+  t 141 DEVIATION     WATCH       drum_pressure -0.21 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t 142 DEVIATION     WATCH       drum_pressure -0.16 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t 160 NORMAL        QUIET       All six parameters within band; balances close.            | -
+  t 172 DEVIATION     WATCH       drum_pressure -0.16 kg/cm2/min sustained 5 min (noise MAD  | Two independent failures in sequence: PA fan m
+  t 173 DEVIATION     WATCH       drum_pressure -0.24 kg/cm2/min sustained 5 min (noise MAD  | Two independent failures in sequence: PA fan m
+  t 174 DEVIATION     WATCH       drum_pressure -0.31 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t 175 DEVIATION     WATCH       drum_pressure -0.36 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t 176 DEVIATION     WATCH       drum_pressure -0.38 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t 177 DEVIATION     WATCH       drum_pressure -0.37 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t 178 DEVIATION     WATCH       drum_pressure -0.34 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  chip temp start {'t': '2026-10-05T23:31:55+0530', 'cpu_max_c': 42.4, 'npu_max_c': 41.7, 'n_zones': 75}  end {'t': '2026-10-05T23:33:23+0530', 'cpu_max_c': 67.8, 'npu_max_c': 65.2, 'n_zones': 75}
+ep_C01_wet_coal                F1=0.46 top1=  0.0 top3=  0.0 faith=1.00 llm=0.15 lead=- p95=3020ms
+
+==================================================================
+AGGREGATE
+==================================================================
+  n_episodes                         1
+  Q1_macro_f1                        0.459
+  Q2_top1                            0.0
+  Q2_top3                            0.0
+  Q2_n_episodes_scored               1
+  Q2_library                         {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}
+  Q2_heldout                         {'n_episodes': 1, 'top1': None, 'top3': None, 'group_top1': 0.791, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': 0.977, 'belief_group_tiefair': 0.977, 'belief_top_tie_rate': 1.0, 'low_conf_rate': 1.0, 'low_conf_rate_decision': 0.256}
+  Q2_by_family                       {'A': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'B': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'C': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 1, 'top1': None, 'top3': None, 'group_top1': 0.791, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': 0.977, 'belief_group_tiefair': 0.977, 'belief_top_tie_rate': 1.0, 'low_conf_rate': 1.0, 'low_conf_rate_decision': 0.256}}, 'D': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'E': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}}
+  Q2_heldout_cases_with_episodes     ['RCA-06']
+  Q2_heldout_cases_without_episodes  ['RCA-02', 'RCA-08', 'RCA-12', 'RCA-17']
+  Q2_episodes_not_applicable         []
+  Q3_faithfulness                    1.0
+  Q3_rel                             0.639
+  Q4_action_precision                0.429
+  Q4_action_recall                   0.75
+  Q4_n_episodes_scored               1
+  Q5_fp_per_hour                     None
+  Q6_lead_time_min_mean              None
+  Q6_n_faults_caught_before_trip     0
+  S4_llm_invocation_rate             0.147
+  S7_deadline_miss_rate              0.0
+  constraints:
+    C1_hard_deadline_misses_zero     PASS
+    C3_top3_ge_0.85                  FAIL
+    C4_faithfulness_ge_0.95          PASS
+
+written to results/presentation_benchmark/multi_agent_LOCKSTEP_grammar_llama32-3b_gemma3-1b/tmp/summary_llamaserver_ep_C01_wet_coal.json

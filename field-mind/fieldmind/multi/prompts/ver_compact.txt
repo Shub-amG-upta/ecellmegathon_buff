@@ -1,0 +1,10 @@
+{rules}
+FACTS:
+{facts}
+
+CLAIMS:
+{claims}
+
+Answer format, JSON only. Judge every claim:
+{{"v":[[<claim line>,"p" (pass) or "f" (fail)],...],"c":<fact line of the strongest contradiction, or null>}}
+Example: {{"v":[[1,"p"],[2,"f"]],"c":3}}

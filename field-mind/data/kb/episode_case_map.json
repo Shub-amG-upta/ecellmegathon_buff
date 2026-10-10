@@ -1,0 +1,40 @@
+{
+  "_comment": "PROVISIONAL Stage 5 re-pointing of episode ground-truth from the old invented case ids to the real RCA library (data/kb/case_library.json) / hold-out set (data/kb/holdout.json). Mapped BY MECHANISM, never by which case scores better. Advisor must ratify this together with the hold-out split. `new` -> ground_truth.root_cause_id ; `actions` -> ground_truth.correct_action_ids (the mapped case's action set, from the same fixed catalogue; [] where the mechanism has no real case -> T2/T4/T6 all return applicable:false, NOT scored 0). `mapping`: library_exact | library_near | heldout_exact | heldout_approx | not_applicable.",
+  "generated_by": "reports/stage5_case_library.md",
+  "old_scheme": "10 invented cases RCA-01, RCA-01b, RCA-02..RCA-09 (matched the pre-Stage-4 simulator by construction)",
+  "new_scheme": "case_id RCA-NN == 'Case N' in docs/Boiler_Failure_Case_Studies_RCA.pdf",
+  "summary": {
+    "fault_episodes": 24,
+    "to_library_case": 13,
+    "to_heldout_case": 4,
+    "not_applicable_null": 7,
+    "heldout_cases_with_at_least_one_episode": ["RCA-06"],
+    "heldout_cases_with_no_episode": ["RCA-02", "RCA-08", "RCA-12", "RCA-17"]
+  },
+  "episodes": [
+    {"episode": "ep_A01_fcv_seize",          "old": "RCA-01",  "new": "RCA-01", "actions": ["ACT-014", "ACT-031", "ACT-021", "ACT-002"], "mapping": "library_exact", "reason": "FCV actuator stem seizure IS Case 1's physical root cause."},
+    {"episode": "ep_A02_fcv_seize_fast",     "old": "RCA-01",  "new": "RCA-01", "actions": ["ACT-014", "ACT-031", "ACT-021", "ACT-002"], "mapping": "library_exact", "reason": "Same, fast variant."},
+    {"episode": "ep_A05_fcv_caught",         "old": "RCA-01",  "new": "RCA-01", "actions": ["ACT-014", "ACT-031", "ACT-021", "ACT-002"], "mapping": "library_exact", "reason": "Same, operator intervened before trip."},
+    {"episode": "ep_A06_fcv_seize_repeat",   "old": "RCA-01",  "new": "RCA-01", "actions": ["ACT-014", "ACT-031", "ACT-021", "ACT-002"], "mapping": "library_exact", "reason": "Same, repeat occurrence."},
+    {"episode": "ep_A03_bfp_suction",        "old": "RCA-02",  "new": "RCA-16", "actions": ["ACT-005", "ACT-031", "ACT-040", "ACT-002"], "mapping": "library_exact", "reason": "BFP suction loss from low deaerator level IS Case 16's root cause (cavitation from NPSH loss)."},
+    {"episode": "ep_A04_strainer_choke",     "old": "RCA-03",  "new": null,     "actions": [], "mapping": "not_applicable", "reason": "Feed strainer choke as a PRIMARY cause is not a standalone RCA case. Case 1 H2 / Case 16 aggravating contributor only. T2/T4/T6 not-applicable. (ACT-007 would be the mechanism-appropriate action if the advisor prefers to score it.)"},
+    {"episode": "ep_B01_tube_leak",          "old": "RCA-04",  "new": "RCA-11", "actions": ["ACT-009", "ACT-040", "ACT-031", "ACT-002"], "mapping": "library_exact", "reason": "Water wall tube erosion progressing to a longitudinal split IS Case 11's root cause."},
+    {"episode": "ep_B02_tube_leak_fast",     "old": "RCA-04",  "new": "RCA-11", "actions": ["ACT-009", "ACT-040", "ACT-031", "ACT-002"], "mapping": "library_exact", "reason": "Same, fast variant."},
+    {"episode": "ep_B03_tube_leak_slow",     "old": "RCA-04",  "new": "RCA-11", "actions": ["ACT-009", "ACT-040", "ACT-031", "ACT-002"], "mapping": "library_exact", "reason": "Same, slow variant."},
+    {"episode": "ep_B05_tube_leak_repeat",   "old": "RCA-04",  "new": "RCA-11", "actions": ["ACT-009", "ACT-040", "ACT-031", "ACT-002"], "mapping": "library_exact", "reason": "Same, repeat occurrence."},
+    {"episode": "ep_B04_cbd_left_open",      "old": "RCA-01b", "new": null,     "actions": [], "mapping": "not_applicable", "reason": "CBD valve left open is Case 1's H3 contributory finding, not a standalone case. On the six tags its signature (water_balance SURPLUS + held level) is identical to RCA-11. T2/T4/T6 not-applicable. (ACT-021 would be the mechanism-appropriate action.)"},
+    {"episode": "ep_C01_wet_coal",           "old": "RCA-05",  "new": "RCA-06", "actions": ["ACT-011", "ACT-012", "ACT-040", "ACT-002"], "mapping": "heldout_exact", "reason": "Wet fines-heavy coal bridging -> intermittent feed -> outlet steam pressure sag at steady load IS Case 6's mechanism. RCA-06 is HELD OUT: generalisation test, T2/T4 measured over the scoreable subset."},
+    {"episode": "ep_C03_wet_coal_mild",      "old": "RCA-05",  "new": "RCA-06", "actions": ["ACT-011", "ACT-012", "ACT-040", "ACT-002"], "mapping": "heldout_exact", "reason": "Same, milder severity."},
+    {"episode": "ep_C06_wet_coal_repeat",    "old": "RCA-05",  "new": "RCA-06", "actions": ["ACT-011", "ACT-012", "ACT-040", "ACT-002"], "mapping": "heldout_exact", "reason": "Same, repeat occurrence."},
+    {"episode": "ep_C05_low_cv_coal",        "old": "RCA-05",  "new": "RCA-06", "actions": ["ACT-011", "ACT-018", "ACT-040", "ACT-002"], "mapping": "heldout_approx", "reason": "Low-CV coal below the feeder calibration -> heat-input deficit -> pressure sag. Symptom family is Case 6; the low-CV pathway itself is Case 8 H2. Actions include ACT-018 (request coal lab report) which the wet-coal episodes do not need."},
+    {"episode": "ep_C02_feeder_trip",        "old": "RCA-06",  "new": "RCA-14", "actions": ["ACT-012", "ACT-040", "ACT-002"], "mapping": "library_near", "reason": "Loss of coal feeder(s). Case 14 (common-cause MCC single-phasing, all six) is the only feeder-loss case; this episode is a single feeder on overload. Same lost function, narrower cause."},
+    {"episode": "ep_C04_feeder_trip_caught", "old": "RCA-06",  "new": "RCA-14", "actions": ["ACT-012", "ACT-040", "ACT-002"], "mapping": "library_near", "reason": "Same, feeder restarted."},
+    {"episode": "ep_D01_high_cv_coal",       "old": "RCA-07",  "new": "RCA-07", "actions": ["ACT-018", "ACT-019", "ACT-024", "ACT-002"], "mapping": "library_exact", "reason": "High-CV coal fired without feeder recalibration IS Case 7's initiating change and a named root-cause contributor."},
+    {"episode": "ep_D03_high_cv_severe",     "old": "RCA-07",  "new": "RCA-07", "actions": ["ACT-018", "ACT-019", "ACT-024", "ACT-002"], "mapping": "library_exact", "reason": "Same, severe severity."},
+    {"episode": "ep_D02_low_primary_air",    "old": "RCA-08",  "new": null,     "actions": [], "mapping": "not_applicable", "reason": "Low primary air RAISING bed temperature is Case 7's H2 contributory pathway, not a standalone case. Case 8 is the opposite polarity. Mapping to RCA-07 would score-game. T2/T4/T6 not-applicable. (ACT-019 would be the mechanism-appropriate action.)"},
+    {"episode": "ep_D04_low_pa_caught",      "old": "RCA-08",  "new": null,     "actions": [], "mapping": "not_applicable", "reason": "Same, operator corrected."},
+    {"episode": "ep_E01_fouling_drift",      "old": "RCA-09",  "new": null,     "actions": [], "mapping": "not_applicable", "reason": "Progressive heat-transfer-surface fouling has no standalone RCA case. Case 3 H4 is a ruled-out hypothesis; Case 13 is a different component. The regenerated episode's L1 signature also matches no case. T2/T4/T6 not-applicable. (ACT-024/ACT-025 would be the mechanism-appropriate actions.)"},
+    {"episode": "ep_E02_fouling_drift",      "old": "RCA-09",  "new": null,     "actions": [], "mapping": "not_applicable", "reason": "Same."},
+    {"episode": "ep_E03_fouling_drift",      "old": "RCA-09",  "new": null,     "actions": [], "mapping": "not_applicable", "reason": "Same."}
+  ]
+}

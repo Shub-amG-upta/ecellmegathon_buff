@@ -1,0 +1,143 @@
+=== ep_A01_fcv_seize  started 2026-10-05T23:18:49+0530  BACK TO BACK (lockstep)  backend llamaserver
+backend = llamaserver
+
+--- ep_A01_fcv_seize  (A/tier B) truth: FCV actuator stem seizure
+  t  33 DEVIATION     WATCH       drum_level -0.50 %/min sustained 3 min (noise MAD 0.20).   | Insufficient primary air velocity in one branc
+  t  34 DEVIATION     WATCH       drum_level -0.95 %/min sustained 3 min (noise MAD 0.42); s | Bed temperature runaway to the sintering range
+  t  35 DEVIATION     WATCH       drum_level -1.42 %/min sustained 3 min (noise MAD 0.95); s | Insufficient primary air velocity in one branc
+  t  36 DEVIATION     WATCH       drum_level -1.96 %/min sustained 3 min (noise MAD 1.39); s | Loss of a stable light-up flame from degraded 
+  t  37 DEVIATION     WATCH       drum_level -2.27 %/min sustained 3 min (noise MAD 1.85).   | Insufficient primary air velocity in one branc
+  t  38 DEVIATION     WATCH       drum_level -2.48 %/min sustained 3 min (noise MAD 1.92).   | Feed water control valve actuator stem seizure
+  t  39 DEVIATION     WATCH       drum_level -2.60 %/min sustained 3 min (noise MAD 2.01).   | Feed water control valve actuator stem seizure
+  t  40 DEVIATION     WATCH       drum_level -2.62 %/min sustained 3 min (noise MAD 1.90).   | Feed water control valve actuator stem seizure
+  t  41 DEVIATION     WATCH       drum_level -2.60 %/min sustained 3 min (noise MAD 1.91).   | Feed water control valve actuator stem seizure
+  t  42 DEVIATION     WATCH       drum_level -2.67 %/min sustained 3 min (noise MAD 2.01).   | Feed water control valve actuator stem seizure
+  t  43 DEVIATION     WATCH       drum_level -2.66 %/min sustained 3 min (noise MAD 2.19); s | Feed water control valve actuator stem seizure
+  t  44 DEVIATION     WATCH       drum_level -2.68 %/min sustained 3 min (noise MAD 1.98); s | Feed water control valve actuator stem seizure
+  t  45 DEVIATION     WATCH       drum_level -2.66 %/min sustained 3 min (noise MAD 2.01); s | Feed water control valve actuator stem seizure
+  t  46 DEVIATION     WATCH       drum_level -2.67 %/min sustained 3 min (noise MAD 1.90); s | Feed water control valve actuator stem seizure
+  t  47 DEVIATION     WATCH       drum_level -2.74 %/min sustained 3 min (noise MAD 2.02); s | Feed water control valve actuator stem seizure
+  t  48 DEVIATION     WATCH       drum_level -2.79 %/min sustained 3 min (noise MAD 2.08); s | Feed water control valve actuator stem seizure
+  t  49 DEVIATION     WATCH       drum_level -2.79 %/min sustained 3 min (noise MAD 2.03); s | Feed water control valve actuator stem seizure
+  t  50 DEVIATION     WATCH       drum_level -2.72 %/min sustained 3 min (noise MAD 2.08).   | Feed water control valve actuator stem seizure
+  t  51 DEVIATION     WATCH       drum_level -2.56 %/min sustained 3 min (noise MAD 1.90).   | Feed water control valve actuator stem seizure
+  t  52 DEVIATION     WATCH       drum_level -2.30 %/min sustained 3 min (noise MAD 1.78).   | Cavitation of the boiler feed pump from loss o
+  t  53 DEVIATION     WATCH       drum_level -2.05 %/min sustained 3 min (noise MAD 1.54).   | Cavitation of the boiler feed pump from loss o
+  t  54 DEVIATION     WATCH       drum_level -1.81 %/min sustained 3 min (noise MAD 1.23).   | Cavitation of the boiler feed pump from loss o
+  t  55 DEVIATION     WATCH       drum_level -1.61 %/min sustained 3 min (noise MAD 1.14).   | Cavitation of the boiler feed pump from loss o
+  t  56 DEVIATION     WATCH       drum_level -1.54 %/min sustained 3 min (noise MAD 1.09); s | Cavitation of the boiler feed pump from loss o
+  t  57 DEVIATION     WATCH       drum_level -1.57 %/min sustained 3 min (noise MAD 1.19); s | Cavitation of the boiler feed pump from loss o
+  t  58 ALARM         INVESTIGATE drum_level = 19.7 < 20.0 (alarm_lo); drum_level -1.58 %/mi | Cavitation of the boiler feed pump from loss o
+  t  59 ALARM         INVESTIGATE drum_level = 19.2 < 20.0 (alarm_lo); drum_level -1.56 %/mi | Cavitation of the boiler feed pump from loss o
+  t  60 ALARM         INVESTIGATE drum_level = 18.4 < 20.0 (alarm_lo); drum_level -1.53 %/mi | Cavitation of the boiler feed pump from loss o
+  t  61 ALARM         INVESTIGATE drum_level = 17.8 < 20.0 (alarm_lo); drum_level -1.38 %/mi | Cavitation of the boiler feed pump from loss o
+  t  62 ALARM         INVESTIGATE drum_level = 17.3 < 20.0 (alarm_lo); drum_level -1.30 %/mi | Cavitation of the boiler feed pump from loss o
+  t  63 ALARM         INVESTIGATE drum_level = 16.9 < 20.0 (alarm_lo); drum_level -1.20 %/mi | Cavitation of the boiler feed pump from loss o
+  t  64 ALARM         INVESTIGATE drum_level = 16.6 < 20.0 (alarm_lo); drum_level -1.09 %/mi | Cavitation of the boiler feed pump from loss o
+  t  65 ALARM         INVESTIGATE drum_level = 16.1 < 20.0 (alarm_lo); drum_level -0.94 %/mi | Cavitation of the boiler feed pump from loss o
+  t  66 ALARM         INVESTIGATE drum_level = 15.5 < 20.0 (alarm_lo); drum_level -0.89 %/mi | Cavitation of the boiler feed pump from loss o
+  t  67 ALARM         INVESTIGATE drum_level = 14.9 < 20.0 (alarm_lo); drum_level -0.84 %/mi | Feed water control valve actuator stem seizure
+  t  68 TRIP_IMMINENT URGENT      drum_level = 14.4 < 20.0 (alarm_lo); drum_level -0.96 %/mi | Feed water control valve actuator stem seizure
+  t  69 TRIP_IMMINENT URGENT      drum_level = 13.7 < 20.0 (alarm_lo); drum_level -1.08 %/mi | Feed water control valve actuator stem seizure
+  t  70 TRIP_IMMINENT URGENT      drum_level = 13.1 < 20.0 (alarm_lo); drum_level -1.20 %/mi | Feed water control valve actuator stem seizure
+  t  71 TRIP_IMMINENT URGENT      drum_level = 12.5 < 20.0 (alarm_lo); drum_level -1.20 %/mi | Feed water control valve actuator stem seizure
+  t  72 TRIP_IMMINENT URGENT      drum_level = 12.3 < 20.0 (alarm_lo); drum_level -1.17 %/mi | Cavitation of the boiler feed pump from loss o
+  t  73 TRIP_IMMINENT URGENT      drum_level = 11.5 < 20.0 (alarm_lo); drum_level -1.09 %/mi | Cavitation of the boiler feed pump from loss o
+  t  74 TRIP_IMMINENT URGENT      drum_level = 11.2 < 20.0 (alarm_lo); drum_level -1.05 %/mi | Cavitation of the boiler feed pump from loss o
+  t  75 TRIP_IMMINENT URGENT      drum_level = 10.5 < 20.0 (alarm_lo); drum_level -1.01 %/mi | Cavitation of the boiler feed pump from loss o
+  t  76 TRIP_IMMINENT URGENT      drum_level = 10.3 < 20.0 (alarm_lo); drum_level -0.94 %/mi | Cavitation of the boiler feed pump from loss o
+  t  77 TRIP_IMMINENT URGENT      drum_level = 9.8 < 10.0 (critical_lo); drum_level = 9.8 <  | Cavitation of the boiler feed pump from loss o
+  t  78 TRIP_IMMINENT URGENT      drum_level = 9.8 < 10.0 (critical_lo); drum_level = 9.8 <  | Cavitation of the boiler feed pump from loss o
+  t  79 TRIP_IMMINENT URGENT      drum_level = 9.6 < 10.0 (critical_lo); drum_level = 9.6 <  | Feed water control valve actuator stem seizure
+  t  80 TRIP_IMMINENT URGENT      drum_level = 9.7 < 10.0 (critical_lo); drum_level = 9.7 <  | Feed water control valve actuator stem seizure
+  t  81 TRIP_IMMINENT URGENT      drum_level = 9.7 < 10.0 (critical_lo); drum_level = 9.7 <  | Feed water control valve actuator stem seizure
+  t  82 TRIP_IMMINENT URGENT      drum_level = 9.7 < 10.0 (critical_lo); drum_level = 9.7 <  | Feed water control valve actuator stem seizure
+  t  83 TRIP_IMMINENT URGENT      drum_level = 9.4 < 10.0 (critical_lo); drum_level = 9.4 <  | Cavitation of the boiler feed pump from loss o
+  t  84 TRIP_IMMINENT URGENT      drum_level = 9.3 < 10.0 (critical_lo); drum_level = 9.3 <  | Cavitation of the boiler feed pump from loss o
+  t  85 TRIP_IMMINENT URGENT      drum_level = 9.2 < 10.0 (critical_lo); drum_level = 9.2 <  | Cavitation of the boiler feed pump from loss o
+  t  86 TRIP_IMMINENT URGENT      drum_level = 9.1 < 10.0 (critical_lo); drum_level = 9.1 <  | Cavitation of the boiler feed pump from loss o
+  t  87 TRIP_IMMINENT URGENT      drum_level = 8.8 < 10.0 (critical_lo); drum_level = 8.8 <  | Cavitation of the boiler feed pump from loss o
+  t  88 TRIP_IMMINENT URGENT      drum_level = 8.9 < 10.0 (critical_lo); drum_level = 8.9 <  | Fail-to-open of the PRDS dumping control valve
+  t  89 TRIP_IMMINENT URGENT      drum_level = 8.7 < 10.0 (critical_lo); drum_level = 8.7 <  | Seat leakage of the attemperator spray control
+  t  90 TRIP_IMMINENT URGENT      drum_level = 8.9 < 10.0 (critical_lo); drum_level = 8.9 <  | Seat leakage of the attemperator spray control
+  t  91 TRIP_IMMINENT URGENT      drum_level = 9.3 < 10.0 (critical_lo); drum_level = 9.3 <  | Insufficient primary air velocity in one branc
+  t  92 TRIP_IMMINENT URGENT      drum_level = 9.6 < 10.0 (critical_lo); drum_level = 9.6 <  | Insufficient primary air velocity in one branc
+  t  93 ALARM         INVESTIGATE drum_level = 10.1 < 20.0 (alarm_lo).                       | Deflagration on re-ignition of an accumulated 
+  t  94 ALARM         INVESTIGATE drum_level = 11.1 < 20.0 (alarm_lo); drum_level +0.76 %/mi | Fireside erosion of a water wall tube by circu
+  t  95 ALARM         INVESTIGATE drum_level = 11.6 < 20.0 (alarm_lo); drum_level +0.96 %/mi | Fireside erosion of a water wall tube by circu
+  t  96 ALARM         INVESTIGATE drum_level = 12.0 < 20.0 (alarm_lo); drum_level +1.09 %/mi | Cavitation of the boiler feed pump from loss o
+  t  97 ALARM         INVESTIGATE drum_level = 12.3 < 20.0 (alarm_lo); drum_level +1.15 %/mi | Seat leakage of the attemperator spray control
+  t  98 ALARM         INVESTIGATE drum_level = 12.7 < 20.0 (alarm_lo); drum_level +1.10 %/mi | Cavitation of the boiler feed pump from loss o
+  t  99 ALARM         INVESTIGATE drum_level = 13.2 < 20.0 (alarm_lo); drum_level +0.95 %/mi | Cavitation of the boiler feed pump from loss o
+  t 100 ALARM         INVESTIGATE drum_level = 13.6 < 20.0 (alarm_lo); drum_level +0.91 %/mi | Cavitation of the boiler feed pump from loss o
+  t 101 ALARM         INVESTIGATE drum_level = 14.1 < 20.0 (alarm_lo); drum_level +0.87 %/mi | Cavitation of the boiler feed pump from loss o
+  t 102 ALARM         INVESTIGATE drum_level = 14.4 < 20.0 (alarm_lo); drum_level +0.85 %/mi | Cavitation of the boiler feed pump from loss o
+  t 103 ALARM         INVESTIGATE drum_level = 14.2 < 20.0 (alarm_lo); drum_level +0.75 %/mi | Total loss of fuel input from a degraded conne
+  t 104 ALARM         INVESTIGATE drum_level = 14.9 < 20.0 (alarm_lo); drum_level +0.67 %/mi | Total loss of fuel input from a degraded conne
+  t 105 ALARM         INVESTIGATE drum_level = 14.9 < 20.0 (alarm_lo); drum_level +0.50 %/mi | Total loss of fuel input from a degraded conne
+  t 106 ALARM         INVESTIGATE drum_level = 15.3 < 20.0 (alarm_lo).                       | Total loss of fuel input from a degraded conne
+  t 107 ALARM         INVESTIGATE drum_level = 15.5 < 20.0 (alarm_lo).                       | Insufficient primary air velocity in one branc
+  t 108 ALARM         INVESTIGATE drum_level = 16.0 < 20.0 (alarm_lo); drum_level +0.52 %/mi | Cavitation of the boiler feed pump from loss o
+  t 109 ALARM         INVESTIGATE drum_level = 16.9 < 20.0 (alarm_lo); drum_level +0.70 %/mi | Cavitation of the boiler feed pump from loss o
+  t 110 ALARM         INVESTIGATE drum_level = 17.3 < 20.0 (alarm_lo); drum_level +0.90 %/mi | Insufficient primary air velocity in one branc
+  t 111 ALARM         INVESTIGATE drum_level = 17.9 < 20.0 (alarm_lo); drum_level +1.03 %/mi | Insufficient primary air velocity in one branc
+  t 112 ALARM         INVESTIGATE drum_level = 18.7 < 20.0 (alarm_lo); drum_level +1.18 %/mi | Insufficient primary air velocity in one branc
+  t 113 ALARM         INVESTIGATE drum_level = 19.2 < 20.0 (alarm_lo); drum_level +1.21 %/mi | Insufficient primary air velocity in one branc
+  t 114 ALARM         INVESTIGATE drum_level = 19.6 < 20.0 (alarm_lo); drum_level +1.25 %/mi | Insufficient primary air velocity in one branc
+  t 115 DEVIATION     WATCH       drum_level +1.29 %/min sustained 3 min (noise MAD 1.00).   | Insufficient primary air velocity in one branc
+  t 116 DEVIATION     WATCH       drum_level +1.27 %/min sustained 3 min (noise MAD 0.93).   | Insufficient primary air velocity in one branc
+  t 117 DEVIATION     WATCH       drum_level +1.23 %/min sustained 3 min (noise MAD 0.95).   | Insufficient primary air velocity in one branc
+  t 118 DEVIATION     WATCH       drum_level +1.19 %/min sustained 3 min (noise MAD 0.88).   | Insufficient primary air velocity in one branc
+  t 119 DEVIATION     WATCH       drum_level +1.21 %/min sustained 3 min (noise MAD 0.88).   | Insufficient primary air velocity in one branc
+  t 120 DEVIATION     WATCH       drum_level +1.34 %/min sustained 3 min (noise MAD 1.02).   | Total loss of fuel input from a degraded conne
+  t 121 DEVIATION     WATCH       drum_level +1.45 %/min sustained 3 min (noise MAD 1.06).   | Total loss of fuel input from a degraded conne
+  t 122 DEVIATION     WATCH       drum_level +1.61 %/min sustained 3 min (noise MAD 1.17).   | Total loss of fuel input from a degraded conne
+  t 123 DEVIATION     WATCH       drum_level +1.79 %/min sustained 3 min (noise MAD 1.38).   | Total loss of fuel input from a degraded conne
+  t 124 DEVIATION     WATCH       drum_level +1.86 %/min sustained 3 min (noise MAD 1.46).   | Cavitation of the boiler feed pump from loss o
+  t 125 DEVIATION     WATCH       drum_level +1.90 %/min sustained 3 min (noise MAD 1.43).   | Cavitation of the boiler feed pump from loss o
+  t 126 DEVIATION     WATCH       drum_level +1.90 %/min sustained 3 min (noise MAD 1.43).   | Seat leakage of the attemperator spray control
+  t 127 DEVIATION     WATCH       drum_level +1.85 %/min sustained 3 min (noise MAD 1.36).   | Seat leakage of the attemperator spray control
+  t 128 DEVIATION     WATCH       drum_level +1.75 %/min sustained 3 min (noise MAD 1.30).   | Seat leakage of the attemperator spray control
+  t 129 DEVIATION     WATCH       drum_level +1.70 %/min sustained 3 min (noise MAD 1.22).   | Seat leakage of the attemperator spray control
+  t 130 DEVIATION     WATCH       drum_level +1.67 %/min sustained 3 min (noise MAD 1.26).   | Insufficient primary air velocity in one branc
+  t 131 DEVIATION     WATCH       drum_level +1.67 %/min sustained 3 min (noise MAD 1.31).   | Insufficient primary air velocity in one branc
+  t 132 DEVIATION     WATCH       drum_level +1.73 %/min sustained 3 min (noise MAD 1.25).   | Seat leakage of the attemperator spray control
+  t 133 DEVIATION     WATCH       drum_level +1.74 %/min sustained 3 min (noise MAD 1.32).   | Seat leakage of the attemperator spray control
+  t 134 DEVIATION     WATCH       drum_level +1.64 %/min sustained 3 min (noise MAD 1.17).   | Cavitation of the boiler feed pump from loss o
+  t 135 DEVIATION     WATCH       drum_level +1.53 %/min sustained 3 min (noise MAD 1.14).   | Cavitation of the boiler feed pump from loss o
+  t 136 DEVIATION     WATCH       drum_level +1.41 %/min sustained 3 min (noise MAD 1.02).   | Cavitation of the boiler feed pump from loss o
+  t 137 DEVIATION     WATCH       drum_level +1.27 %/min sustained 3 min (noise MAD 1.02).   | Seat leakage of the attemperator spray control
+  t 138 DEVIATION     WATCH       drum_level +1.23 %/min sustained 3 min (noise MAD 0.93).   | Seat leakage of the attemperator spray control
+  chip temp start {'t': '2026-10-05T23:18:53+0530', 'cpu_max_c': 38.4, 'npu_max_c': 37.8, 'n_zones': 75}  end {'t': '2026-10-05T23:22:11+0530', 'cpu_max_c': 66.7, 'npu_max_c': 63.7, 'n_zones': 75}
+ep_A01_fcv_seize               F1=0.86 top1=0.217 top3=0.887 faith=1.00 llm=0.45 lead=20.2 p95=4679ms
+
+==================================================================
+AGGREGATE
+==================================================================
+  n_episodes                         1
+  Q1_macro_f1                        0.857
+  Q2_top1                            0.217
+  Q2_top3                            0.887
+  Q2_n_episodes_scored               1
+  Q2_library                         {'n_episodes': 1, 'top1': 0.217, 'top3': 0.887, 'group_top1': 0.594, 'sep_named': 0.509, 'belief_top1': 0.547, 'belief_top1_tiefair': 0.547, 'belief_top3': 0.566, 'belief_group': 0.547, 'belief_group_tiefair': 0.547, 'belief_top_tie_rate': 0.151, 'low_conf_rate': None, 'low_conf_rate_decision': None}
+  Q2_heldout                         {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}
+  Q2_by_family                       {'A': {'library': {'n_episodes': 1, 'top1': 0.217, 'top3': 0.887, 'group_top1': 0.594, 'sep_named': 0.509, 'belief_top1': 0.547, 'belief_top1_tiefair': 0.547, 'belief_top3': 0.566, 'belief_group': 0.547, 'belief_group_tiefair': 0.547, 'belief_top_tie_rate': 0.151, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'B': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'C': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'D': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'E': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}}
+  Q2_heldout_cases_with_episodes     []
+  Q2_heldout_cases_without_episodes  ['RCA-02', 'RCA-06', 'RCA-08', 'RCA-12', 'RCA-17']
+  Q2_episodes_not_applicable         []
+  Q3_faithfulness                    1.0
+  Q3_rel                             0.537
+  Q4_action_precision                0.308
+  Q4_action_recall                   1.0
+  Q4_n_episodes_scored               1
+  Q5_fp_per_hour                     None
+  Q6_lead_time_min_mean              20.2
+  Q6_n_faults_caught_before_trip     1
+  S4_llm_invocation_rate             0.446
+  S7_deadline_miss_rate              0.0
+  constraints:
+    C1_hard_deadline_misses_zero     PASS
+    C3_top3_ge_0.85                  PASS
+    C4_faithfulness_ge_0.95          PASS
+
+written to results/presentation_benchmark/multi_agent_LOCKSTEP_grammar_llama32-3b_gemma3-1b/tmp/summary_llamaserver_ep_A01_fcv_seize.json

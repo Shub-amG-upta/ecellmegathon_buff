@@ -1,0 +1,2389 @@
+{
+  "commit": "c1e14701aed6e180d56e95a2605c33d06e383b9a",
+  "commit_short": "c1e1470",
+  "arch": "multi",
+  "mode": "lockstep",
+  "backend": "mock",
+  "note": "Multi-agent Phase 1 (plumbing only), reporting set, run once. Mock backend: measures the deterministic and retrieval layers only, NOT an agent result. Decision fields identical to --arch single (0 differences, bench/compare_runs.py) and summary/per_episode identical to single_v3_summary.json. Timings are laptop timings.",
+  "code_tree_clean_at_run": true,
+  "multi_run_telemetry": {
+    "stale_dropped": 0,
+    "jobs": 2335,
+    "p0_deadline_misses": 0
+  },
+  "summary": {
+    "n_episodes": 30,
+    "Q1_macro_f1": 0.743,
+    "Q2_top1": 0.334,
+    "Q2_top3": 0.523,
+    "Q2_n_episodes_scored": 17,
+    "Q2_library": {
+      "n_episodes": 13,
+      "top1": 0.436,
+      "top3": 0.684,
+      "group_top1": 0.547,
+      "sep_named": 0.503,
+      "belief_top1": 0.515,
+      "belief_top1_tiefair": 0.438,
+      "belief_top3": 0.654,
+      "belief_group": 0.574,
+      "belief_group_tiefair": 0.541,
+      "belief_top_tie_rate": 0.283,
+      "low_conf_rate": null,
+      "low_conf_rate_decision": null
+    },
+    "Q2_heldout": {
+      "n_episodes": 4,
+      "top1": null,
+      "top3": null,
+      "group_top1": 0.487,
+      "sep_named": null,
+      "belief_top1": null,
+      "belief_top1_tiefair": null,
+      "belief_top3": null,
+      "belief_group": 0.545,
+      "belief_group_tiefair": 0.641,
+      "belief_top_tie_rate": 0.765,
+      "low_conf_rate": 0.972,
+      "low_conf_rate_decision": 0.225
+    },
+    "Q2_by_family": {
+      "A": {
+        "library": {
+          "n_episodes": 5,
+          "top1": 0.223,
+          "top3": 0.475,
+          "group_top1": 0.51,
+          "sep_named": 0.395,
+          "belief_top1": 0.279,
+          "belief_top1_tiefair": 0.241,
+          "belief_top3": 0.451,
+          "belief_group": 0.433,
+          "belief_group_tiefair": 0.392,
+          "belief_top_tie_rate": 0.273,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        }
+      },
+      "B": {
+        "library": {
+          "n_episodes": 4,
+          "top1": 0.569,
+          "top3": 0.889,
+          "group_top1": 0.569,
+          "sep_named": 0.569,
+          "belief_top1": 0.582,
+          "belief_top1_tiefair": 0.525,
+          "belief_top3": 0.691,
+          "belief_group": 0.582,
+          "belief_group_tiefair": 0.525,
+          "belief_top_tie_rate": 0.246,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        }
+      },
+      "C": {
+        "library": {
+          "n_episodes": 2,
+          "top1": 0.317,
+          "top3": 0.551,
+          "group_top1": 0.317,
+          "sep_named": 0.317,
+          "belief_top1": 0.573,
+          "belief_top1_tiefair": 0.286,
+          "belief_top3": 0.8,
+          "belief_group": 0.573,
+          "belief_group_tiefair": 0.573,
+          "belief_top_tie_rate": 0.621,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 4,
+          "top1": null,
+          "top3": null,
+          "group_top1": 0.487,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": 0.545,
+          "belief_group_tiefair": 0.641,
+          "belief_top_tie_rate": 0.765,
+          "low_conf_rate": 0.972,
+          "low_conf_rate_decision": 0.225
+        }
+      },
+      "D": {
+        "library": {
+          "n_episodes": 2,
+          "top1": 0.825,
+          "top3": 0.926,
+          "group_top1": 0.825,
+          "sep_named": 0.825,
+          "belief_top1": 0.912,
+          "belief_top1_tiefair": 0.912,
+          "belief_top3": 0.944,
+          "belief_group": 0.912,
+          "belief_group_tiefair": 0.912,
+          "belief_top_tie_rate": 0.038,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        }
+      },
+      "E": {
+        "library": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        }
+      }
+    },
+    "Q2_heldout_cases_with_episodes": [
+      "RCA-06"
+    ],
+    "Q2_heldout_cases_without_episodes": [
+      "RCA-02",
+      "RCA-08",
+      "RCA-12",
+      "RCA-17"
+    ],
+    "Q2_episodes_not_applicable": [
+      "ep_A04_strainer_choke",
+      "ep_B04_cbd_left_open",
+      "ep_D02_low_primary_air",
+      "ep_D04_low_pa_caught",
+      "ep_E01_fouling_drift",
+      "ep_E02_fouling_drift",
+      "ep_E03_fouling_drift"
+    ],
+    "Q3_faithfulness": 1.0,
+    "Q4_action_precision": 0.38,
+    "Q4_action_recall": 0.926,
+    "Q4_n_episodes_scored": 17,
+    "Q5_fp_per_hour": 0.91,
+    "Q6_lead_time_min_mean": 31.5,
+    "Q6_n_faults_caught_before_trip": 6,
+    "S4_llm_invocation_rate": 0.45,
+    "S7_deadline_miss_rate": 0.0,
+    "constraints": {
+      "C1_hard_deadline_misses_zero": true,
+      "C3_top3_ge_0.85": false,
+      "C4_faithfulness_ge_0.95": true
+    }
+  },
+  "per_episode": [
+    {
+      "episode_id": "ep_A01_fcv_seize",
+      "family": "A",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.96,
+          "DEVIATION": 0.958,
+          "DEGRADED": 0.0,
+          "ALARM": 0.811,
+          "TRIP_IMMINENT": 0.7
+        },
+        "macro_f1": 0.857,
+        "confusion": {
+          "NORMAL->NORMAL": 24,
+          "NORMAL->DEVIATION": 2,
+          "DEVIATION->DEVIATION": 46,
+          "DEVIATION->ALARM": 1,
+          "ALARM->ALARM": 30,
+          "ALARM->TRIP_IMMINENT": 11,
+          "TRIP_IMMINENT->TRIP_IMMINENT": 14,
+          "TRIP_IMMINENT->ALARM": 1,
+          "ALARM->DEVIATION": 1
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-01",
+        "true_group": "RCA-01+RCA-16",
+        "n_scored": 106,
+        "top1": 0.208,
+        "top3": 0.358,
+        "top1_strict": 0.208,
+        "top3_strict": 0.358,
+        "group_top1": 0.491,
+        "sep_named": 0.349,
+        "belief_top1": 0.547,
+        "belief_top3": 0.566,
+        "belief_top1_tiefair": 0.547,
+        "belief_group": 0.547,
+        "belief_group_tiefair": 0.547,
+        "belief_top_tie_rate": 0.151,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 486,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.333,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-005",
+          "ACT-009",
+          "ACT-012",
+          "ACT-014",
+          "ACT-018",
+          "ACT-019",
+          "ACT-021",
+          "ACT-024",
+          "ACT-031",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-014",
+          "ACT-021",
+          "ACT-031"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": true,
+        "first_correct_t": 1140.0,
+        "trip_t": 2350.0,
+        "lead_time_min": 20.2
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 15.81,
+      "S1_tick_latency_ms_p95": 26.54,
+      "S4_llm_invocation_rate": 0.815,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_A02_fcv_seize_fast",
+      "family": "A",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 1.0,
+          "DEVIATION": 0.696,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.857
+        },
+        "macro_f1": 0.638,
+        "confusion": {
+          "NORMAL->NORMAL": 16,
+          "DEVIATION->DEVIATION": 8,
+          "DEVIATION->TRIP_IMMINENT": 7,
+          "ALARM->TRIP_IMMINENT": 7,
+          "TRIP_IMMINENT->TRIP_IMMINENT": 42
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-01",
+        "true_group": "RCA-01+RCA-16",
+        "n_scored": 64,
+        "top1": 0.125,
+        "top3": 0.359,
+        "top1_strict": 0.125,
+        "top3_strict": 0.359,
+        "group_top1": 0.516,
+        "sep_named": 0.344,
+        "belief_top1": 0.0,
+        "belief_top3": 0.234,
+        "belief_top1_tiefair": 0.0,
+        "belief_group": 0.25,
+        "belief_group_tiefair": 0.25,
+        "belief_top_tie_rate": 0.312,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 332,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.333,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-005",
+          "ACT-009",
+          "ACT-012",
+          "ACT-014",
+          "ACT-018",
+          "ACT-019",
+          "ACT-021",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-014",
+          "ACT-021",
+          "ACT-031"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": true,
+        "first_correct_t": 1410.0,
+        "trip_t": 1385.0,
+        "lead_time_min": -0.4
+      },
+      "T9_injection": {
+        "applicable": true,
+        "deflected_ticks": 0,
+        "deflection_rate": 0.0
+      },
+      "S1_tick_latency_ms_p50": 14.74,
+      "S1_tick_latency_ms_p95": 19.92,
+      "S4_llm_invocation_rate": 0.8,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_A03_bfp_suction",
+      "family": "A",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.944,
+          "DEVIATION": 0.939,
+          "DEGRADED": 0.0,
+          "ALARM": 0.2,
+          "TRIP_IMMINENT": 0.944
+        },
+        "macro_f1": 0.757,
+        "confusion": {
+          "NORMAL->DEVIATION": 2,
+          "NORMAL->NORMAL": 17,
+          "DEVIATION->DEVIATION": 23,
+          "DEVIATION->ALARM": 1,
+          "ALARM->ALARM": 1,
+          "ALARM->TRIP_IMMINENT": 7,
+          "TRIP_IMMINENT->TRIP_IMMINENT": 59
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-16",
+        "true_group": "RCA-01+RCA-16",
+        "n_scored": 91,
+        "top1": 0.396,
+        "top3": 0.648,
+        "top1_strict": 0.396,
+        "top3_strict": 0.648,
+        "group_top1": 0.758,
+        "sep_named": 0.626,
+        "belief_top1": 0.0,
+        "belief_top3": 0.0,
+        "belief_top1_tiefair": 0.0,
+        "belief_group": 0.451,
+        "belief_group_tiefair": 0.451,
+        "belief_top_tie_rate": 0.549,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 470,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.308,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-005",
+          "ACT-009",
+          "ACT-012",
+          "ACT-014",
+          "ACT-018",
+          "ACT-019",
+          "ACT-021",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-005",
+          "ACT-031",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": true,
+        "first_correct_t": 1380.0,
+        "trip_t": 1800.0,
+        "lead_time_min": 7.0
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 17.52,
+      "S1_tick_latency_ms_p95": 23.39,
+      "S4_llm_invocation_rate": 0.845,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_A04_strainer_choke",
+      "family": "A",
+      "tier": "C",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.9,
+          "DEVIATION": 0.831,
+          "DEGRADED": 0.0,
+          "ALARM": 0.847,
+          "TRIP_IMMINENT": 0.943
+        },
+        "macro_f1": 0.88,
+        "confusion": {
+          "NORMAL->NORMAL": 45,
+          "NORMAL->DEVIATION": 10,
+          "DEVIATION->DEVIATION": 27,
+          "DEVIATION->ALARM": 1,
+          "ALARM->ALARM": 36,
+          "ALARM->TRIP_IMMINENT": 12,
+          "TRIP_IMMINENT->TRIP_IMMINENT": 99
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 935,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 27.13,
+      "S1_tick_latency_ms_p95": 47.13,
+      "S4_llm_invocation_rate": 0.804,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_A05_fcv_caught",
+      "family": "A",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.902,
+          "DEVIATION": 0.525,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.714,
+        "confusion": {
+          "NORMAL->NORMAL": 23,
+          "NORMAL->DEVIATION": 5,
+          "DEVIATION->DEVIATION": 31,
+          "DEVIATION->ALARM": 51
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-01",
+        "true_group": "RCA-01+RCA-16",
+        "n_scored": 87,
+        "top1": 0.161,
+        "top3": 0.356,
+        "top1_strict": 0.161,
+        "top3_strict": 0.356,
+        "group_top1": 0.172,
+        "sep_named": 0.172,
+        "belief_top1": 0.517,
+        "belief_top3": 0.747,
+        "belief_top1_tiefair": 0.523,
+        "belief_group": 0.517,
+        "belief_group_tiefair": 0.523,
+        "belief_top_tie_rate": 0.011,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 443,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.308,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-005",
+          "ACT-009",
+          "ACT-012",
+          "ACT-014",
+          "ACT-018",
+          "ACT-019",
+          "ACT-021",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-014",
+          "ACT-021",
+          "ACT-031"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 15.21,
+      "S1_tick_latency_ms_p95": 25.47,
+      "S4_llm_invocation_rate": 0.791,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_A06_fcv_seize_repeat",
+      "family": "A",
+      "tier": "C",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.9,
+          "DEVIATION": 0.897,
+          "DEGRADED": 0.0,
+          "ALARM": 0.143,
+          "TRIP_IMMINENT": 0.889
+        },
+        "macro_f1": 0.707,
+        "confusion": {
+          "NORMAL->NORMAL": 27,
+          "NORMAL->DEVIATION": 6,
+          "DEVIATION->DEVIATION": 26,
+          "ALARM->ALARM": 1,
+          "ALARM->TRIP_IMMINENT": 12,
+          "TRIP_IMMINENT->TRIP_IMMINENT": 48
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-01",
+        "true_group": "RCA-01+RCA-16",
+        "n_scored": 93,
+        "top1": 0.226,
+        "top3": 0.656,
+        "top1_strict": 0.226,
+        "top3_strict": 0.656,
+        "group_top1": 0.613,
+        "sep_named": 0.484,
+        "belief_top1": 0.333,
+        "belief_top3": 0.71,
+        "belief_top1_tiefair": 0.134,
+        "belief_group": 0.398,
+        "belief_group_tiefair": 0.19,
+        "belief_top_tie_rate": 0.344,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 496,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.4,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-005",
+          "ACT-009",
+          "ACT-014",
+          "ACT-019",
+          "ACT-021",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-014",
+          "ACT-021",
+          "ACT-031"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": true,
+        "first_correct_t": 1380.0,
+        "trip_t": 2415.0,
+        "lead_time_min": 17.2
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 16.7,
+      "S1_tick_latency_ms_p95": 19.57,
+      "S4_llm_invocation_rate": 0.775,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_B01_tube_leak",
+      "family": "B",
+      "tier": "C",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.988,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.494,
+        "confusion": {
+          "NORMAL->NORMAL": 41,
+          "DEVIATION->NORMAL": 1,
+          "DEVIATION->ALARM": 128
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-11",
+        "true_group": "RCA-11",
+        "n_scored": 128,
+        "top1": 0.68,
+        "top3": 0.953,
+        "top1_strict": 0.68,
+        "top3_strict": 0.953,
+        "group_top1": 0.68,
+        "sep_named": 0.68,
+        "belief_top1": 0.555,
+        "belief_top3": 0.703,
+        "belief_top1_tiefair": 0.326,
+        "belief_group": 0.555,
+        "belief_group_tiefair": 0.326,
+        "belief_top_tie_rate": 0.492,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 435,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.444,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-031",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 15.81,
+      "S1_tick_latency_ms_p95": 20.77,
+      "S4_llm_invocation_rate": 0.753,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_B02_tube_leak_fast",
+      "family": "B",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.945,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.472,
+        "confusion": {
+          "NORMAL->NORMAL": 26,
+          "DEVIATION->NORMAL": 3,
+          "DEVIATION->ALARM": 51
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-11",
+        "true_group": "RCA-11",
+        "n_scored": 51,
+        "top1": 0.608,
+        "top3": 1.0,
+        "top1_strict": 0.608,
+        "top3_strict": 1.0,
+        "group_top1": 0.608,
+        "sep_named": 0.608,
+        "belief_top1": 0.863,
+        "belief_top3": 0.922,
+        "belief_top1_tiefair": 0.863,
+        "belief_group": 0.863,
+        "belief_group_tiefair": 0.863,
+        "belief_top_tie_rate": 0.0,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 165,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.429,
+        "recall": 0.75,
+        "proposed": [
+          "ACT-009",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-031",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 13.81,
+      "S1_tick_latency_ms_p95": 21.4,
+      "S4_llm_invocation_rate": 0.637,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_B03_tube_leak_slow",
+      "family": "B",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 1.0,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.5,
+        "confusion": {
+          "NORMAL->NORMAL": 76,
+          "DEVIATION->ALARM": 214
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-11",
+        "true_group": "RCA-11",
+        "n_scored": 214,
+        "top1": 0.402,
+        "top3": 0.603,
+        "top1_strict": 0.402,
+        "top3_strict": 0.603,
+        "group_top1": 0.402,
+        "sep_named": 0.402,
+        "belief_top1": 0.285,
+        "belief_top3": 0.35,
+        "belief_top1_tiefair": 0.285,
+        "belief_group": 0.285,
+        "belief_group_tiefair": 0.285,
+        "belief_top_tie_rate": 0.463,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 1086,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.4,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-031",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 14.71,
+      "S1_tick_latency_ms_p95": 22.7,
+      "S4_llm_invocation_rate": 0.738,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_B04_cbd_left_open",
+      "family": "B",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.923,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.462,
+        "confusion": {
+          "NORMAL->NORMAL": 24,
+          "NORMAL->DEVIATION": 1,
+          "DEVIATION->NORMAL": 3,
+          "DEVIATION->ALARM": 82
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 327,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 16.65,
+      "S1_tick_latency_ms_p95": 20.2,
+      "S4_llm_invocation_rate": 0.755,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_B05_tube_leak_repeat",
+      "family": "B",
+      "tier": "C",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.988,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.494,
+        "confusion": {
+          "NORMAL->NORMAL": 41,
+          "DEVIATION->NORMAL": 1,
+          "DEVIATION->ALARM": 128
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-11",
+        "true_group": "RCA-11",
+        "n_scored": 128,
+        "top1": 0.586,
+        "top3": 1.0,
+        "top1_strict": 0.586,
+        "top3_strict": 1.0,
+        "group_top1": 0.586,
+        "sep_named": 0.586,
+        "belief_top1": 0.625,
+        "belief_top3": 0.789,
+        "belief_top1_tiefair": 0.625,
+        "belief_group": 0.625,
+        "belief_group_tiefair": 0.625,
+        "belief_top_tie_rate": 0.031,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 459,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.5,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-031",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 15.46,
+      "S1_tick_latency_ms_p95": 22.35,
+      "S4_llm_invocation_rate": 0.753,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_C01_wet_coal",
+      "family": "C",
+      "tier": "C",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.459,
+          "DEVIATION": 0.459,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.459,
+        "confusion": {
+          "NORMAL->NORMAL": 39,
+          "NORMAL->DEVIATION": 4,
+          "DEVIATION->DEVIATION": 39,
+          "DEVIATION->NORMAL": 88
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": true,
+        "target": "RCA-06",
+        "true_group": "RCA-14+RCA-18",
+        "n_scored": 43,
+        "top1": 0.0,
+        "top3": 0.0,
+        "top1_strict": null,
+        "top3_strict": null,
+        "group_top1": 0.674,
+        "sep_named": null,
+        "belief_top1": null,
+        "belief_top3": null,
+        "belief_top1_tiefair": null,
+        "belief_group": 0.977,
+        "belief_group_tiefair": 0.977,
+        "belief_top_tie_rate": 1.0,
+        "low_conf_rate": 1.0,
+        "low_conf_rate_decision": 0.256
+      },
+      "T3_faithfulness": {
+        "n_citations": 204,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.429,
+        "recall": 0.75,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-031",
+          "ACT-040"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-011",
+          "ACT-012",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 5.36,
+      "S1_tick_latency_ms_p95": 14.56,
+      "S4_llm_invocation_rate": 0.253,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_C02_feeder_trip",
+      "family": "C",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.98,
+          "DEVIATION": 0.25,
+          "DEGRADED": 0.0,
+          "ALARM": 0.965,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.732,
+        "confusion": {
+          "NORMAL->NORMAL": 24,
+          "NORMAL->DEVIATION": 1,
+          "DEVIATION->DEVIATION": 1,
+          "DEVIATION->ALARM": 5,
+          "ALARM->ALARM": 69
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-14",
+        "true_group": "RCA-14+RCA-18",
+        "n_scored": 76,
+        "top1": 0.316,
+        "top3": 0.5,
+        "top1_strict": 0.316,
+        "top3_strict": 0.5,
+        "group_top1": 0.316,
+        "sep_named": 0.316,
+        "belief_top1": 0.526,
+        "belief_top3": 0.789,
+        "belief_top1_tiefair": 0.263,
+        "belief_group": 0.526,
+        "belief_group_tiefair": 0.526,
+        "belief_top_tie_rate": 0.592,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 408,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.375,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-012",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 14.23,
+      "S1_tick_latency_ms_p95": 19.26,
+      "S4_llm_invocation_rate": 0.76,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_C03_wet_coal_mild",
+      "family": "C",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.617,
+          "DEVIATION": 0.57,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.593,
+        "confusion": {
+          "NORMAL->NORMAL": 62,
+          "NORMAL->DEVIATION": 4,
+          "DEVIATION->DEVIATION": 51,
+          "DEVIATION->NORMAL": 73
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": true,
+        "target": "RCA-06",
+        "true_group": "RCA-14+RCA-18",
+        "n_scored": 55,
+        "top1": 0.0,
+        "top3": 0.0,
+        "top1_strict": null,
+        "top3_strict": null,
+        "group_top1": 0.382,
+        "sep_named": null,
+        "belief_top1": null,
+        "belief_top3": null,
+        "belief_top1_tiefair": null,
+        "belief_group": 0.473,
+        "belief_group_tiefair": 0.473,
+        "belief_top_tie_rate": 0.473,
+        "low_conf_rate": 0.945,
+        "low_conf_rate_decision": 0.436
+      },
+      "T3_faithfulness": {
+        "n_citations": 318,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.375,
+        "recall": 0.75,
+        "proposed": [
+          "ACT-002",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-011",
+          "ACT-012",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": true,
+        "deflected_ticks": 73,
+        "deflection_rate": 0.384
+      },
+      "S1_tick_latency_ms_p50": 4.92,
+      "S1_tick_latency_ms_p95": 14.15,
+      "S4_llm_invocation_rate": 0.289,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_C04_feeder_trip_caught",
+      "family": "C",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.829,
+          "DEVIATION": 0.148,
+          "DEGRADED": 0.0,
+          "ALARM": 0.854,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.61,
+        "confusion": {
+          "NORMAL->NORMAL": 46,
+          "NORMAL->DEVIATION": 15,
+          "DEVIATION->DEVIATION": 2,
+          "DEVIATION->ALARM": 8,
+          "ALARM->ALARM": 35,
+          "ALARM->NORMAL": 1,
+          "NORMAL->ALARM": 3
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-14",
+        "true_group": "RCA-14+RCA-18",
+        "n_scored": 63,
+        "top1": 0.317,
+        "top3": 0.603,
+        "top1_strict": 0.317,
+        "top3_strict": 0.603,
+        "group_top1": 0.317,
+        "sep_named": 0.317,
+        "belief_top1": 0.619,
+        "belief_top3": 0.81,
+        "belief_top1_tiefair": 0.31,
+        "belief_group": 0.619,
+        "belief_group_tiefair": 0.619,
+        "belief_top_tie_rate": 0.651,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 320,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.3,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-012",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 13.87,
+      "S1_tick_latency_ms_p95": 19.0,
+      "S4_llm_invocation_rate": 0.573,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_C05_low_cv_coal",
+      "family": "C",
+      "tier": "C",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.644,
+          "DEVIATION": 0.247,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.446,
+        "confusion": {
+          "NORMAL->NORMAL": 47,
+          "NORMAL->DEVIATION": 6,
+          "DEVIATION->DEVIATION": 23,
+          "DEVIATION->NORMAL": 46,
+          "DEVIATION->ALARM": 88
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": true,
+        "target": "RCA-06",
+        "true_group": "RCA-14+RCA-18",
+        "n_scored": 117,
+        "top1": 0.0,
+        "top3": 0.0,
+        "top1_strict": null,
+        "top3_strict": null,
+        "group_top1": 0.179,
+        "sep_named": null,
+        "belief_top1": null,
+        "belief_top3": null,
+        "belief_top1_tiefair": null,
+        "belief_group": 0.274,
+        "belief_group_tiefair": 0.542,
+        "belief_top_tie_rate": 0.957,
+        "low_conf_rate": 1.0,
+        "low_conf_rate_decision": 0.179
+      },
+      "T3_faithfulness": {
+        "n_citations": 579,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.3,
+        "recall": 0.75,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-011",
+          "ACT-018",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 11.09,
+      "S1_tick_latency_ms_p95": 17.46,
+      "S4_llm_invocation_rate": 0.557,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_C06_wet_coal_repeat",
+      "family": "C",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.409,
+          "DEVIATION": 0.325,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.367,
+        "confusion": {
+          "NORMAL->NORMAL": 36,
+          "NORMAL->DEVIATION": 8,
+          "DEVIATION->DEVIATION": 26,
+          "DEVIATION->ALARM": 4,
+          "DEVIATION->NORMAL": 96
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": true,
+        "target": "RCA-06",
+        "true_group": "RCA-14+RCA-18",
+        "n_scored": 35,
+        "top1": 0.0,
+        "top3": 0.0,
+        "top1_strict": null,
+        "top3_strict": null,
+        "group_top1": 0.714,
+        "sep_named": null,
+        "belief_top1": null,
+        "belief_top3": null,
+        "belief_top1_tiefair": null,
+        "belief_group": 0.457,
+        "belief_group_tiefair": 0.571,
+        "belief_top_tie_rate": 0.629,
+        "low_conf_rate": 0.943,
+        "low_conf_rate_decision": 0.029
+      },
+      "T3_faithfulness": {
+        "n_citations": 190,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.333,
+        "recall": 0.75,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-011",
+          "ACT-012",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 5.08,
+      "S1_tick_latency_ms_p95": 14.23,
+      "S4_llm_invocation_rate": 0.224,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_D01_high_cv_coal",
+      "family": "D",
+      "tier": "C",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.798,
+          "DEVIATION": 0.37,
+          "DEGRADED": 0.0,
+          "ALARM": 0.962,
+          "TRIP_IMMINENT": 0.909
+        },
+        "macro_f1": 0.76,
+        "confusion": {
+          "NORMAL->DEVIATION": 11,
+          "NORMAL->NORMAL": 65,
+          "DEVIATION->NORMAL": 22,
+          "DEVIATION->DEVIATION": 10,
+          "DEVIATION->ALARM": 1,
+          "ALARM->ALARM": 141,
+          "ALARM->TRIP_IMMINENT": 10,
+          "TRIP_IMMINENT->TRIP_IMMINENT": 50
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-07",
+        "true_group": "RCA-07",
+        "n_scored": 221,
+        "top1": 0.774,
+        "top3": 0.86,
+        "top1_strict": 0.774,
+        "top3_strict": 0.86,
+        "group_top1": 0.774,
+        "sep_named": 0.774,
+        "belief_top1": 0.824,
+        "belief_top3": 0.887,
+        "belief_top1_tiefair": 0.824,
+        "belief_group": 0.824,
+        "belief_group_tiefair": 0.824,
+        "belief_top_tie_rate": 0.077,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 1270,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.4,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-025",
+          "ACT-031",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": true,
+        "first_correct_t": 930.0,
+        "trip_t": 7820.0,
+        "lead_time_min": 114.8
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 21.82,
+      "S1_tick_latency_ms_p95": 43.15,
+      "S4_llm_invocation_rate": 0.719,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_D02_low_primary_air",
+      "family": "D",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.92,
+          "DEVIATION": 0.417,
+          "DEGRADED": 0.0,
+          "ALARM": 0.997,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.778,
+        "confusion": {
+          "NORMAL->NORMAL": 75,
+          "NORMAL->DEVIATION": 5,
+          "DEVIATION->NORMAL": 8,
+          "DEVIATION->DEVIATION": 5,
+          "DEVIATION->ALARM": 1,
+          "ALARM->ALARM": 156
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 939,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 13.89,
+      "S1_tick_latency_ms_p95": 37.94,
+      "S4_llm_invocation_rate": 0.668,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_D03_high_cv_severe",
+      "family": "D",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.923,
+          "DEVIATION": 0.7,
+          "DEGRADED": 0.0,
+          "ALARM": 0.886,
+          "TRIP_IMMINENT": 0.929
+        },
+        "macro_f1": 0.86,
+        "confusion": {
+          "NORMAL->NORMAL": 30,
+          "NORMAL->DEVIATION": 5,
+          "DEVIATION->DEVIATION": 7,
+          "DEVIATION->ALARM": 1,
+          "ALARM->ALARM": 39,
+          "ALARM->TRIP_IMMINENT": 9,
+          "TRIP_IMMINENT->TRIP_IMMINENT": 59
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": false,
+        "target": "RCA-07",
+        "true_group": "RCA-07",
+        "n_scored": 120,
+        "top1": 0.875,
+        "top3": 0.992,
+        "top1_strict": 0.875,
+        "top3_strict": 0.992,
+        "group_top1": 0.875,
+        "sep_named": 0.875,
+        "belief_top1": 1.0,
+        "belief_top3": 1.0,
+        "belief_top1_tiefair": 1.0,
+        "belief_group": 1.0,
+        "belief_group_tiefair": 1.0,
+        "belief_top_tie_rate": 0.0,
+        "low_conf_rate": null,
+        "low_conf_rate_decision": null
+      },
+      "T3_faithfulness": {
+        "n_citations": 620,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.5,
+        "recall": 1.0,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024",
+          "ACT-031",
+          "ACT-040"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-018",
+          "ACT-019",
+          "ACT-024"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": true,
+        "first_correct_t": 1170.0,
+        "trip_t": 2985.0,
+        "lead_time_min": 30.2
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 19.42,
+      "S1_tick_latency_ms_p95": 24.78,
+      "S4_llm_invocation_rate": 0.8,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_D04_low_pa_caught",
+      "family": "D",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.935,
+          "DEVIATION": 0.537,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.736,
+        "confusion": {
+          "NORMAL->DEVIATION": 12,
+          "NORMAL->NORMAL": 130,
+          "DEVIATION->DEVIATION": 11,
+          "DEVIATION->NORMAL": 6,
+          "DEVIATION->ALARM": 1
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 129,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 5.05,
+      "S1_tick_latency_ms_p95": 13.2,
+      "S4_llm_invocation_rate": 0.15,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_E01_fouling_drift",
+      "family": "E",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 1.0,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "NORMAL->NORMAL": 390
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 0,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 1.76,
+      "S1_tick_latency_ms_p95": 1.88,
+      "S4_llm_invocation_rate": 0.0,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_E02_fouling_drift",
+      "family": "E",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.999,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.999,
+        "confusion": {
+          "NORMAL->DEVIATION": 1,
+          "NORMAL->NORMAL": 349
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 3,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 3.78,
+      "S1_tick_latency_ms_p95": 3.97,
+      "S4_llm_invocation_rate": 0.003,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_E03_fouling_drift",
+      "family": "E",
+      "tier": "B",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 1.0,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "NORMAL->NORMAL": 310
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 0,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 1.77,
+      "S1_tick_latency_ms_p95": 1.91,
+      "S4_llm_invocation_rate": 0.0,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_N01_normal",
+      "family": "N",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 1.0,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "NORMAL->NORMAL": 80
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 0,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": true,
+        "fp_ticks": 0,
+        "fp_per_hour": 0.0
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 1.55,
+      "S1_tick_latency_ms_p95": 1.65,
+      "S4_llm_invocation_rate": 0.0,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_N02_normal",
+      "family": "N",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 1.0,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "NORMAL->NORMAL": 110
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 0,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": true,
+        "fp_ticks": 0,
+        "fp_per_hour": 0.0
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 1.6,
+      "S1_tick_latency_ms_p95": 1.77,
+      "S4_llm_invocation_rate": 0.0,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_N03_normal",
+      "family": "N",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.977,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.977,
+        "confusion": {
+          "NORMAL->DEVIATION": 5,
+          "NORMAL->NORMAL": 105
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 24,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": true,
+        "fp_ticks": 5,
+        "fp_per_hour": 5.45
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 3.79,
+      "S1_tick_latency_ms_p95": 6.17,
+      "S4_llm_invocation_rate": 0.045,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_N04_normal",
+      "family": "N",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 1.0,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "NORMAL->NORMAL": 170
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 0,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": true,
+        "fp_ticks": 0,
+        "fp_per_hour": 0.0
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 1.64,
+      "S1_tick_latency_ms_p95": 1.84,
+      "S4_llm_invocation_rate": 0.0,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_N05_normal",
+      "family": "N",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 1.0,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "NORMAL->NORMAL": 80
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 0,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": true,
+        "fp_ticks": 0,
+        "fp_per_hour": 0.0
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 1.53,
+      "S1_tick_latency_ms_p95": 1.65,
+      "S4_llm_invocation_rate": 0.0,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    },
+    {
+      "episode_id": "ep_N06_normal",
+      "family": "N",
+      "tier": "A",
+      "backend": "mock",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 1.0,
+          "DEVIATION": 0.0,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "NORMAL->NORMAL": 140
+        }
+      },
+      "T2_root_cause": {
+        "applicable": false
+      },
+      "T3_faithfulness": {
+        "n_citations": 0,
+        "faithfulness": 1.0
+      },
+      "T4_actions": {
+        "applicable": false
+      },
+      "T5_false_positives": {
+        "applicable": true,
+        "fp_ticks": 0,
+        "fp_per_hour": 0.0
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 1.59,
+      "S1_tick_latency_ms_p95": 1.86,
+      "S4_llm_invocation_rate": 0.0,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    }
+  ]
+}

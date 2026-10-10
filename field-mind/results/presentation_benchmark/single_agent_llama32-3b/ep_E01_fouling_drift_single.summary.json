@@ -1,0 +1,63 @@
+{
+ "meta": {
+  "episode": "ep_E01_fouling_drift",
+  "family": "family E, tier B",
+  "backend": "llamaserver",
+  "model": "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf",
+  "llm_where": "board, llama-server at http://localhost:8080",
+  "host": "fedora (x86_64)",
+  "policy": "sequential",
+  "verifier": "conditional",
+  "started": "2026-10-05 19:05:03",
+  "finished": "2026-10-05 19:05:03",
+  "runner": "bench/stage_monitor.py (LlamaServerBackend)",
+  "timing_report": "stage_timing_ep_E01_fouling_drift_llamaserver_20261005-190503.txt",
+  "energy_mwh": null
+ },
+ "evaluation": {
+  "episode_id": "ep_E01_fouling_drift",
+  "family": "E",
+  "tier": "B",
+  "backend": "llamaserver",
+  "ablate_text": false,
+  "T1_state": {
+   "per_state_f1": {
+    "NORMAL": 1.0,
+    "DEVIATION": 0.0,
+    "DEGRADED": 0.0,
+    "ALARM": 0.0,
+    "TRIP_IMMINENT": 0.0
+   },
+   "macro_f1": 1.0,
+   "confusion": {
+    "NORMAL->NORMAL": 390
+   }
+  },
+  "T2_root_cause": {
+   "applicable": false
+  },
+  "T3_faithfulness": {
+   "n_citations": 0,
+   "faithfulness": 1.0
+  },
+  "T4_actions": {
+   "applicable": false
+  },
+  "T5_false_positives": {
+   "applicable": false
+  },
+  "T6_lead_time": {
+   "applicable": false
+  },
+  "T9_injection": {
+   "applicable": false
+  },
+  "S1_tick_latency_ms_p50": 0.66,
+  "S1_tick_latency_ms_p95": 0.7,
+  "S4_llm_invocation_rate": 0.0,
+  "S7_deadline_miss_rate": 0.0,
+  "parse_failure_rate": 0.0,
+  "verifier_disagreement_rate": 0.0,
+  "S3_energy_mwh": null
+ }
+}

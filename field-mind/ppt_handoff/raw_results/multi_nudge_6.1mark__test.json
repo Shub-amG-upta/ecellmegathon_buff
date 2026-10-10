@@ -1,0 +1,128 @@
+{
+ "name": "multi_nudge_6.1mark",
+ "created": "2026-10-07T20:48:38+0530",
+ "params": {
+  "arch": "multi",
+  "mode": "lockstep",
+  "tick_s": null,
+  "overlay": "configs/fast.yaml",
+  "overlay_sha256": "e0f034c0a12dabd4",
+  "merge_rule": "nudge",
+  "backend": "llamaserver",
+  "models": {
+   "npu": "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf",
+   "cpu": "gemma-3-1b-it-qat-Q4_0-pure-embq8.gguf"
+  },
+  "prompts_saved": true
+ },
+ "runs": [
+  {
+   "episode": "ep_A02_fcv_seize_fast",
+   "run": 1,
+   "stem": "ep_A02_fcv_seize_fast_multi",
+   "status": "done",
+   "started": "2026-10-07T20:48:44+0530",
+   "git": {
+    "commit": "8acbc13",
+    "branch": "multi-agent-fix",
+    "uncommitted_changes": true
+   },
+   "chip_c_before": 34.5,
+   "cool_wait_s": 0,
+   "wall_s": 151.1,
+   "chip_c_after": 57.9,
+   "exit_code": 0,
+   "finished": "2026-10-07T20:51:32+0530"
+  },
+  {
+   "episode": "ep_A03_bfp_suction",
+   "run": 1,
+   "stem": "ep_A03_bfp_suction_multi",
+   "status": "done",
+   "started": "2026-10-07T20:51:32+0530",
+   "git": {
+    "commit": "8acbc13",
+    "branch": "multi-agent-fix",
+    "uncommitted_changes": true
+   },
+   "chip_c_before": 39.7,
+   "cool_wait_s": 120,
+   "wall_s": 185.6,
+   "chip_c_after": 61.4,
+   "exit_code": 0,
+   "finished": "2026-10-07T20:57:29+0530"
+  },
+  {
+   "episode": "ep_C02_feeder_trip",
+   "run": 1,
+   "stem": "ep_C02_feeder_trip_multi",
+   "status": "done",
+   "started": "2026-10-07T20:57:29+0530",
+   "git": {
+    "commit": "8acbc13",
+    "branch": "multi-agent-fix",
+    "uncommitted_changes": true
+   },
+   "chip_c_before": 39.5,
+   "cool_wait_s": 195,
+   "wall_s": 171.6,
+   "chip_c_after": 61.0,
+   "exit_code": 0,
+   "finished": "2026-10-07T21:04:49+0530"
+  },
+  {
+   "episode": "ep_C03_wet_coal_mild",
+   "run": 1,
+   "stem": "ep_C03_wet_coal_mild_multi",
+   "status": "done",
+   "started": "2026-10-07T21:04:49+0530",
+   "git": {
+    "commit": "8acbc13",
+    "branch": "multi-agent-fix",
+    "uncommitted_changes": true
+   },
+   "chip_c_before": 40.3,
+   "cool_wait_s": 165,
+   "wall_s": 116.6,
+   "chip_c_after": 58.7,
+   "exit_code": 0,
+   "finished": "2026-10-07T21:10:35+0530"
+  },
+  {
+   "episode": "ep_B02_tube_leak_fast",
+   "run": 1,
+   "stem": "ep_B02_tube_leak_fast_multi",
+   "status": "done",
+   "started": "2026-10-07T21:10:35+0530",
+   "git": {
+    "commit": "8acbc13",
+    "branch": "multi-agent-fix",
+    "uncommitted_changes": true
+   },
+   "chip_c_before": 40.5,
+   "cool_wait_s": 150,
+   "wall_s": 100.6,
+   "chip_c_after": 58.7,
+   "exit_code": 0,
+   "finished": "2026-10-07T21:15:45+0530"
+  },
+  {
+   "episode": "ep_B03_tube_leak_slow",
+   "run": 1,
+   "stem": "ep_B03_tube_leak_slow_multi",
+   "status": "done",
+   "started": "2026-10-07T21:15:45+0530",
+   "git": {
+    "commit": "8acbc13",
+    "branch": "multi-agent-fix",
+    "uncommitted_changes": true
+   },
+   "chip_c_before": 40.5,
+   "cool_wait_s": 150,
+   "wall_s": 327.2,
+   "chip_c_after": 63.7,
+   "exit_code": 0,
+   "finished": "2026-10-07T21:24:43+0530"
+  }
+ ]
+}

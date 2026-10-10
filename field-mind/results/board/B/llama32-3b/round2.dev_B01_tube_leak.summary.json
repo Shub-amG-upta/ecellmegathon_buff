@@ -1,0 +1,406 @@
+{
+ "meta": {
+  "job": "B/round2/llama32-3b/dev_B01_tube_leak",
+  "stage": "B",
+  "phase": "round2",
+  "model": "llama32-3b",
+  "model_file": "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf",
+  "model_sha256": "5aa3ece50ab33d09a7181888a75f8755f924c662dc99626e7f45440adfeadcdb",
+  "server_flags": "-c 4096 -np 1 --device HTP0 -ngl 99 -fit off --cache-ram 0 -lv 4",
+  "sampling": {
+   "temperature": 0.0,
+   "seed": 0,
+   "max_tokens": 256,
+   "cache_prompt": false,
+   "json_mode": false,
+   "extra_body": {}
+  },
+  "episode": "dev_B01_tube_leak",
+  "episodes_dir": "data/episodes_dev",
+  "git_commit": "76f4d3e1239a3a2baa3018b735a8dcb237803196",
+  "code_hash": "10627556e0969a28",
+  "llamacpp_commit": "99b95488c",
+  "config": {
+   "llm": {
+    "backend": "campaign",
+    "gemini": {
+     "model": "gemini-flash-lite-latest",
+     "api_key_env": "GOOGLE_API_KEY",
+     "temperature": 0.1,
+     "timeout_s": 30,
+     "json_mode": true,
+     "max_retries": 5,
+     "backoff_base_s": 2.0,
+     "backoff_cap_s": 60.0,
+     "min_interval_s": 4.0
+    },
+    "litert": {
+     "mode": "adb",
+     "device_dir": "/data/local/tmp/llm",
+     "binary": "litert_lm_main",
+     "model_file": "model.litertlm",
+     "accelerator": "cpu",
+     "timeout_s": 60,
+     "adb_serial": ""
+    },
+    "llamaserver": {
+     "url": "http://localhost:8080",
+     "lane": "npu",
+     "model_file": null,
+     "ctx_size": 4096,
+     "cpu_threads": 6,
+     "temperature": 0.0,
+     "seed": 0,
+     "timeout_s": 120,
+     "json_mode": false,
+     "cache_prompt": false
+    }
+   },
+   "agent": {
+    "tick_period_s": 30,
+    "policy": "sequential",
+    "verifier": "conditional",
+    "verifier_band": [
+     0.35,
+     0.75
+    ],
+    "max_tokens": 256,
+    "max_actions": 3,
+    "min_faithfulness": 0.5,
+    "hard_stage_deadline_ms": 200,
+    "llm_budget_ms": 8000,
+    "triage": {
+     "trip_horizon_min": 5.0
+    },
+    "belief": {
+     "retire_after_ticks": null
+    },
+    "retrieval": {
+     "k_cases": 4,
+     "k_notes": 5,
+     "k_experience": 2,
+     "k_records": 5,
+     "topology_depth": 3,
+     "context_cap_tokens": {
+      "WATCH": 2048,
+      "INVESTIGATE": 3072,
+      "URGENT": 1024
+     }
+    },
+    "log_prompts": false
+   },
+   "checks": {
+    "sample_period_s": 5.0,
+    "load_coef_degc_per_tph": 2.43,
+    "limits": {
+     "bed_temp_avg": {
+      "alarm_hi": {
+       "op": ">",
+       "value": 880.0,
+       "severity": "ALARM"
+      },
+      "critical_hi": {
+       "op": ">",
+       "value": 940.0,
+       "severity": "CRITICAL"
+      }
+     },
+     "drum_level": {
+      "alarm_lo": {
+       "op": "<",
+       "value": 20.0,
+       "severity": "ALARM"
+      },
+      "critical_lo": {
+       "op": "<",
+       "value": 10.0,
+       "severity": "CRITICAL"
+      }
+     },
+     "ms_temperature": {
+      "alarm_hi": {
+       "op": ">",
+       "value": 550.0,
+       "severity": "ALARM"
+      }
+     },
+     "drum_pressure": {
+      "alarm_hi": {
+       "op": ">",
+       "value": 70.0,
+       "severity": "ALARM"
+      },
+      "alarm_lo": {
+       "op": "<",
+       "value": 55.0,
+       "severity": "ALARM"
+      }
+     }
+    },
+    "rates": {
+     "drum_level": {
+      "threshold": 0.5,
+      "sustained_min": 3.0,
+      "direction": "abs",
+      "unit": "%/min",
+      "severity": "WATCH"
+     },
+     "bed_temp_avg": {
+      "threshold": 1.6,
+      "sustained_min": 10.0,
+      "direction": "up",
+      "unit": "degC/min",
+      "severity": "WATCH"
+     },
+     "drum_pressure": {
+      "threshold": -0.15,
+      "sustained_min": 5.0,
+      "direction": "down",
+      "unit": "kg/cm2/min",
+      "severity": "WATCH"
+     }
+    },
+    "rates_long": {
+     "bed_temp_avg": {
+      "threshold": 0.28,
+      "sustained_min": 55.0,
+      "direction": "up",
+      "unit": "degC/min",
+      "severity": "WATCH"
+     },
+     "ms_temperature": {
+      "threshold": 0.2,
+      "sustained_min": 40.0,
+      "direction": "up",
+      "unit": "degC/min",
+      "severity": "INFO"
+     },
+     "drum_pressure": {
+      "threshold": -0.01,
+      "sustained_min": 40.0,
+      "direction": "down",
+      "unit": "kg/cm2/min",
+      "severity": "INFO"
+     }
+    },
+    "bands": {
+     "drum_level": [
+      0.03,
+      0.15,
+      0.5
+     ],
+     "feed_water_flow": [
+      0.05,
+      0.3,
+      1.0
+     ],
+     "steam_flow": [
+      0.05,
+      0.3,
+      1.0
+     ],
+     "drum_pressure": [
+      0.004,
+      0.02,
+      0.08
+     ],
+     "bed_temp_avg": [
+      0.03,
+      0.15,
+      0.5
+     ],
+     "ms_temperature": [
+      0.04,
+      0.2,
+      0.8
+     ]
+    },
+    "balance": {
+     "level_gain_pct_per_min_per_tph": 0.586,
+     "residual_tph": 1.5,
+     "window_min": 5.0,
+     "p_falling": 0.15,
+     "bed_rising": 1.3,
+     "steam_flat_tph_per_min": 0.3
+    },
+    "validity": {
+     "stuck_minutes": 10.0,
+     "stuck_mad_eps": 0.001,
+     "physical_range": {
+      "drum_level": [
+       0.0,
+       100.0
+      ],
+      "feed_water_flow": [
+       0.0,
+       120.0
+      ],
+      "steam_flow": [
+       0.0,
+       120.0
+      ],
+      "drum_pressure": [
+       0.0,
+       90.0
+      ],
+      "bed_temp_avg": [
+       0.0,
+       1200.0
+      ],
+      "ms_temperature": [
+       0.0,
+       700.0
+      ]
+     },
+     "max_step": {
+      "drum_level": 5.0,
+      "feed_water_flow": 15.0,
+      "steam_flow": 15.0,
+      "drum_pressure": 3.0,
+      "bed_temp_avg": 25.0,
+      "ms_temperature": 25.0
+     }
+    }
+   },
+   "paths": {
+    "asset_model": "data/kb/asset_model.json",
+    "case_library": "data/kb/case_library.json",
+    "action_catalogue": "data/kb/action_catalogue.json",
+    "episodes": "data/episodes_dev",
+    "experience": "data/experience/store.json",
+    "results": "results"
+   }
+  },
+  "chip_temp_start": {
+   "t": "2026-10-04T00:18:32+0530",
+   "cpu_max_c": 44.6,
+   "npu_max_c": 42.0,
+   "n_zones": 75
+  },
+  "chip_temp_end": {
+   "t": "2026-10-04T01:18:48+0530",
+   "cpu_max_c": 56.2,
+   "npu_max_c": 56.0,
+   "n_zones": 75
+  },
+  "thermal_gate": {
+   "waited_s": 60.0,
+   "limit_c": 38.3,
+   "temp_c": 38.2,
+   "timed_out": false
+  },
+  "chip_temp_peak": {
+   "cpu_max_c": 68.2,
+   "npu_max_c": 64.1,
+   "n_reads": 232
+  },
+  "memory_guard": {
+   "threshold_kb": 2097152,
+   "before": {
+    "mem_available_kb": 6397004,
+    "server_rss_kb": 501772,
+    "t": "2026-10-04T00:18:28+0530"
+   },
+   "restarted": false
+  },
+  "network": {
+   "t": "2026-10-04T00:18:32+0530",
+   "interfaces": {
+    "docker0": "down",
+    "lo": "unknown",
+    "wlp0s20f3": "up"
+   },
+   "default_route": true
+  },
+  "n_calls": 230,
+  "n_cache_hits": 0,
+  "finished": "2026-10-04T01:18:48+0530",
+  "energy_mwh": null
+ },
+ "evaluation": {
+  "episode_id": "dev_B01_tube_leak",
+  "family": "B",
+  "tier": "C",
+  "backend": "campaign",
+  "ablate_text": false,
+  "T1_state": {
+   "per_state_f1": {
+    "NORMAL": 0.95,
+    "DEVIATION": 0.0,
+    "DEGRADED": 0.0,
+    "ALARM": 0.0,
+    "TRIP_IMMINENT": 0.0
+   },
+   "macro_f1": 0.475,
+   "confusion": {
+    "NORMAL->NORMAL": 38,
+    "DEVIATION->NORMAL": 4,
+    "DEVIATION->ALARM": 128
+   }
+  },
+  "T2_root_cause": {
+   "applicable": true,
+   "heldout": false,
+   "target": "RCA-11",
+   "true_group": "RCA-11",
+   "n_scored": 128,
+   "top1": 0.547,
+   "top3": 0.836,
+   "top1_strict": 0.547,
+   "top3_strict": 0.836,
+   "group_top1": 0.547,
+   "sep_named": 0.547,
+   "belief_top1": 0.469,
+   "belief_top3": 0.508,
+   "belief_top1_tiefair": 0.352,
+   "belief_group": 0.469,
+   "belief_group_tiefair": 0.352,
+   "belief_top_tie_rate": 0.641,
+   "low_conf_rate": null,
+   "low_conf_rate_decision": null
+  },
+  "T3_faithfulness": {
+   "n_citations": 167,
+   "faithfulness": 0.844
+  },
+  "T4_actions": {
+   "applicable": true,
+   "precision": 0.4,
+   "recall": 1.0,
+   "proposed": [
+    "ACT-002",
+    "ACT-009",
+    "ACT-018",
+    "ACT-019",
+    "ACT-021",
+    "ACT-024",
+    "ACT-025",
+    "ACT-031",
+    "ACT-040",
+    "ACT-041"
+   ],
+   "expected": [
+    "ACT-002",
+    "ACT-009",
+    "ACT-031",
+    "ACT-040"
+   ]
+  },
+  "T5_false_positives": {
+   "applicable": false
+  },
+  "T6_lead_time": {
+   "applicable": false
+  },
+  "T9_injection": {
+   "applicable": false
+  },
+  "S1_tick_latency_ms_p50": 27276.1,
+  "S1_tick_latency_ms_p95": 37505.19,
+  "S4_llm_invocation_rate": 0.753,
+  "S7_deadline_miss_rate": 0.3059,
+  "parse_failure_rate": 0.07,
+  "verifier_disagreement_rate": 0.57,
+  "S3_energy_mwh": null
+ }
+}

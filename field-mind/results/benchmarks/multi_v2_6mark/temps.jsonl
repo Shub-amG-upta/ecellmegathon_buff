@@ -1,0 +1,13 @@
+{"episode": "batch", "when": "start", "t": "2026-10-07T15:28:16+0530", "max_c": 34.1, "cool_wait_s": null}
+{"episode": "ep_N01_normal", "when": "before", "t": "2026-10-07T15:28:30+0530", "max_c": 34.5, "cool_wait_s": 0}
+{"episode": "ep_N01_normal", "when": "after", "t": "2026-10-07T15:28:51+0530", "max_c": 44.6, "cool_wait_s": null}
+{"episode": "ep_A01_fcv_seize", "when": "before", "t": "2026-10-07T15:29:23+0530", "max_c": 38.2, "cool_wait_s": 15}
+{"episode": "ep_A01_fcv_seize", "when": "after", "t": "2026-10-07T15:32:51+0530", "max_c": 60.6, "cool_wait_s": null}
+{"episode": "ep_B01_tube_leak", "when": "before", "t": "2026-10-07T15:37:15+0530", "max_c": 38.7, "cool_wait_s": 195}
+{"episode": "ep_B01_tube_leak", "when": "after", "t": "2026-10-07T15:41:27+0530", "max_c": 62.9, "cool_wait_s": null}
+{"episode": "ep_C01_wet_coal", "when": "before", "t": "2026-10-07T15:46:49+0530", "max_c": 38.0, "cool_wait_s": 240}
+{"episode": "ep_C01_wet_coal", "when": "after", "t": "2026-10-07T15:48:27+0530", "max_c": 56.7, "cool_wait_s": null}
+{"episode": "ep_D01_high_cv_coal", "when": "before", "t": "2026-10-07T15:51:33+0530", "max_c": 39.1, "cool_wait_s": 135}
+{"episode": "ep_D01_high_cv_coal", "when": "after", "t": "2026-10-07T15:58:52+0530", "max_c": 65.5, "cool_wait_s": null}
+{"episode": "ep_E01_fouling_drift", "when": "before", "t": "2026-10-07T16:04:14+0530", "max_c": 38.4, "cool_wait_s": 240}
+{"episode": "ep_E01_fouling_drift", "when": "after", "t": "2026-10-07T16:04:45+0530", "max_c": 50.8, "cool_wait_s": null}

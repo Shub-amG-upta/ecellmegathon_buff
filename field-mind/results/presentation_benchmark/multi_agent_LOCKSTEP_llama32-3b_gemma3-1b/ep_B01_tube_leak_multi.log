@@ -1,0 +1,166 @@
+=== ep_B01_tube_leak  started 2026-10-05T22:42:39+0530  BACK TO BACK (lockstep)  backend llamaserver
+backend = llamaserver
+
+--- ep_B01_tube_leak  (B/tier C) truth: Water wall tube erosion and split
+  t  40 NORMAL        QUIET       All six parameters within band; balances close.            | -
+  t  51 ALARM         INVESTIGATE water balance residual +1.6 TPH (feed 66.3, steam 63.7, le | Fireside erosion of a water wall tube by circu
+  t  52 ALARM         INVESTIGATE water balance residual +1.7 TPH (feed 66.4, steam 63.8, le | Deflagration on re-ignition of an accumulated 
+  t  53 ALARM         INVESTIGATE water balance residual +1.8 TPH (feed 66.6, steam 63.9, le | Deflagration on re-ignition of an accumulated 
+  t  54 ALARM         INVESTIGATE water balance residual +1.9 TPH (feed 66.9, steam 64.1, le | Deflagration on re-ignition of an accumulated 
+  t  55 ALARM         INVESTIGATE water balance residual +1.9 TPH (feed 67.0, steam 64.2, le | Deflagration on re-ignition of an accumulated 
+  t  56 ALARM         INVESTIGATE water balance residual +2.0 TPH (feed 67.2, steam 64.2, le | Deflagration on re-ignition of an accumulated 
+  t  57 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.3, steam 64.2, le | Deflagration on re-ignition of an accumulated 
+  t  58 ALARM         INVESTIGATE water balance residual +2.0 TPH (feed 67.4, steam 64.2, le | Deflagration on re-ignition of an accumulated 
+  t  59 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.3, le | Deflagration on re-ignition of an accumulated 
+  t  60 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.3, le | Deflagration on re-ignition of an accumulated 
+  t  61 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.3, le | Fireside erosion of a water wall tube by circu
+  t  62 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.6, steam 64.4, le | Fireside erosion of a water wall tube by circu
+  t  63 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.6, steam 64.4, le | Fireside erosion of a water wall tube by circu
+  t  64 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Fireside erosion of a water wall tube by circu
+  t  65 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Fireside erosion of a water wall tube by circu
+  t  66 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.5, le | Fireside erosion of a water wall tube by circu
+  t  67 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Fireside erosion of a water wall tube by circu
+  t  68 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Fireside erosion of a water wall tube by circu
+  t  69 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Fireside erosion of a water wall tube by circu
+  t  70 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.9, steam 64.7, le | Fireside erosion of a water wall tube by circu
+  t  71 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.0, steam 64.8, le | Fireside erosion of a water wall tube by circu
+  t  72 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.0, steam 64.8, le | Fireside erosion of a water wall tube by circu
+  t  73 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.1, steam 64.9, le | Fireside erosion of a water wall tube by circu
+  t  74 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.2, steam 64.9, le | Fireside erosion of a water wall tube by circu
+  t  75 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.3, steam 65.1, le | Fireside erosion of a water wall tube by circu
+  t  76 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.4, steam 65.2, le | Fireside erosion of a water wall tube by circu
+  t  77 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.5, steam 65.3, le | Fireside erosion of a water wall tube by circu
+  t  78 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Fireside erosion of a water wall tube by circu
+  t  79 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Fireside erosion of a water wall tube by circu
+  t  80 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.8, steam 65.6, le | Fireside erosion of a water wall tube by circu
+  t  81 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.8, steam 65.6, le | Fireside erosion of a water wall tube by circu
+  t  82 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.8, steam 65.6, le | Fireside erosion of a water wall tube by circu
+  t  83 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.8, steam 65.5, le | Fireside erosion of a water wall tube by circu
+  t  84 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.7, steam 65.5, le | Fireside erosion of a water wall tube by circu
+  t  85 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Fireside erosion of a water wall tube by circu
+  t  86 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Fireside erosion of a water wall tube by circu
+  t  87 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Fireside erosion of a water wall tube by circu
+  t  88 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Fireside erosion of a water wall tube by circu
+  t  89 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.5, steam 65.4, le | Insufficient primary air velocity in one branc
+  t  90 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Insufficient primary air velocity in one branc
+  t  91 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Insufficient primary air velocity in one branc
+  t  92 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.5, le | Sulphuric acid condensation on cold-end APH tu
+  t  93 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Fireside erosion of a water wall tube by circu
+  t  94 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Insufficient primary air velocity in one branc
+  t  95 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.7, steam 65.5, le | Insufficient primary air velocity in one branc
+  t  96 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.8, steam 65.6, le | Insufficient primary air velocity in one branc
+  t  97 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.8, steam 65.6, le | Insufficient primary air velocity in one branc
+  t  98 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.9, steam 65.7, le | Fireside erosion of a water wall tube by circu
+  t  99 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.9, steam 65.7, le | Fireside erosion of a water wall tube by circu
+  t 100 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.9, steam 65.6, le | Fireside erosion of a water wall tube by circu
+  t 101 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.8, steam 65.5, le | Fireside erosion of a water wall tube by circu
+  t 102 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.7, steam 65.5, le | Fireside erosion of a water wall tube by circu
+  t 103 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.6, steam 65.4, le | Fireside erosion of a water wall tube by circu
+  t 104 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.6, steam 65.4, le | Fireside erosion of a water wall tube by circu
+  t 105 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.5, steam 65.3, le | Two independent failures in sequence: PA fan m
+  t 106 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.4, steam 65.2, le | Two independent failures in sequence: PA fan m
+  t 107 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.3, steam 65.0, le | Two independent failures in sequence: PA fan m
+  t 108 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 68.1, steam 64.9, le | Two independent failures in sequence: PA fan m
+  t 109 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 68.0, steam 64.8, le | Two independent failures in sequence: PA fan m
+  t 110 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.9, steam 64.7, le | Two independent failures in sequence: PA fan m
+  t 111 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.7, le | Sulphuric acid condensation on cold-end APH tu
+  t 112 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Sulphuric acid condensation on cold-end APH tu
+  t 113 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Sulphuric acid condensation on cold-end APH tu
+  t 114 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Sulphuric acid condensation on cold-end APH tu
+  t 115 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.8, steam 64.6, le | Sulphuric acid condensation on cold-end APH tu
+  t 116 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.6, le | Sulphuric acid condensation on cold-end APH tu
+  t 117 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Sulphuric acid condensation on cold-end APH tu
+  t 118 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Sulphuric acid condensation on cold-end APH tu
+  t 119 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.7, steam 64.5, le | Sulphuric acid condensation on cold-end APH tu
+  t 120 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.6, steam 64.5, le | Fireside erosion of a water wall tube by circu
+  t 121 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.6, steam 64.4, le | Fireside erosion of a water wall tube by circu
+  t 122 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.4, le | Deflagration on re-ignition of an accumulated 
+  t 123 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.5, steam 64.3, le | Insufficient primary air velocity in one branc
+  t 124 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.4, steam 64.2, le | Insufficient primary air velocity in one branc
+  t 125 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.3, steam 64.1, le | Sulphuric acid condensation on cold-end APH tu
+  t 126 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.3, steam 64.1, le | Sulphuric acid condensation on cold-end APH tu
+  t 127 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.2, steam 64.1, le | Sulphuric acid condensation on cold-end APH tu
+  t 128 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.1, le | Fireside erosion of a water wall tube by circu
+  t 129 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Fireside erosion of a water wall tube by circu
+  t 130 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Loss of the HP heater and the resulting low ec
+  t 131 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 132 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 133 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 134 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 64.0, le | Loss of the HP heater and the resulting low ec
+  t 135 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 64.0, le | Loss of the HP heater and the resulting low ec
+  t 136 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 137 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Fireside erosion of a water wall tube by circu
+  t 138 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 64.0, le | Fireside erosion of a water wall tube by circu
+  t 139 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Insufficient primary air velocity in one branc
+  t 140 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Insufficient primary air velocity in one branc
+  t 141 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 64.0, le | Insufficient primary air velocity in one branc
+  t 142 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.1, steam 64.0, le | Insufficient primary air velocity in one branc
+  t 143 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 67.1, steam 64.0, le | Insufficient primary air velocity in one branc
+  t 144 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 145 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.8, le | Fireside erosion of a water wall tube by circu
+  t 146 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.0, steam 63.8, le | Fireside erosion of a water wall tube by circu
+  t 147 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 66.9, steam 63.7, le | Deflagration on re-ignition of an accumulated 
+  t 148 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.9, steam 63.7, le | Insufficient primary air velocity in one branc
+  t 149 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.9, steam 63.7, le | Fireside erosion of a water wall tube by circu
+  t 150 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.9, steam 63.8, le | Fireside erosion of a water wall tube by circu
+  t 151 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.0, steam 63.8, le | Fireside erosion of a water wall tube by circu
+  t 152 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.0, steam 63.8, le | Fireside erosion of a water wall tube by circu
+  t 153 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.1, steam 63.9, le | Deflagration on re-ignition of an accumulated 
+  t 154 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Fireside erosion of a water wall tube by circu
+  t 155 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Fireside erosion of a water wall tube by circu
+  t 156 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 64.0, le | Fireside erosion of a water wall tube by circu
+  t 157 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.2, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 158 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 67.1, steam 63.9, le | Fireside erosion of a water wall tube by circu
+  t 159 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 67.0, steam 63.7, le | Deflagration on re-ignition of an accumulated 
+  t 160 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.8, steam 63.6, le | Loss of a stable light-up flame from degraded 
+  t 161 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.6, steam 63.4, le | Loss of a stable light-up flame from degraded 
+  t 162 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.4, steam 63.2, le | Loss of a stable light-up flame from degraded 
+  t 163 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.2, steam 63.0, le | Loss of a stable light-up flame from degraded 
+  t 164 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 66.0, steam 62.8, le | Fireside erosion of a water wall tube by circu
+  t 165 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 65.9, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 166 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 65.8, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 167 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 65.8, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 168 ALARM         INVESTIGATE water balance residual +2.1 TPH (feed 65.8, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 169 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.9, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 170 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.9, steam 62.8, le | Fireside erosion of a water wall tube by circu
+  t 171 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 65.9, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 172 ALARM         INVESTIGATE water balance residual +2.3 TPH (feed 66.0, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 173 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.9, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 174 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.9, steam 62.7, le | Fireside erosion of a water wall tube by circu
+  t 175 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.8, steam 62.6, le | Fireside erosion of a water wall tube by circu
+  t 176 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.7, steam 62.5, le | Fireside erosion of a water wall tube by circu
+  t 177 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.6, steam 62.4, le | Fireside erosion of a water wall tube by circu
+  t 178 ALARM         INVESTIGATE water balance residual +2.2 TPH (feed 65.5, steam 62.3, le | Deflagration on re-ignition of an accumulated 
+  chip temp start {'t': '2026-10-05T22:42:44+0530', 'cpu_max_c': 41.5, 'npu_max_c': 40.9, 'n_zones': 75}  end {'t': '2026-10-05T22:51:04+0530', 'cpu_max_c': 72.5, 'npu_max_c': 69.5, 'n_zones': 75}
+ep_B01_tube_leak               F1=0.49 top1= 0.57 top3=0.648 faith=0.86 llm=0.68 lead=- p95=5835ms
+
+==================================================================
+AGGREGATE
+==================================================================
+  n_episodes                         1
+  Q1_macro_f1                        0.494
+  Q2_top1                            0.57
+  Q2_top3                            0.648
+  Q2_n_episodes_scored               1
+  Q2_library                         {'n_episodes': 1, 'top1': 0.57, 'top3': 0.648, 'group_top1': 0.57, 'sep_named': 0.57, 'belief_top1': 0.555, 'belief_top1_tiefair': 0.326, 'belief_top3': 0.703, 'belief_group': 0.555, 'belief_group_tiefair': 0.326, 'belief_top_tie_rate': 0.492, 'low_conf_rate': None, 'low_conf_rate_decision': None}
+  Q2_heldout                         {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}
+  Q2_by_family                       {'A': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'B': {'library': {'n_episodes': 1, 'top1': 0.57, 'top3': 0.648, 'group_top1': 0.57, 'sep_named': 0.57, 'belief_top1': 0.555, 'belief_top1_tiefair': 0.326, 'belief_top3': 0.703, 'belief_group': 0.555, 'belief_group_tiefair': 0.326, 'belief_top_tie_rate': 0.492, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'C': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'D': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}, 'E': {'library': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}, 'heldout': {'n_episodes': 0, 'top1': None, 'top3': None, 'group_top1': None, 'sep_named': None, 'belief_top1': None, 'belief_top1_tiefair': None, 'belief_top3': None, 'belief_group': None, 'belief_group_tiefair': None, 'belief_top_tie_rate': None, 'low_conf_rate': None, 'low_conf_rate_decision': None}}}
+  Q2_heldout_cases_with_episodes     []
+  Q2_heldout_cases_without_episodes  ['RCA-02', 'RCA-06', 'RCA-08', 'RCA-12', 'RCA-17']
+  Q2_episodes_not_applicable         []
+  Q3_faithfulness                    0.863
+  Q3_rel                             0.339
+  Q4_action_precision                0.364
+  Q4_action_recall                   1.0
+  Q4_n_episodes_scored               1
+  Q5_fp_per_hour                     None
+  Q6_lead_time_min_mean              None
+  Q6_n_faults_caught_before_trip     0
+  S4_llm_invocation_rate             0.676
+  S7_deadline_miss_rate              0.0
+  constraints:
+    C1_hard_deadline_misses_zero     PASS
+    C3_top3_ge_0.85                  FAIL
+    C4_faithfulness_ge_0.95          FAIL
+
+written to results/presentation_benchmark/multi_agent_LOCKSTEP_llama32-3b_gemma3-1b/tmp/summary_llamaserver_ep_B01_tube_leak.json

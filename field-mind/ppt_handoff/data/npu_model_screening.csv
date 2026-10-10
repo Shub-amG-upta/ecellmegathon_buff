@@ -1,0 +1,5 @@
+model,file,bytes,tensor_types,layers_on_npu,prefill_tok_s,decode_tok_s,"verified_diagnosis_s (700-token prompt + 60-token answer, plus 350 + 30)",screening_calls
+llama32-3b,Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf,2012612832,"{""F32"": 58, ""Q8_0"": 1, ""Q4_0"": 196}",29/29,986.2,21.04,5.341,10
+qwen3-1.7b,Qwen3-1.7B-Q4_0-pure-embq8.gguf,1460395904,"{""Q8_0"": 2, ""F32"": 113, ""Q4_0"": 196}",29/29,1432.4,32.36,3.514,10
+gemma3-1b-qat,gemma-3-1b-it-qat-Q4_0-pure-embq8.gguf,720425280,"{""F32"": 157, ""Q8_0"": 1, ""Q4_0"": 182}",27/27,1757.0,44.19,2.633,10
+qwen25-0.5b,Qwen2.5-0.5B-Instruct-Q4_0-pure-embq8.gguf,352154624,"{""F32"": 121, ""Q8_0"": 1, ""Q4_0"": 168}",25/25,2959.7,52.75,2.061,10

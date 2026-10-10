@@ -1,0 +1,477 @@
+{
+  "columns": {
+    "mock": {
+      "file": "results/board/tmp/model_choice/runs_mock.json",
+      "n_episodes": 3,
+      "library_top1": 0.419,
+      "library_group_top1": 0.501,
+      "library_sep_named": 0.46,
+      "library_belief_top1_tiefair": 0.219,
+      "library_belief_group": 0.465,
+      "Q3_faithfulness_after_gate": 1.0,
+      "Q1_macro_f1": 0.598,
+      "Q4_precision": 0.347,
+      "Q4_recall": 1.0,
+      "S4_llm_invocation": 0.654,
+      "ece_group_decision": 0.2692,
+      "confident_wrong_decision": 58,
+      "confident_wrong_share_decision": 0.221,
+      "low_conf_share_decision": 0.485,
+      "ece_group_shown": 0.1849,
+      "confident_wrong_shown": 7,
+      "confident_wrong_share_shown": 0.027,
+      "low_conf_share_shown": 0.855,
+      "scored_library_ticks": 262,
+      "server_prefill_tok_s": null,
+      "server_decode_tok_s": null,
+      "rate_calls_missing": 294,
+      "projected_verified_s": null,
+      "answer_tokens_per_call_mean": null,
+      "answer_tokens_per_call_p95": null,
+      "answer_share_at_cap": null,
+      "tick_deadline_misses": 0,
+      "tick_deadline_miss_rate": 0.0,
+      "diag_calls": 262,
+      "broken_json_first_reply": 0.0,
+      "broken_json_after_repair": 0.0,
+      "envelope_status": {
+        "diagnostician:ok": 262,
+        "verifier:ok": 32
+      },
+      "model_citation_faithfulness_raw": 1.0,
+      "n_model_citations": 397,
+      "prompt_tokens_mean": 2102.5,
+      "prompt_tokens_missing": 0,
+      "answer_tokens_mean": 947.9,
+      "answer_tokens_missing": 0,
+      "diag_latency_ms_mean": 5.0,
+      "diag_latency_ms_p95": 5.0,
+      "models": [
+        "mock-0"
+      ],
+      "lanes": [
+        "mock"
+      ],
+      "chip_temp": {},
+      "group_top1_by_episode": {
+        "dev_A01_fcv_seize": 0.509,
+        "dev_B01_tube_leak": 0.617,
+        "dev_C02_feeder_trip": 0.377
+      },
+      "is_mock": true,
+      "ranking_model_rank1": {
+        "pooled": {
+          "n": 157,
+          "model_only": 0,
+          "p_belief": 0.239,
+          "p_model": 0.389
+        },
+        "per_episode": {
+          "dev_A01_fcv_seize": {
+            "n": 53,
+            "model_only": 0,
+            "p_belief": 0.0,
+            "p_model": 0.528
+          },
+          "dev_B01_tube_leak": {
+            "n": 69,
+            "model_only": 0,
+            "p_belief": 0.145,
+            "p_model": 0.478
+          },
+          "dev_C02_feeder_trip": {
+            "n": 35,
+            "model_only": 0,
+            "p_belief": 0.786,
+            "p_model": 0.0
+          }
+        },
+        "verdict": "INCONCLUSIVE"
+      },
+      "ranking_shown_rank1": {
+        "pooled": {
+          "n": 157,
+          "model_only": 0,
+          "p_belief": 0.239,
+          "p_model": 0.389
+        },
+        "per_episode": {
+          "dev_A01_fcv_seize": {
+            "n": 53,
+            "model_only": 0,
+            "p_belief": 0.0,
+            "p_model": 0.528
+          },
+          "dev_B01_tube_leak": {
+            "n": 69,
+            "model_only": 0,
+            "p_belief": 0.145,
+            "p_model": 0.478
+          },
+          "dev_C02_feeder_trip": {
+            "n": 35,
+            "model_only": 0,
+            "p_belief": 0.786,
+            "p_model": 0.0
+          }
+        },
+        "verdict": "INCONCLUSIVE"
+      }
+    },
+    "llama32-3b": {
+      "file": "results/board/tmp/model_choice/runs_llama32-3b.json",
+      "n_episodes": 3,
+      "library_top1": 0.394,
+      "library_group_top1": 0.507,
+      "library_sep_named": 0.432,
+      "library_belief_top1_tiefair": 0.219,
+      "library_belief_group": 0.465,
+      "Q3_faithfulness_after_gate": 0.841,
+      "Q1_macro_f1": 0.598,
+      "Q4_precision": 0.338,
+      "Q4_recall": 1.0,
+      "S4_llm_invocation": 0.654,
+      "ece_group_decision": 0.2395,
+      "confident_wrong_decision": 44,
+      "confident_wrong_share_decision": 0.168,
+      "low_conf_share_decision": 0.599,
+      "ece_group_shown": 0.1797,
+      "confident_wrong_shown": 11,
+      "confident_wrong_share_shown": 0.042,
+      "low_conf_share_shown": 0.863,
+      "scored_library_ticks": 262,
+      "server_prefill_tok_s": 890.1,
+      "server_decode_tok_s": 16.1,
+      "rate_calls_missing": 1,
+      "projected_verified_s": 6.77,
+      "answer_tokens_per_call_mean": 143.1,
+      "answer_tokens_per_call_p95": 243,
+      "answer_share_at_cap": 0.047,
+      "tick_deadline_misses": 67,
+      "tick_deadline_miss_rate": 0.1675,
+      "diag_calls": 262,
+      "broken_json_first_reply": 0.061,
+      "broken_json_after_repair": 0.042,
+      "envelope_status": {
+        "diagnostician:ok": 251,
+        "diagnostician:invalid_schema": 11,
+        "verifier:invalid_schema": 40,
+        "verifier:ok": 69
+      },
+      "model_citation_faithfulness_raw": 0.828,
+      "n_model_citations": 383,
+      "prompt_tokens_mean": 1933.3,
+      "prompt_tokens_missing": 0,
+      "answer_tokens_mean": 141.9,
+      "answer_tokens_missing": 0,
+      "diag_latency_ms_mean": 11356.7,
+      "diag_latency_ms_p95": 15916.5,
+      "models": [
+        "/data/local/tmp/llm/Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf"
+      ],
+      "lanes": [
+        "npu"
+      ],
+      "chip_temp": {
+        "dev_A01_fcv_seize": [
+          {
+            "t": "2026-10-03T23:48:08+0530",
+            "cpu_max_c": 40.7,
+            "npu_max_c": 40.1,
+            "n_zones": 75
+          },
+          {
+            "t": "2026-10-04T00:02:59+0530",
+            "cpu_max_c": 58.1,
+            "npu_max_c": 58.3,
+            "n_zones": 75
+          }
+        ],
+        "dev_B01_tube_leak": [
+          {
+            "t": "2026-10-04T00:18:32+0530",
+            "cpu_max_c": 44.6,
+            "npu_max_c": 42.0,
+            "n_zones": 75
+          },
+          {
+            "t": "2026-10-04T01:18:48+0530",
+            "cpu_max_c": 56.2,
+            "npu_max_c": 56.0,
+            "n_zones": 75
+          }
+        ],
+        "dev_C02_feeder_trip": [
+          {
+            "t": "2026-10-04T01:57:46+0530",
+            "cpu_max_c": 45.3,
+            "npu_max_c": 41.7,
+            "n_zones": 75
+          },
+          {
+            "t": "2026-10-04T02:24:56+0530",
+            "cpu_max_c": 56.6,
+            "npu_max_c": 56.7,
+            "n_zones": 75
+          }
+        ]
+      },
+      "group_top1_by_episode": {
+        "dev_A01_fcv_seize": 0.544,
+        "dev_B01_tube_leak": 0.547,
+        "dev_C02_feeder_trip": 0.429
+      },
+      "is_mock": false,
+      "ranking_model_rank1": {
+        "pooled": {
+          "n": 169,
+          "model_only": 9,
+          "p_belief": 0.265,
+          "p_model": 0.444
+        },
+        "per_episode": {
+          "dev_A01_fcv_seize": {
+            "n": 46,
+            "model_only": 3,
+            "p_belief": 0.0,
+            "p_model": 0.652
+          },
+          "dev_B01_tube_leak": {
+            "n": 96,
+            "model_only": 3,
+            "p_belief": 0.227,
+            "p_model": 0.469
+          },
+          "dev_C02_feeder_trip": {
+            "n": 27,
+            "model_only": 3,
+            "p_belief": 0.852,
+            "p_model": 0.0
+          }
+        },
+        "verdict": "INCONCLUSIVE"
+      },
+      "ranking_shown_rank1": {
+        "pooled": {
+          "n": 165,
+          "model_only": 5,
+          "p_belief": 0.253,
+          "p_model": 0.455
+        },
+        "per_episode": {
+          "dev_A01_fcv_seize": {
+            "n": 46,
+            "model_only": 3,
+            "p_belief": 0.0,
+            "p_model": 0.652
+          },
+          "dev_B01_tube_leak": {
+            "n": 94,
+            "model_only": 1,
+            "p_belief": 0.221,
+            "p_model": 0.479
+          },
+          "dev_C02_feeder_trip": {
+            "n": 25,
+            "model_only": 1,
+            "p_belief": 0.84,
+            "p_model": 0.0
+          }
+        },
+        "verdict": "INCONCLUSIVE"
+      }
+    },
+    "qwen25-0.5b": {
+      "file": "results/board/tmp/model_choice/runs_qwen25-0.5b.json",
+      "n_episodes": 3,
+      "library_top1": 0.302,
+      "library_group_top1": 0.418,
+      "library_sep_named": 0.315,
+      "library_belief_top1_tiefair": 0.219,
+      "library_belief_group": 0.465,
+      "Q3_faithfulness_after_gate": 0.974,
+      "Q1_macro_f1": 0.598,
+      "Q4_precision": 0.31,
+      "Q4_recall": 1.0,
+      "S4_llm_invocation": 0.654,
+      "ece_group_decision": 0.3837,
+      "confident_wrong_decision": 100,
+      "confident_wrong_share_decision": 0.382,
+      "low_conf_share_decision": 0.202,
+      "ece_group_shown": 0.0877,
+      "confident_wrong_shown": 38,
+      "confident_wrong_share_shown": 0.145,
+      "low_conf_share_shown": 0.721,
+      "scored_library_ticks": 262,
+      "server_prefill_tok_s": 2939.3,
+      "server_decode_tok_s": 47.91,
+      "rate_calls_missing": 29,
+      "projected_verified_s": 2.24,
+      "answer_tokens_per_call_mean": 210.5,
+      "answer_tokens_per_call_p95": 256,
+      "answer_share_at_cap": 0.503,
+      "tick_deadline_misses": 1,
+      "tick_deadline_miss_rate": 0.0025,
+      "diag_calls": 262,
+      "broken_json_first_reply": 0.389,
+      "broken_json_after_repair": 0.29,
+      "envelope_status": {
+        "diagnostician:ok": 186,
+        "diagnostician:invalid_schema": 76,
+        "verifier:invalid_schema": 21,
+        "verifier:ok": 2
+      },
+      "model_citation_faithfulness_raw": 0.179,
+      "n_model_citations": 234,
+      "prompt_tokens_mean": 2067.2,
+      "prompt_tokens_missing": 0,
+      "answer_tokens_mean": 210.9,
+      "answer_tokens_missing": 0,
+      "diag_latency_ms_mean": 4920.4,
+      "diag_latency_ms_p95": 10667.4,
+      "models": [
+        "/data/local/tmp/llm/Qwen2.5-0.5B-Instruct-Q4_0-pure-embq8.gguf"
+      ],
+      "lanes": [
+        "npu"
+      ],
+      "chip_temp": {
+        "dev_A01_fcv_seize": [
+          {
+            "t": "2026-10-04T00:07:22+0530",
+            "cpu_max_c": 39.0,
+            "npu_max_c": 39.0,
+            "n_zones": 75
+          },
+          {
+            "t": "2026-10-04T00:17:00+0530",
+            "cpu_max_c": 46.5,
+            "npu_max_c": 46.3,
+            "n_zones": 75
+          }
+        ],
+        "dev_B01_tube_leak": [
+          {
+            "t": "2026-10-04T01:21:53+0530",
+            "cpu_max_c": 39.0,
+            "npu_max_c": 39.0,
+            "n_zones": 75
+          },
+          {
+            "t": "2026-10-04T01:54:38+0530",
+            "cpu_max_c": 50.2,
+            "npu_max_c": 50.2,
+            "n_zones": 75
+          }
+        ],
+        "dev_C02_feeder_trip": [
+          {
+            "t": "2026-10-04T02:29:00+0530",
+            "cpu_max_c": 39.3,
+            "npu_max_c": 38.2,
+            "n_zones": 75
+          },
+          {
+            "t": "2026-10-04T02:41:54+0530",
+            "cpu_max_c": 61.2,
+            "npu_max_c": 61.0,
+            "n_zones": 75
+          }
+        ]
+      },
+      "group_top1_by_episode": {
+        "dev_A01_fcv_seize": 0.07,
+        "dev_B01_tube_leak": 0.352,
+        "dev_C02_feeder_trip": 0.831
+      },
+      "is_mock": false,
+      "ranking_model_rank1": {
+        "pooled": {
+          "n": 32,
+          "model_only": 1,
+          "p_belief": 0.617,
+          "p_model": 0.094
+        },
+        "per_episode": {
+          "dev_A01_fcv_seize": {
+            "n": 7,
+            "model_only": 0,
+            "p_belief": 0.0,
+            "p_model": 0.429
+          },
+          "dev_B01_tube_leak": {
+            "n": 19,
+            "model_only": 0,
+            "p_belief": 0.724,
+            "p_model": 0.0
+          },
+          "dev_C02_feeder_trip": {
+            "n": 6,
+            "model_only": 1,
+            "p_belief": 1.0,
+            "p_model": 0.0
+          }
+        },
+        "verdict": "BELIEF_DECIDES"
+      },
+      "ranking_shown_rank1": {
+        "pooled": {
+          "n": 33,
+          "model_only": 1,
+          "p_belief": 0.598,
+          "p_model": 0.121
+        },
+        "per_episode": {
+          "dev_A01_fcv_seize": {
+            "n": 7,
+            "model_only": 0,
+            "p_belief": 0.0,
+            "p_model": 0.429
+          },
+          "dev_B01_tube_leak": {
+            "n": 20,
+            "model_only": 0,
+            "p_belief": 0.688,
+            "p_model": 0.05
+          },
+          "dev_C02_feeder_trip": {
+            "n": 6,
+            "model_only": 1,
+            "p_belief": 1.0,
+            "p_model": 0.0
+          }
+        },
+        "verdict": "BELIEF_DECIDES"
+      }
+    }
+  },
+  "selection": {
+    "floor": 0.501,
+    "gates": {
+      "llama32-3b": {
+        "broken_json_first_reply": true,
+        "broken_json_after_repair": false,
+        "projected_verified_s": true,
+        "htp0_all_layers": true,
+        "gguf_all_q4_0_q8_0": true,
+        "pass": false
+      },
+      "qwen25-0.5b": {
+        "broken_json_first_reply": false,
+        "broken_json_after_repair": false,
+        "projected_verified_s": true,
+        "htp0_all_layers": true,
+        "gguf_all_q4_0_q8_0": true,
+        "pass": false
+      }
+    },
+    "passing": [],
+    "group_tied": [],
+    "faith_tied": [],
+    "pick": null,
+    "pick_reason": "NO MODEL PASSES: stop and ask",
+    "flags": [
+      "qwen25-0.5b: library group top-1 0.418 is BELOW the deterministic floor 0.501 (evidence for the ranking question: the model's order loses to the no-reasoning order)"
+    ]
+  }
+}

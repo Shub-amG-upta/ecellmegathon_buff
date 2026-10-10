@@ -1,0 +1,171 @@
+{
+ "model": "gemma3-1b-qat",
+ "model_file": "gemma-3-1b-it-qat-Q4_0-pure-embq8.gguf",
+ "model_sha256": "3a229fece56839877093042f0699939d9c4a65691dda81999f80ff27dae2cc5f",
+ "server_flags": "-c 4096 -np 1 --device HTP0 -ngl 99 -fit off -lv 4",
+ "llamacpp_commit": "99b95488c",
+ "git_commit": "586338f538c7eafaeeef34854d9efbdf8276530a",
+ "gguf": {
+  "gguf_version": 3,
+  "file_type_meta": 2,
+  "architecture": "gemma3",
+  "name": "Gemma3 1b Qat Unsloth",
+  "n_tensors": 340,
+  "type_counts": {
+   "F32": 157,
+   "Q8_0": 1,
+   "Q4_0": 182
+  },
+  "one_d_types": {
+   "F32": 157
+  },
+  "output.weight": "absent (tied to token_embd)",
+  "token_embd.weight": "Q8_0",
+  "flagged": [],
+  "verdict": "OK: every matrix is Q4_0/Q8_0"
+ },
+ "gguf_all_q4_0_q8_0": true,
+ "offload": {
+  "layers_offloaded": 27,
+  "layers_total": 27,
+  "output_layer_offloaded": true,
+  "htp0_model_buffer_mib": 680.82,
+  "loader_type_counts": {
+   "f32": 157,
+   "q4_0": 182,
+   "q8_0": 1
+  },
+  "htp0_all_layers": true
+ },
+ "htp0_all_layers": true,
+ "loader_types_match_gguf": true,
+ "thermal_gate": {
+  "waited_s": 45.0,
+  "limit_c": 38.9,
+  "temp_c": 38.2,
+  "timed_out": false
+ },
+ "template_overhead_tokens": 9,
+ "shapes": {
+  "screen_diag": {
+   "target_prompt_tokens": 700,
+   "answer_cap": 60,
+   "prompt_sha256": "b2737363ec9ae4d9c9b5a749c9c918918889293884bfa42f0341f0817d2ea4fd",
+   "source": "dev_A01_fcv_seize tick 37"
+  },
+  "screen_ver": {
+   "target_prompt_tokens": 350,
+   "answer_cap": 30,
+   "prompt_sha256": "41a2c45fb00324985b49894df6be336b1d6aa134078e7c04edba4035dbb42da5",
+   "source": "dev_B01_tube_leak tick 51"
+  }
+ },
+ "calls": [
+  {
+   "role": "screen_diag",
+   "i": 0,
+   "prompt_n": 699,
+   "predicted_n": 60,
+   "prompt_ms": 367.925,
+   "predicted_ms": 1378.066,
+   "latency_ms": 1779.3172559995583
+  },
+  {
+   "role": "screen_diag",
+   "i": 1,
+   "prompt_n": 699,
+   "predicted_n": 60,
+   "prompt_ms": 357.572,
+   "predicted_ms": 1342.218,
+   "latency_ms": 1724.631633998797
+  },
+  {
+   "role": "screen_diag",
+   "i": 2,
+   "prompt_n": 699,
+   "predicted_n": 60,
+   "prompt_ms": 382.907,
+   "predicted_ms": 1329.932,
+   "latency_ms": 1748.3585449990642
+  },
+  {
+   "role": "screen_diag",
+   "i": 3,
+   "prompt_n": 699,
+   "predicted_n": 60,
+   "prompt_ms": 381.711,
+   "predicted_ms": 1345.142,
+   "latency_ms": 1760.1395750007214
+  },
+  {
+   "role": "screen_diag",
+   "i": 4,
+   "prompt_n": 699,
+   "predicted_n": 60,
+   "prompt_ms": 381.19,
+   "predicted_ms": 1332.775,
+   "latency_ms": 1747.8945660004683
+  },
+  {
+   "role": "screen_ver",
+   "i": 0,
+   "prompt_n": 349,
+   "predicted_n": 30,
+   "prompt_ms": 198.987,
+   "predicted_ms": 633.345,
+   "latency_ms": 885.7394610004121
+  },
+  {
+   "role": "screen_ver",
+   "i": 1,
+   "prompt_n": 349,
+   "predicted_n": 30,
+   "prompt_ms": 223.808,
+   "predicted_ms": 612.395,
+   "latency_ms": 868.4046660000604
+  },
+  {
+   "role": "screen_ver",
+   "i": 2,
+   "prompt_n": 349,
+   "predicted_n": 30,
+   "prompt_ms": 202.207,
+   "predicted_ms": 655.452,
+   "latency_ms": 890.3405330001988
+  },
+  {
+   "role": "screen_ver",
+   "i": 3,
+   "prompt_n": 349,
+   "predicted_n": 30,
+   "prompt_ms": 227.088,
+   "predicted_ms": 643.622,
+   "latency_ms": 908.0333559995779
+  },
+  {
+   "role": "screen_ver",
+   "i": 4,
+   "prompt_n": 349,
+   "predicted_n": 30,
+   "prompt_ms": 216.90800000000002,
+   "predicted_ms": 650.295,
+   "latency_ms": 901.7576099995495
+  }
+ ],
+ "warmup": {
+  "prompt_n": 16,
+  "prompt_ms": 111.42
+ },
+ "server_prefill_tok_s": 1782.1,
+ "server_decode_tok_s": 45.35,
+ "measured_verified_s": 2.573,
+ "projected_verified_s": 2.57,
+ "measured_over_projected": 1.001,
+ "short_answers": 0,
+ "think_blocks_in_calls": [],
+ "thinking_off_mechanism": null,
+ "think_ok": true,
+ "finished": "2026-10-03T18:44:12+0530",
+ "energy_mwh": null,
+ "pass": true
+}

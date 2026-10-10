@@ -1,0 +1,606 @@
+{
+  "_about": "Statistical fingerprint of data/reference/xinan_completed_data.csv (real AFBC-class boiler, ~60 t/h, 9.77 MPa, 5 s sampling, 120 h). Calibration target for data/generator/sim.py. All numbers MEASURED from the real trace. See data/reference/FINGERPRINT.md.",
+  "_generated": "2026-08-31 09:36:28.884877+00:00",
+  "_source_csv": "data/reference/xinan_completed_data.csv",
+  "_column_mapping": {
+    "steam_flow": "ZZQBCHLL.AV_0#",
+    "bed_temp_avg": "TE_8313B.AV_0#",
+    "ms_temperature": "TE_8332A.AV_0#",
+    "drum_pressure": "PTCA_8322A.AV_0#"
+  },
+  "_pressure_conversion": "PTCA_8322A.AV_0# in MPa(g) multiplied by 10.197162129779 -> kg/cm2(g)",
+  "sampling": {
+    "n_rows": 86400,
+    "start": "2022-03-27 14:28:54",
+    "end": "2022-04-01 14:28:49",
+    "span_hours": 119.99861111111112,
+    "dt_seconds_median": 5.0,
+    "dt_seconds_min": 5.0,
+    "dt_seconds_max": 5.0,
+    "n_gaps_gt_1p5x": 0,
+    "n_duplicate_timestamps": 0
+  },
+  "native_pressure_mpa": {
+    "mean": 9.769467939814815,
+    "std_full_5day": 0.07504654984250161,
+    "min": 9.42,
+    "max": 10.09,
+    "quantiser_step": 0.009999999999999787,
+    "per_sample_increment_std": 0.004592972422426173
+  },
+  "tags": {
+    "steam_flow": {
+      "unit": "t/h",
+      "source_column": "ZZQBCHLL.AV_0#",
+      "level": {
+        "mean": 59.76190578703704,
+        "std_full_5day": 2.3788802606955373,
+        "cov_pct": 3.980596383878274,
+        "min": 50.66,
+        "max": 70.87,
+        "p05": 55.32,
+        "p50": 59.85,
+        "p95": 63.3,
+        "range_full": 20.210000000000008,
+        "net_change_end_minus_start": 0.13000000000000256,
+        "quantiser_step": 0.009999999999990905
+      },
+      "measurement_noise": {
+        "per_sample_increment_std": 0.18808219642340931,
+        "per_sample_increment_mad_std": 0.0,
+        "hf_noise_est_2nd_diff": 0.10858993516864834,
+        "increment_lag1_acf": -6.400058598685141e-11,
+        "noise_to_5day_drift_ratio": 0.07906333056394264,
+        "comment": "per_sample_increment_std is signal+noise; where increment_lag1_acf is strongly positive the smooth drift dominates and hf_noise_est_2nd_diff is the better estimate of true white measurement noise. A white-noise sim gives increment std = sigma*sqrt(2) and increment lag-1 acf ~= -0.5."
+      },
+      "autocorrelation_level": {
+        "5s": 0.996871611056042,
+        "10s": 0.993743222112084,
+        "30s": 0.9765724512918091,
+        "1min": 0.9627842944965291,
+        "5min": 0.8749820799010738,
+        "10min": 0.8044278096689768,
+        "30min": 0.6471391323310011,
+        "1h": 0.5024236600276918,
+        "6h": -0.02332020978203165,
+        "12h": -0.13142904824086626,
+        "24h": 0.14124904356507767
+      },
+      "ar1": {
+        "phi": 0.9968748381609386,
+        "innovation_std": 0.18793520707525574,
+        "timescale_seconds": 1597.4158385020908,
+        "timescale_minutes": 26.62359730836818
+      },
+      "drift_by_horizon": {
+        "5s": {
+          "increment_std": 0.18808219642340931,
+          "increment_mean_abs": 0.10542332665887338,
+          "increment_rms": 0.18808110797504388
+        },
+        "10s": {
+          "increment_std": 0.2659899323480709,
+          "increment_mean_abs": 0.21084909372902153,
+          "increment_rms": 0.2659883930314175
+        },
+        "30s": {
+          "increment_std": 0.5148181926787999,
+          "increment_mean_abs": 0.4132312429103873,
+          "increment_rms": 0.5148152132550814
+        },
+        "1min": {
+          "increment_std": 0.6489201933419513,
+          "increment_mean_abs": 0.516898411816456,
+          "increment_rms": 0.6489164375678732
+        },
+        "5min": {
+          "increment_std": 1.1893978499154299,
+          "increment_mean_abs": 0.92824368774612,
+          "increment_rms": 1.1893910706039972
+        },
+        "10min": {
+          "increment_std": 1.4879934340215124,
+          "increment_mean_abs": 1.1667357440890125,
+          "increment_rms": 1.4879854174987468
+        },
+        "30min": {
+          "increment_std": 1.999269356361676,
+          "increment_mean_abs": 1.5771980474198046,
+          "increment_rms": 1.9992592398525386
+        },
+        "1h": {
+          "increment_std": 2.3682813642801133,
+          "increment_mean_abs": 1.8679204014939308,
+          "increment_rms": 2.3683548004436146
+        },
+        "6h": {
+          "increment_std": 3.426372418483664,
+          "increment_mean_abs": 2.701138888888889,
+          "increment_rms": 3.42964064391501
+        },
+        "12h": {
+          "increment_std": 3.6764786256499526,
+          "increment_mean_abs": 2.95199279835391,
+          "increment_rms": 3.68179750814008
+        },
+        "24h": {
+          "increment_std": 3.1567816120111254,
+          "increment_mean_abs": 2.4615474537037034,
+          "increment_rms": 3.17130997567339
+        }
+      },
+      "within_1h_block_ptp": {
+        "mean": 5.288499999999999,
+        "p50": 5.155000000000001,
+        "p95": 7.649,
+        "max": 10.790000000000006
+      }
+    },
+    "bed_temp_avg": {
+      "unit": "degC",
+      "source_column": "TE_8313B.AV_0#",
+      "level": {
+        "mean": 774.0630346064814,
+        "std_full_5day": 10.681691346551466,
+        "cov_pct": 1.379951098166292,
+        "min": 737.7,
+        "max": 818.08,
+        "p05": 755.08,
+        "p50": 774.32,
+        "p95": 790.84,
+        "range_full": 80.38,
+        "net_change_end_minus_start": -2.310000000000059,
+        "quantiser_step": 0.009999999999990905
+      },
+      "measurement_noise": {
+        "per_sample_increment_std": 0.2732205123091537,
+        "per_sample_increment_mad_std": 0.25204200000010785,
+        "hf_noise_est_2nd_diff": 0.05646925371550373,
+        "increment_lag1_acf": 0.8718441846795996,
+        "noise_to_5day_drift_ratio": 0.025578394230363306,
+        "comment": "per_sample_increment_std is signal+noise; where increment_lag1_acf is strongly positive the smooth drift dominates and hf_noise_est_2nd_diff is the better estimate of true white measurement noise. A white-noise sim gives increment std = sigma*sqrt(2) and increment lag-1 acf ~= -0.5."
+      },
+      "autocorrelation_level": {
+        "5s": 0.9996726099554291,
+        "10s": 0.9987747488560379,
+        "30s": 0.9916661941774009,
+        "1min": 0.9773934132442716,
+        "5min": 0.8456591102333014,
+        "10min": 0.716095942275536,
+        "30min": 0.5705943381308706,
+        "1h": 0.4157159762030961,
+        "6h": -0.023722345685226742,
+        "12h": -0.07518851088388788,
+        "24h": 0.09877597195324563
+      },
+      "ar1": {
+        "phi": 0.999673143155843,
+        "innovation_std": 0.2731982036007012,
+        "timescale_seconds": 15294.716640432902,
+        "timescale_minutes": 254.91194400721503
+      },
+      "drift_by_horizon": {
+        "5s": {
+          "increment_std": 0.2732205123091537,
+          "increment_mean_abs": 0.2153426544288706,
+          "increment_rms": 0.2732189324572288
+        },
+        "10s": {
+          "increment_std": 0.5286458385300435,
+          "increment_mean_abs": 0.41825389476608243,
+          "increment_rms": 0.5286427822997074
+        },
+        "30s": {
+          "increment_std": 1.3789193959705581,
+          "increment_mean_abs": 1.0903569692339745,
+          "increment_rms": 1.3789114298077614
+        },
+        "1min": {
+          "increment_std": 2.271231228542537,
+          "increment_mean_abs": 1.7917258184007037,
+          "increment_rms": 2.271218127136714
+        },
+        "5min": {
+          "increment_std": 5.933500912512088,
+          "increment_mean_abs": 4.541654737085939,
+          "increment_rms": 5.93346911639001
+        },
+        "10min": {
+          "increment_std": 8.049617828623472,
+          "increment_mean_abs": 6.278710245711636,
+          "increment_rms": 8.04958014869325
+        },
+        "30min": {
+          "increment_std": 9.894699419361407,
+          "increment_mean_abs": 7.794436541143654,
+          "increment_rms": 9.894644633208422
+        },
+        "1h": {
+          "increment_std": 11.53614202519088,
+          "increment_mean_abs": 9.130321661998131,
+          "increment_rms": 11.536332817709116
+        },
+        "6h": {
+          "increment_std": 15.348981709952076,
+          "increment_mean_abs": 12.115330287524365,
+          "increment_rms": 15.36522885588158
+        },
+        "12h": {
+          "increment_std": 15.983252217245166,
+          "increment_mean_abs": 12.926333461934156,
+          "increment_rms": 16.0202619701371
+        },
+        "24h": {
+          "increment_std": 14.533631046792566,
+          "increment_mean_abs": 11.570309606481482,
+          "increment_rms": 14.60573018566226
+        }
+      },
+      "within_1h_block_ptp": {
+        "mean": 24.603999999999996,
+        "p50": 23.29000000000002,
+        "p95": 38.33949999999998,
+        "max": 45.069999999999936
+      }
+    },
+    "ms_temperature": {
+      "unit": "degC",
+      "source_column": "TE_8332A.AV_0#",
+      "level": {
+        "mean": 537.5211304398148,
+        "std_full_5day": 4.328548613810243,
+        "cov_pct": 0.8052797124958612,
+        "min": 517.05,
+        "max": 550.49,
+        "p05": 530.08,
+        "p50": 537.71,
+        "p95": 544.35,
+        "range_full": 33.440000000000055,
+        "net_change_end_minus_start": -2.6200000000000045,
+        "quantiser_step": 0.009999999999990905
+      },
+      "measurement_noise": {
+        "per_sample_increment_std": 0.06671880108609743,
+        "per_sample_increment_mad_std": 0.08895599999991909,
+        "hf_noise_est_2nd_diff": 0.025871497646033345,
+        "increment_lag1_acf": 0.5489091428569679,
+        "noise_to_5day_drift_ratio": 0.015413665650705864,
+        "comment": "per_sample_increment_std is signal+noise; where increment_lag1_acf is strongly positive the smooth drift dominates and hf_noise_est_2nd_diff is the better estimate of true white measurement noise. A white-noise sim gives increment std = sigma*sqrt(2) and increment lag-1 acf ~= -0.5."
+      },
+      "autocorrelation_level": {
+        "5s": 0.9998799698116527,
+        "10s": 0.9996295649579724,
+        "30s": 0.9969885621720405,
+        "1min": 0.9882190742178524,
+        "5min": 0.7734813539995107,
+        "10min": 0.4949627300421099,
+        "30min": 0.4063912530002897,
+        "1h": 0.2640699948834278,
+        "6h": -0.05011937816902023,
+        "12h": 0.015774643433610857,
+        "24h": -0.0645112422986843
+      },
+      "ar1": {
+        "phi": 0.9998820863664546,
+        "innovation_std": 0.06671684879478997,
+        "timescale_seconds": 42401.41754428474,
+        "timescale_minutes": 706.6902924047457
+      },
+      "drift_by_horizon": {
+        "5s": {
+          "increment_std": 0.06671880108609743,
+          "increment_mean_abs": 0.046895450178821484,
+          "increment_rms": 0.06671842186776941
+        },
+        "10s": {
+          "increment_std": 0.11742986259451842,
+          "increment_mean_abs": 0.08553404013981795,
+          "increment_rms": 0.11742919848910235
+        },
+        "30s": {
+          "increment_std": 0.33556054709675415,
+          "increment_mean_abs": 0.24781639928698734,
+          "increment_rms": 0.3355586500325087
+        },
+        "1min": {
+          "increment_std": 0.6641241122344621,
+          "increment_mean_abs": 0.4910531555308603,
+          "increment_rms": 0.6641203513588783
+        },
+        "5min": {
+          "increment_std": 2.9140154157502356,
+          "increment_mean_abs": 2.1714325920778315,
+          "increment_rms": 2.913999069257096
+        },
+        "10min": {
+          "increment_std": 4.3516932786201865,
+          "increment_mean_abs": 3.3108580203987006,
+          "increment_rms": 4.351670615446526
+        },
+        "30min": {
+          "increment_std": 4.707023886759217,
+          "increment_mean_abs": 3.6397018828451877,
+          "increment_rms": 4.707012764412496
+        },
+        "1h": {
+          "increment_std": 5.247337004964298,
+          "increment_mean_abs": 4.120747899159663,
+          "increment_rms": 5.247308719955497
+        },
+        "6h": {
+          "increment_std": 6.321438091452891,
+          "increment_mean_abs": 5.1057897173489275,
+          "increment_rms": 6.321436732350574
+        },
+        "12h": {
+          "increment_std": 6.111530932750074,
+          "increment_mean_abs": 4.8423573816872425,
+          "increment_rms": 6.11305666115906
+        },
+        "24h": {
+          "increment_std": 6.428519222450866,
+          "increment_mean_abs": 5.142045572916666,
+          "increment_rms": 6.44346315651478
+        }
+      },
+      "within_1h_block_ptp": {
+        "mean": 10.573499999999994,
+        "p50": 10.299999999999955,
+        "p95": 17.250999999999937,
+        "max": 26.120000000000005
+      }
+    },
+    "drum_pressure": {
+      "unit": "kg/cm2(g)",
+      "source_column": "PTCA_8322A.AV_0#",
+      "level": {
+        "mean": 99.6208485039697,
+        "std_full_5day": 0.7652618360245299,
+        "cov_pct": 0.7681743806810034,
+        "min": 96.05726726251818,
+        "max": 102.88936588947011,
+        "p05": 98.30064293106958,
+        "p50": 99.62627400794084,
+        "p95": 100.74796184221653,
+        "range_full": 6.832098626951932,
+        "net_change_end_minus_start": -0.20394324259558516,
+        "quantiser_step": 0.10197099999999182
+      },
+      "measurement_noise": {
+        "per_sample_increment_std": 0.04683528444908349,
+        "per_sample_increment_mad_std": 0.0,
+        "hf_noise_est_2nd_diff": 0.028043398005695355,
+        "increment_lag1_acf": -0.07555141280561549,
+        "noise_to_5day_drift_ratio": 0.06120164660554459,
+        "comment": "per_sample_increment_std is signal+noise; where increment_lag1_acf is strongly positive the smooth drift dominates and hf_noise_est_2nd_diff is the better estimate of true white measurement noise. A white-noise sim gives increment std = sigma*sqrt(2) and increment lag-1 acf ~= -0.5."
+      },
+      "autocorrelation_level": {
+        "5s": 0.9981140172114042,
+        "10s": 0.9965110196486826,
+        "30s": 0.9854370249860128,
+        "1min": 0.9572057200988033,
+        "5min": 0.4354328533374837,
+        "10min": -0.04797230278391205,
+        "30min": 0.14841085859260802,
+        "1h": 0.05295636197851156,
+        "6h": 0.051902219046929966,
+        "12h": -0.033317324116585695,
+        "24h": -0.01643765019050647
+      },
+      "ar1": {
+        "phi": 0.9981304364114781,
+        "innovation_std": 0.04681342714224023,
+        "timescale_seconds": 2671.9201550419043,
+        "timescale_minutes": 44.53200258403174
+      },
+      "drift_by_horizon": {
+        "5s": {
+          "increment_std": 0.04683528444908349,
+          "increment_mean_abs": 0.021496905176193532,
+          "increment_rms": 0.046835013467120476
+        },
+        "10s": {
+          "increment_std": 0.06368425240162709,
+          "increment_mean_abs": 0.038296895389600294,
+          "increment_rms": 0.06368388402389143
+        },
+        "30s": {
+          "increment_std": 0.13028079505322876,
+          "increment_mean_abs": 0.09690337417585193,
+          "increment_rms": 0.13028004159356743
+        },
+        "1min": {
+          "increment_std": 0.2235754255970645,
+          "increment_mean_abs": 0.17113663437766213,
+          "increment_rms": 0.22357413227543088
+        },
+        "5min": {
+          "increment_std": 0.8132842145673316,
+          "increment_mean_abs": 0.6218804400550304,
+          "increment_rms": 0.8132795120355362
+        },
+        "10min": {
+          "increment_std": 1.1081843340355075,
+          "increment_mean_abs": 0.8185432703396915,
+          "increment_rms": 1.1081779781526322
+        },
+        "30min": {
+          "increment_std": 0.9991020573460605,
+          "increment_mean_abs": 0.7556649425190005,
+          "increment_rms": 0.9990966456487991
+        },
+        "1h": {
+          "increment_std": 1.051821145537049,
+          "increment_mean_abs": 0.8047236644517798,
+          "increment_rms": 1.0518387968173306
+        },
+        "6h": {
+          "increment_std": 1.044358890114581,
+          "increment_mean_abs": 0.8094519225123985,
+          "increment_rms": 1.0448756320075197
+        },
+        "12h": {
+          "increment_std": 1.1018438924196656,
+          "increment_mean_abs": 0.8431791549695437,
+          "increment_rms": 1.102678956135809
+        },
+        "24h": {
+          "increment_std": 1.1202422870931688,
+          "increment_mean_abs": 0.8639719697952264,
+          "increment_rms": 1.1230688556997361
+        }
+      },
+      "within_1h_block_ptp": {
+        "mean": 2.641064991612758,
+        "p50": 2.3453472898491725,
+        "p95": 4.491849918167662,
+        "max": 6.3222405204629695
+      }
+    }
+  },
+  "cross_tag_correlation": {
+    "pearson_level": {
+      "steam_flow": {
+        "steam_flow": 1.0,
+        "bed_temp_avg": 0.8686452093942687,
+        "ms_temperature": 0.16826472239899798,
+        "drum_pressure": 0.3457168422002528
+      },
+      "bed_temp_avg": {
+        "steam_flow": 0.8686452093942688,
+        "bed_temp_avg": 1.0,
+        "ms_temperature": 0.3482625435659723,
+        "drum_pressure": 0.3933021289908141
+      },
+      "ms_temperature": {
+        "steam_flow": 0.16826472239899798,
+        "bed_temp_avg": 0.3482625435659723,
+        "ms_temperature": 0.9999999999999998,
+        "drum_pressure": 0.29011523164889247
+      },
+      "drum_pressure": {
+        "steam_flow": 0.3457168422002528,
+        "bed_temp_avg": 0.3933021289908142,
+        "ms_temperature": 0.29011523164889247,
+        "drum_pressure": 0.9999999999999999
+      }
+    },
+    "pearson_increment_1min": {
+      "steam_flow": {
+        "steam_flow": 1.0,
+        "bed_temp_avg": 0.0965717480587221,
+        "ms_temperature": 0.08971881777213148,
+        "drum_pressure": -0.09488947387686802
+      },
+      "bed_temp_avg": {
+        "steam_flow": 0.0965717480587221,
+        "bed_temp_avg": 0.9999999999999998,
+        "ms_temperature": 0.2201065884539317,
+        "drum_pressure": 0.25122272253120065
+      },
+      "ms_temperature": {
+        "steam_flow": 0.08971881777213148,
+        "bed_temp_avg": 0.2201065884539317,
+        "ms_temperature": 1.0,
+        "drum_pressure": 0.5024995515090152
+      },
+      "drum_pressure": {
+        "steam_flow": -0.09488947387686804,
+        "bed_temp_avg": 0.2512227225312006,
+        "ms_temperature": 0.502499551509015,
+        "drum_pressure": 1.0
+      }
+    },
+    "pearson_increment_1h": {
+      "steam_flow": {
+        "steam_flow": 1.0,
+        "bed_temp_avg": 0.7904217151552252,
+        "ms_temperature": 0.2546727281593565,
+        "drum_pressure": 0.2710100489623519
+      },
+      "bed_temp_avg": {
+        "steam_flow": 0.7904217151552252,
+        "bed_temp_avg": 1.0,
+        "ms_temperature": 0.44992066337198344,
+        "drum_pressure": 0.3763453181962145
+      },
+      "ms_temperature": {
+        "steam_flow": 0.2546727281593565,
+        "bed_temp_avg": 0.4499206633719835,
+        "ms_temperature": 0.9999999999999998,
+        "drum_pressure": 0.3752352071961524
+      },
+      "drum_pressure": {
+        "steam_flow": 0.2710100489623519,
+        "bed_temp_avg": 0.3763453181962145,
+        "ms_temperature": 0.37523520719615233,
+        "drum_pressure": 0.9999999999999998
+      }
+    },
+    "note": "level correlation is dominated by the shared slow load trend; increment correlation isolates co-movement of the dynamics."
+  },
+  "load_following": {
+    "load": {
+      "proxy": "steam_flow",
+      "unit": "t/h",
+      "mean": 59.76190578703704,
+      "std": 2.3788802606955373,
+      "min": 50.66,
+      "max": 70.87,
+      "p05_p95": [
+        55.32,
+        63.3
+      ]
+    },
+    "coefficients": {
+      "bed_temp_avg": {
+        "unit_per_tph": "degC per t/h",
+        "level_regression": {
+          "slope": 3.900406493640482,
+          "intercept": 540.9673092023917,
+          "r2": 0.7545444998036104
+        },
+        "delta_1h_regression": {
+          "slope": 3.8502254433764134,
+          "r2": 0.624766487788927
+        },
+        "delta_1min_regression": {
+          "slope": 0.3380026885221799,
+          "r2": 0.009326102523117275
+        }
+      },
+      "ms_temperature": {
+        "unit_per_tph": "degC per t/h",
+        "level_regression": {
+          "slope": 0.30617010991565863,
+          "intercept": 519.2238211762284,
+          "r2": 0.02831301680401188
+        },
+        "delta_1h_regression": {
+          "slope": 0.5642714800620809,
+          "r2": 0.06485819846812935
+        },
+        "delta_1min_regression": {
+          "slope": 0.09182089078902225,
+          "r2": 0.008049466262428973
+        }
+      },
+      "drum_pressure": {
+        "unit_per_tph": "kg/cm2 per t/h",
+        "level_regression": {
+          "slope": 0.1112136284360159,
+          "intercept": 92.97451011914202,
+          "r2": 0.11952013498091507
+        },
+        "delta_1h_regression": {
+          "slope": 0.12036327458848028,
+          "r2": 0.07344644663857636
+        },
+        "delta_1min_regression": {
+          "slope": -0.03269270200615118,
+          "r2": 0.009004012252631255
+        }
+      }
+    }
+  }
+}

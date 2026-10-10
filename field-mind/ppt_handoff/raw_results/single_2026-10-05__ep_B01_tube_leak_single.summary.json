@@ -1,0 +1,104 @@
+{
+ "meta": {
+  "episode": "ep_B01_tube_leak",
+  "family": "family B, tier C",
+  "backend": "llamaserver",
+  "model": "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf",
+  "llm_where": "board, llama-server at http://localhost:8080",
+  "host": "fedora (x86_64)",
+  "policy": "sequential",
+  "verifier": "conditional",
+  "started": "2026-10-05 15:21:14",
+  "finished": "2026-10-05 16:08:31",
+  "runner": "bench/stage_monitor.py (LlamaServerBackend)",
+  "timing_report": "stage_timing_ep_B01_tube_leak_llamaserver_20261005-152114.txt",
+  "energy_mwh": null
+ },
+ "evaluation": {
+  "episode_id": "ep_B01_tube_leak",
+  "family": "B",
+  "tier": "C",
+  "backend": "llamaserver",
+  "ablate_text": false,
+  "T1_state": {
+   "per_state_f1": {
+    "NORMAL": 0.988,
+    "DEVIATION": 0.0,
+    "DEGRADED": 0.0,
+    "ALARM": 0.0,
+    "TRIP_IMMINENT": 0.0
+   },
+   "macro_f1": 0.494,
+   "confusion": {
+    "NORMAL->NORMAL": 41,
+    "DEVIATION->NORMAL": 1,
+    "DEVIATION->ALARM": 128
+   }
+  },
+  "T2_root_cause": {
+   "applicable": true,
+   "heldout": false,
+   "target": "RCA-11",
+   "true_group": "RCA-11",
+   "n_scored": 128,
+   "top1": 0.656,
+   "top3": 0.914,
+   "top1_strict": 0.656,
+   "top3_strict": 0.914,
+   "group_top1": 0.656,
+   "sep_named": 0.656,
+   "belief_top1": 0.555,
+   "belief_top3": 0.703,
+   "belief_top1_tiefair": 0.326,
+   "belief_group": 0.555,
+   "belief_group_tiefair": 0.326,
+   "belief_top_tie_rate": 0.492,
+   "low_conf_rate": null,
+   "low_conf_rate_decision": null
+  },
+  "T3_faithfulness": {
+   "n_citations": 158,
+   "faithfulness": 0.842
+  },
+  "T4_actions": {
+   "applicable": true,
+   "precision": 0.364,
+   "recall": 1.0,
+   "proposed": [
+    "ACT-002",
+    "ACT-009",
+    "ACT-012",
+    "ACT-018",
+    "ACT-019",
+    "ACT-021",
+    "ACT-024",
+    "ACT-025",
+    "ACT-031",
+    "ACT-040",
+    "ACT-041"
+   ],
+   "expected": [
+    "ACT-002",
+    "ACT-009",
+    "ACT-031",
+    "ACT-040"
+   ]
+  },
+  "T5_false_positives": {
+   "applicable": false
+  },
+  "T6_lead_time": {
+   "applicable": false
+  },
+  "T9_injection": {
+   "applicable": false
+  },
+  "S1_tick_latency_ms_p50": 15059.85,
+  "S1_tick_latency_ms_p95": 33924.37,
+  "S4_llm_invocation_rate": 0.753,
+  "S7_deadline_miss_rate": 0.1941,
+  "parse_failure_rate": 0.047,
+  "verifier_disagreement_rate": 0.544,
+  "S3_energy_mwh": null
+ }
+}

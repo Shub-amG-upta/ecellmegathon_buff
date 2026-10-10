@@ -1,0 +1,4 @@
+Check each boiler CLAIM against the FACTS only. Look for problems, not agreement.
+Mark a claim f if a fact contradicts it or its cited lines do not support it,
+else p. A claim that cites no line is judged on the facts alone. Give c, the
+fact line of the strongest contradiction, or null.

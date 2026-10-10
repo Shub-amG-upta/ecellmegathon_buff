@@ -1,0 +1,49 @@
+{
+  "_comment": "PROVISIONAL hold-out set -- advisor NOT yet consulted (open question 4 in CLAUDE.md / the plan). Five of the eighteen structured RCA cases from docs/Boiler_Failure_Case_Studies_RCA.pdf, chosen to span five distinct fault families rather than cluster in one, so the held-out set tests generalisation across mechanisms. These cases are ABSENT from data/kb/case_library.json (not down-weighted): a present-but-suppressed case still leaks through retrieval and turns T2 into a memorisation test. The full case text stays in the PDF; only the case_id, family and reason are recorded here. Re-point episode root_cause_ids and this split together at the advisor review (see reports/stage5_case_library.md).",
+  "split": {
+    "library_case_ids": ["RCA-01", "RCA-03", "RCA-04", "RCA-05", "RCA-07", "RCA-09", "RCA-10", "RCA-11", "RCA-13", "RCA-14", "RCA-15", "RCA-16", "RCA-18"],
+    "holdout_case_ids": ["RCA-02", "RCA-06", "RCA-08", "RCA-12", "RCA-17"]
+  },
+  "holdout": [
+    {
+      "case_id": "RCA-02",
+      "pdf_case": 2,
+      "family": "water-side control",
+      "title": "Drum level high with carry-over into the superheater and turbine - instrument dynamic response failure",
+      "reason": "Water-side control family, but the OPPOSITE polarity of RCA-01 (level high / swell / over-feed, not level low / starvation). Held out so the agent cannot pattern-match a level excursion to the one direction it has a library case for; it must reason from the swell-plus-carry-over signature (drum_level UP, steam_flow DOWN, ms_temperature sharply DOWN, drum_pressure UP) and the sequence. No regenerated episode exercises drum-level-high, so this is an inert-but-clean hold-out that widens family coverage.",
+      "family_distinct_from": ["RCA-06 steam-side", "RCA-08 bed/combustion", "RCA-12 pressure part", "RCA-17 auxiliary"]
+    },
+    {
+      "case_id": "RCA-06",
+      "pdf_case": 6,
+      "family": "steam-side control",
+      "title": "Boiler outlet steam pressure too low - coal hang-up and DCF shear pin failure",
+      "reason": "Steam-side control family. This is the true mechanism behind the six family-C episodes (wet / low-CV coal -> heat-input deficit -> pressure sag at steady load), so holding it out makes family C a genuine generalisation test: the agent must reach a fuel-delivery deficit from RCA-14 (total feeder loss, in library) plus topology and the coal-lab record, without the exact case present. This is the single episode-backed hold-out and the one that actually measures generalisation.",
+      "family_distinct_from": ["RCA-02 water-side", "RCA-08 bed/combustion", "RCA-12 pressure part", "RCA-17 auxiliary"]
+    },
+    {
+      "case_id": "RCA-08",
+      "pdf_case": 8,
+      "family": "bed / combustion control",
+      "title": "Bed temperature low with risk of bed slumping and unburnt accumulation - over-cooling by excess primary air",
+      "reason": "Bed / combustion control family, the OPPOSITE polarity of RCA-07 (bed low / slumping, not bed high / clinker). Held out so the agent has a library case for bed-HIGH but must generalise to bed-LOW (excess-PA over-cooling, low-CV coal, cold recirculation ash) from the energy-balance HEAT_SHORT signal and the go-observe O2 / PA-to-coal-ratio evidence. No regenerated episode exercises bed-temperature-low.",
+      "family_distinct_from": ["RCA-02 water-side", "RCA-06 steam-side", "RCA-12 pressure part", "RCA-17 auxiliary"]
+    },
+    {
+      "case_id": "RCA-12",
+      "pdf_case": 12,
+      "family": "pressure part",
+      "title": "Superheater tube failure - creep rupture from internal deposits",
+      "reason": "Pressure-part family. RCA-11 (water wall tube erosion) stays in the library; RCA-12 is a SECOND leak location with a different mechanism (steam-side creep from deposit starvation, not fireside erosion) and a different six-tag footprint (feed exceeds steam and level holds, as in RCA-11, but bed temperature stays FLAT instead of dropping, and post-SH flue gas temperature falls). Held out to test whether leak reasoning generalises across pressure-part components rather than being memorised for the water wall.",
+      "family_distinct_from": ["RCA-02 water-side", "RCA-06 steam-side", "RCA-08 bed/combustion", "RCA-17 auxiliary"]
+    },
+    {
+      "case_id": "RCA-17",
+      "pdf_case": 17,
+      "family": "auxiliary equipment",
+      "title": "Loss of ID fan and furnace pressurisation - bearing failure from loss of cooling water",
+      "reason": "Auxiliary / draught family. Its entire signature is on tags we do not carry (furnace pressure, ID fan bearing temperature and motor current) - on the six process tags it is invisible until the boiler trips. Held out as an explicit 'this is new / not observable in these six tags' generalisation case: correct behaviour is to say so and name the furnace-pressure trace and the ID bearing-temperature-vs-current divergence as the observations to go and make, not to force-fit it to a library case.",
+      "family_distinct_from": ["RCA-02 water-side", "RCA-06 steam-side", "RCA-08 bed/combustion", "RCA-12 pressure part"]
+    }
+  ]
+}

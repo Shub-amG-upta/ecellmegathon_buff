@@ -1,0 +1,84 @@
+                                                      mock              llama32-3b             qwen25-0.5b
+n_episodes                                               3                       3                       3
+library_top1                                         0.419                   0.394                   0.302
+library_group_top1                                   0.501                   0.507                   0.418
+library_sep_named                                     0.46                   0.432                   0.315
+library_belief_top1_tiefair                          0.219                   0.219                   0.219
+library_belief_group                                 0.465                   0.465                   0.465
+Q3_faithfulness_after_gate                             1.0                   0.841                   0.974
+model_citation_faithfulness_raw                        1.0                   0.828                   0.179
+n_model_citations                                      397                     383                     234
+diag_calls                                             262                     262                     262
+broken_json_first_reply                                0.0                   0.061                   0.389
+broken_json_after_repair                               0.0                   0.042                    0.29
+ece_group_decision                                  0.2692                  0.2395                  0.3837
+ece_group_shown                                     0.1849                  0.1797                  0.0877
+confident_wrong_decision                                58                      44                     100
+confident_wrong_shown                                    7                      11                      38
+confident_wrong_share_decision                       0.221                   0.168                   0.382
+confident_wrong_share_shown                          0.027                   0.042                   0.145
+low_conf_share_decision                              0.485                   0.599                   0.202
+low_conf_share_shown                                 0.855                   0.863                   0.721
+scored_library_ticks                                   262                     262                     262
+Q1_macro_f1                                          0.598                   0.598                   0.598
+Q4_precision                                         0.347                   0.338                    0.31
+Q4_recall                                              1.0                     1.0                     1.0
+S4_llm_invocation                                    0.654                   0.654                   0.654
+prompt_tokens_mean                                  2102.5                  1933.3                  2067.2
+prompt_tokens_missing                                    0                       0                       0
+answer_tokens_mean                                   947.9                   141.9                   210.9
+answer_tokens_missing                                    0                       0                       0
+answer_tokens_per_call_mean                           None                   143.1                   210.5
+answer_tokens_per_call_p95                            None                     243                     256
+answer_share_at_cap                                   None                   0.047                   0.503
+diag_latency_ms_mean                                   5.0                 11356.7                  4920.4
+diag_latency_ms_p95                                    5.0                 15916.5                 10667.4
+tick_deadline_misses                                     0                      67                       1
+tick_deadline_miss_rate                                0.0                  0.1675                  0.0025
+server_prefill_tok_s                                  None                   890.1                  2939.3
+server_decode_tok_s                                   None                    16.1                   47.91
+rate_calls_missing                                     294                       1                      29
+projected_verified_s                                  None                    6.77                    2.24
+
+[mock] models=['mock-0'] lanes=['mock'] status={'diagnostician:ok': 262, 'verifier:ok': 32}
+  ranking_model_rank1: pooled {'n': 157, 'model_only': 0, 'p_belief': 0.239, 'p_model': 0.389}  verdict=INCONCLUSIVE
+      dev_A01_fcv_seize        {'n': 53, 'model_only': 0, 'p_belief': 0.0, 'p_model': 0.528}
+      dev_B01_tube_leak        {'n': 69, 'model_only': 0, 'p_belief': 0.145, 'p_model': 0.478}
+      dev_C02_feeder_trip      {'n': 35, 'model_only': 0, 'p_belief': 0.786, 'p_model': 0.0}
+  ranking_shown_rank1: pooled {'n': 157, 'model_only': 0, 'p_belief': 0.239, 'p_model': 0.389}  verdict=INCONCLUSIVE
+      dev_A01_fcv_seize        {'n': 53, 'model_only': 0, 'p_belief': 0.0, 'p_model': 0.528}
+      dev_B01_tube_leak        {'n': 69, 'model_only': 0, 'p_belief': 0.145, 'p_model': 0.478}
+      dev_C02_feeder_trip      {'n': 35, 'model_only': 0, 'p_belief': 0.786, 'p_model': 0.0}
+  group top-1 by episode: {'dev_A01_fcv_seize': 0.509, 'dev_B01_tube_leak': 0.617, 'dev_C02_feeder_trip': 0.377}
+
+[llama32-3b] models=['/data/local/tmp/llm/Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf'] lanes=['npu'] status={'diagnostician:ok': 251, 'diagnostician:invalid_schema': 11, 'verifier:invalid_schema': 40, 'verifier:ok': 69}
+  ranking_model_rank1: pooled {'n': 169, 'model_only': 9, 'p_belief': 0.265, 'p_model': 0.444}  verdict=INCONCLUSIVE
+      dev_A01_fcv_seize        {'n': 46, 'model_only': 3, 'p_belief': 0.0, 'p_model': 0.652}
+      dev_B01_tube_leak        {'n': 96, 'model_only': 3, 'p_belief': 0.227, 'p_model': 0.469}
+      dev_C02_feeder_trip      {'n': 27, 'model_only': 3, 'p_belief': 0.852, 'p_model': 0.0}
+  ranking_shown_rank1: pooled {'n': 165, 'model_only': 5, 'p_belief': 0.253, 'p_model': 0.455}  verdict=INCONCLUSIVE
+      dev_A01_fcv_seize        {'n': 46, 'model_only': 3, 'p_belief': 0.0, 'p_model': 0.652}
+      dev_B01_tube_leak        {'n': 94, 'model_only': 1, 'p_belief': 0.221, 'p_model': 0.479}
+      dev_C02_feeder_trip      {'n': 25, 'model_only': 1, 'p_belief': 0.84, 'p_model': 0.0}
+  chip temp [start, end]: {'dev_A01_fcv_seize': [{'t': '2026-10-03T23:48:08+0530', 'cpu_max_c': 40.7, 'npu_max_c': 40.1, 'n_zones': 75}, {'t': '2026-10-04T00:02:59+0530', 'cpu_max_c': 58.1, 'npu_max_c': 58.3, 'n_zones': 75}], 'dev_B01_tube_leak': [{'t': '2026-10-04T00:18:32+0530', 'cpu_max_c': 44.6, 'npu_max_c': 42.0, 'n_zones': 75}, {'t': '2026-10-04T01:18:48+0530', 'cpu_max_c': 56.2, 'npu_max_c': 56.0, 'n_zones': 75}], 'dev_C02_feeder_trip': [{'t': '2026-10-04T01:57:46+0530', 'cpu_max_c': 45.3, 'npu_max_c': 41.7, 'n_zones': 75}, {'t': '2026-10-04T02:24:56+0530', 'cpu_max_c': 56.6, 'npu_max_c': 56.7, 'n_zones': 75}]}
+  group top-1 by episode: {'dev_A01_fcv_seize': 0.544, 'dev_B01_tube_leak': 0.547, 'dev_C02_feeder_trip': 0.429}
+
+[qwen25-0.5b] models=['/data/local/tmp/llm/Qwen2.5-0.5B-Instruct-Q4_0-pure-embq8.gguf'] lanes=['npu'] status={'diagnostician:ok': 186, 'diagnostician:invalid_schema': 76, 'verifier:invalid_schema': 21, 'verifier:ok': 2}
+  ranking_model_rank1: pooled {'n': 32, 'model_only': 1, 'p_belief': 0.617, 'p_model': 0.094}  verdict=BELIEF_DECIDES
+      dev_A01_fcv_seize        {'n': 7, 'model_only': 0, 'p_belief': 0.0, 'p_model': 0.429}
+      dev_B01_tube_leak        {'n': 19, 'model_only': 0, 'p_belief': 0.724, 'p_model': 0.0}
+      dev_C02_feeder_trip      {'n': 6, 'model_only': 1, 'p_belief': 1.0, 'p_model': 0.0}
+  ranking_shown_rank1: pooled {'n': 33, 'model_only': 1, 'p_belief': 0.598, 'p_model': 0.121}  verdict=BELIEF_DECIDES
+      dev_A01_fcv_seize        {'n': 7, 'model_only': 0, 'p_belief': 0.0, 'p_model': 0.429}
+      dev_B01_tube_leak        {'n': 20, 'model_only': 0, 'p_belief': 0.688, 'p_model': 0.05}
+      dev_C02_feeder_trip      {'n': 6, 'model_only': 1, 'p_belief': 1.0, 'p_model': 0.0}
+  chip temp [start, end]: {'dev_A01_fcv_seize': [{'t': '2026-10-04T00:07:22+0530', 'cpu_max_c': 39.0, 'npu_max_c': 39.0, 'n_zones': 75}, {'t': '2026-10-04T00:17:00+0530', 'cpu_max_c': 46.5, 'npu_max_c': 46.3, 'n_zones': 75}], 'dev_B01_tube_leak': [{'t': '2026-10-04T01:21:53+0530', 'cpu_max_c': 39.0, 'npu_max_c': 39.0, 'n_zones': 75}, {'t': '2026-10-04T01:54:38+0530', 'cpu_max_c': 50.2, 'npu_max_c': 50.2, 'n_zones': 75}], 'dev_C02_feeder_trip': [{'t': '2026-10-04T02:29:00+0530', 'cpu_max_c': 39.3, 'npu_max_c': 38.2, 'n_zones': 75}, {'t': '2026-10-04T02:41:54+0530', 'cpu_max_c': 61.2, 'npu_max_c': 61.0, 'n_zones': 75}]}
+  group top-1 by episode: {'dev_A01_fcv_seize': 0.07, 'dev_B01_tube_leak': 0.352, 'dev_C02_feeder_trip': 0.831}
+
+MODEL-CHOICE RULE (projected time is a PROJECTION; call time is a stand-in for energy, not measured energy)
+  floor (deterministic, mock): 0.501
+  llama32-3b                     {'broken_json_first_reply': True, 'broken_json_after_repair': False, 'projected_verified_s': True, 'htp0_all_layers': True, 'gguf_all_q4_0_q8_0': True, 'pass': False}
+  qwen25-0.5b                    {'broken_json_first_reply': False, 'broken_json_after_repair': False, 'projected_verified_s': True, 'htp0_all_layers': True, 'gguf_all_q4_0_q8_0': True, 'pass': False}
+  passing: []  group-tied: []  faith-tied: []
+  pick: None  (decided by NO MODEL PASSES: stop and ask)
+  FLAG: qwen25-0.5b: library group top-1 0.418 is BELOW the deterministic floor 0.501 (evidence for the ranking question: the model's order loses to the no-reasoning order)

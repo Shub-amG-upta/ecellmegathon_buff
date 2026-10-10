@@ -1,0 +1,43 @@
+=== ep_C01_wet_coal  started 2026-10-05T22:55:23+0530  BACK TO BACK (lockstep)  backend llamaserver
+backend = llamaserver
+
+--- ep_C01_wet_coal  (C/tier C) truth: Wet coal bridging in the hopper
+  t  40 NORMAL        QUIET       All six parameters within band; balances close.            | -
+  t  48 DEVIATION     WATCH       drum_pressure -0.23 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  49 DEVIATION     WATCH       drum_pressure -0.36 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  50 DEVIATION     WATCH       drum_pressure -0.50 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  51 DEVIATION     WATCH       drum_pressure -0.66 kg/cm2/min sustained 5 min (noise MAD  | Insufficient primary air velocity in one branc
+  t  52 DEVIATION     WATCH       drum_pressure -0.83 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  53 DEVIATION     WATCH       drum_pressure -1.02 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  54 DEVIATION     WATCH       drum_pressure -1.18 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  55 DEVIATION     WATCH       drum_pressure -1.30 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  56 DEVIATION     WATCH       drum_pressure -1.38 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  57 DEVIATION     WATCH       drum_pressure -1.39 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  58 DEVIATION     WATCH       drum_pressure -1.34 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  59 DEVIATION     WATCH       drum_pressure -1.25 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  60 DEVIATION     WATCH       drum_pressure -1.16 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  61 DEVIATION     WATCH       drum_pressure -1.06 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  62 DEVIATION     WATCH       drum_pressure -0.95 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  63 DEVIATION     WATCH       drum_pressure -0.84 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  64 DEVIATION     WATCH       drum_pressure -0.73 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  65 DEVIATION     WATCH       drum_pressure -0.64 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  66 DEVIATION     WATCH       drum_pressure -0.54 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  67 DEVIATION     WATCH       drum_pressure -0.44 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  68 DEVIATION     WATCH       drum_pressure -0.34 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  69 DEVIATION     WATCH       drum_pressure -0.23 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t  70 DEVIATION     WATCH       bed rising +1.45 degC/min with flat steam and flat pressur | Total loss of fuel input from a degraded conne
+  t  76 DEVIATION     WATCH       drum_pressure -0.18 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t  77 DEVIATION     WATCH       drum_pressure -0.22 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t  78 DEVIATION     WATCH       drum_pressure -0.25 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t  79 DEVIATION     WATCH       drum_pressure -0.25 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t  80 DEVIATION     WATCH       drum_pressure -0.23 kg/cm2/min sustained 5 min (noise MAD  | Loss of the HP heater and the resulting low ec
+  t  81 DEVIATION     WATCH       drum_pressure -0.18 kg/cm2/min sustained 5 min (noise MAD  | Insufficient primary air velocity in one branc
+  t 120 NORMAL        QUIET       All six parameters within band; balances close.            | -
+  t 136 DEVIATION     WATCH       drum_pressure -0.20 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t 137 DEVIATION     WATCH       drum_pressure -0.25 kg/cm2/min sustained 5 min (noise MAD  | Loss of a stable light-up flame from degraded 
+  t 138 DEVIATION     WATCH       drum_pressure -0.29 kg/cm2/min sustained 5 min (noise MAD  | Two independent failures in sequence: PA fan m
+  t 139 DEVIATION     WATCH       drum_pressure -0.29 kg/cm2/min sustained 5 min (noise MAD  | Two independent failures in sequence: PA fan m
+  t 140 DEVIATION     WATCH       drum_pressure -0.26 kg/cm2/min sustained 5 min (noise MAD  | Two independent failures in sequence: PA fan m
+  t 141 DEVIATION     WATCH       drum_pressure -0.21 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t 142 DEVIATION     WATCH       drum_pressure -0.16 kg/cm2/min sustained 5 min (noise MAD  | Total loss of fuel input from a degraded conne
+  t 160 NORMAL        QUIET       All six parameters within band; balances close.            | -

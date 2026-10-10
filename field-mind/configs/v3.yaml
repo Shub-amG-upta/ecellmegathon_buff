@@ -1,0 +1,26 @@
+# multi_v3 (2026-10-08): configs/fast.yaml with two HUMAN DECISIONS added.
+# An OVERLAY on configs/base.yaml, complete on its own (it repeats every key of
+# fast.yaml), so: scripts/benchmark.sh <name> <episodes...> --overlay configs/v3.yaml
+#   merge_rule: hybrid       belief weak (best log-odds < 0) or tied (margin < 0.35):
+#                            the model's ranking of belief's non-flat cases leads;
+#                            otherwise nudge; flat cases never nudged
+#                            (fieldmind/multi/merge_rules.hybrid). LOCKSTEP ONLY.
+#   text_reader: false,      no model note reader (Gemma 1B under the answer grammar
+#   note_source: raw         turned distractor notes into false plant facts); the
+#                            diagnostician reads the selected notes' own text in the
+#                            data fence; records stay as code-written record-facts.
+# Everything else, including group_letters: false, is fast.yaml's.
+agent: {verifier: conditional}
+multi:
+  placement: fixed
+  fixed_placement: {diagnostician: npu, diag_water: npu, diag_heat: npu, verifier: cpu,
+    text_reader: cpu, query: cpu}
+  lanes:
+    npu: {model_file: Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf}
+    cpu: {model_file: gemma-3-1b-it-qat-Q4_0-pure-embq8.gguf}
+  compact: {schema: true, rules: true, cases: true, notes: true, world: true, ver_schema: true,
+    ver_rules: true, ver_claims: true, group_letters: false, text_reader: false, note_source: raw}
+  split: true
+  split_on_change: true
+  grammar: true
+  merge_rule: hybrid

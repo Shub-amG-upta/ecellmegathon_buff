@@ -1,0 +1,315 @@
+{
+  "config_backend": "llamaserver",
+  "summary": {
+    "n_episodes": 1,
+    "Q1_macro_f1": 0.459,
+    "Q2_top1": 0.0,
+    "Q2_top3": 0.0,
+    "Q2_n_episodes_scored": 1,
+    "Q2_library": {
+      "n_episodes": 0,
+      "top1": null,
+      "top3": null,
+      "group_top1": null,
+      "sep_named": null,
+      "belief_top1": null,
+      "belief_top1_tiefair": null,
+      "belief_top3": null,
+      "belief_group": null,
+      "belief_group_tiefair": null,
+      "belief_top_tie_rate": null,
+      "low_conf_rate": null,
+      "low_conf_rate_decision": null
+    },
+    "Q2_heldout": {
+      "n_episodes": 1,
+      "top1": null,
+      "top3": null,
+      "group_top1": 0.791,
+      "sep_named": null,
+      "belief_top1": null,
+      "belief_top1_tiefair": null,
+      "belief_top3": null,
+      "belief_group": 0.977,
+      "belief_group_tiefair": 0.977,
+      "belief_top_tie_rate": 1.0,
+      "low_conf_rate": 1.0,
+      "low_conf_rate_decision": 0.256
+    },
+    "Q2_by_family": {
+      "A": {
+        "library": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        }
+      },
+      "B": {
+        "library": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        }
+      },
+      "C": {
+        "library": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 1,
+          "top1": null,
+          "top3": null,
+          "group_top1": 0.791,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": 0.977,
+          "belief_group_tiefair": 0.977,
+          "belief_top_tie_rate": 1.0,
+          "low_conf_rate": 1.0,
+          "low_conf_rate_decision": 0.256
+        }
+      },
+      "D": {
+        "library": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        }
+      },
+      "E": {
+        "library": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        },
+        "heldout": {
+          "n_episodes": 0,
+          "top1": null,
+          "top3": null,
+          "group_top1": null,
+          "sep_named": null,
+          "belief_top1": null,
+          "belief_top1_tiefair": null,
+          "belief_top3": null,
+          "belief_group": null,
+          "belief_group_tiefair": null,
+          "belief_top_tie_rate": null,
+          "low_conf_rate": null,
+          "low_conf_rate_decision": null
+        }
+      }
+    },
+    "Q2_heldout_cases_with_episodes": [
+      "RCA-06"
+    ],
+    "Q2_heldout_cases_without_episodes": [
+      "RCA-02",
+      "RCA-08",
+      "RCA-12",
+      "RCA-17"
+    ],
+    "Q2_episodes_not_applicable": [],
+    "Q3_faithfulness": 1.0,
+    "Q3_rel": 0.639,
+    "Q4_action_precision": 0.429,
+    "Q4_action_recall": 0.75,
+    "Q4_n_episodes_scored": 1,
+    "Q5_fp_per_hour": null,
+    "Q6_lead_time_min_mean": null,
+    "Q6_n_faults_caught_before_trip": 0,
+    "S4_llm_invocation_rate": 0.147,
+    "S7_deadline_miss_rate": 0.0,
+    "constraints": {
+      "C1_hard_deadline_misses_zero": true,
+      "C3_top3_ge_0.85": false,
+      "C4_faithfulness_ge_0.95": true
+    }
+  },
+  "per_episode": [
+    {
+      "episode_id": "ep_C01_wet_coal",
+      "family": "C",
+      "tier": "C",
+      "backend": "llamaserver",
+      "ablate_text": false,
+      "T1_state": {
+        "per_state_f1": {
+          "NORMAL": 0.459,
+          "DEVIATION": 0.459,
+          "DEGRADED": 0.0,
+          "ALARM": 0.0,
+          "TRIP_IMMINENT": 0.0
+        },
+        "macro_f1": 0.459,
+        "confusion": {
+          "NORMAL->NORMAL": 39,
+          "NORMAL->DEVIATION": 4,
+          "DEVIATION->DEVIATION": 39,
+          "DEVIATION->NORMAL": 88
+        }
+      },
+      "T2_root_cause": {
+        "applicable": true,
+        "heldout": true,
+        "target": "RCA-06",
+        "true_group": "RCA-14+RCA-18",
+        "n_scored": 43,
+        "top1": 0.0,
+        "top3": 0.0,
+        "top1_strict": null,
+        "top3_strict": null,
+        "group_top1": 0.791,
+        "sep_named": null,
+        "belief_top1": null,
+        "belief_top3": null,
+        "belief_top1_tiefair": null,
+        "belief_group": 0.977,
+        "belief_group_tiefair": 0.977,
+        "belief_top_tie_rate": 1.0,
+        "low_conf_rate": 1.0,
+        "low_conf_rate_decision": 0.256
+      },
+      "T3_faithfulness": {
+        "n_citations": 132,
+        "faithfulness": 1.0,
+        "rel": 0.639,
+        "n_rel_citations": 83
+      },
+      "T4_actions": {
+        "applicable": true,
+        "precision": 0.429,
+        "recall": 0.75,
+        "proposed": [
+          "ACT-002",
+          "ACT-009",
+          "ACT-012",
+          "ACT-018",
+          "ACT-019",
+          "ACT-040",
+          "ACT-041"
+        ],
+        "expected": [
+          "ACT-002",
+          "ACT-011",
+          "ACT-012",
+          "ACT-040"
+        ]
+      },
+      "T5_false_positives": {
+        "applicable": false
+      },
+      "T6_lead_time": {
+        "applicable": false
+      },
+      "T9_injection": {
+        "applicable": false
+      },
+      "S1_tick_latency_ms_p50": 15.99,
+      "S1_tick_latency_ms_p95": 3020.12,
+      "S4_llm_invocation_rate": 0.147,
+      "S7_deadline_miss_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "verifier_disagreement_rate": 0.0,
+      "S3_energy_mwh": null
+    }
+  ]
+}

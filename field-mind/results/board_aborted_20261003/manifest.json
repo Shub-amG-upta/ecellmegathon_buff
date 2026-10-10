@@ -1,0 +1,126 @@
+{
+ "version": 1,
+ "created": "2026-10-03T18:37:09+0530",
+ "jobs": {
+  "A/A/llama32-3b/screen": {
+   "status": "complete",
+   "attempts": 1,
+   "started": "2026-10-03T18:38:27+0530",
+   "summary": "A/llama32-3b/screen.summary.json",
+   "finished": "2026-10-03T18:40:01+0530"
+  },
+  "A/A/qwen3-1.7b/screen": {
+   "status": "complete",
+   "attempts": 1,
+   "started": "2026-10-03T18:40:01+0530",
+   "summary": "A/qwen3-1.7b/screen.summary.json",
+   "finished": "2026-10-03T18:42:18+0530"
+  },
+  "A/A/gemma3-1b-qat/screen": {
+   "status": "complete",
+   "attempts": 1,
+   "started": "2026-10-03T18:42:18+0530",
+   "summary": "A/gemma3-1b-qat/screen.summary.json",
+   "finished": "2026-10-03T18:44:12+0530"
+  },
+  "A/A/qwen25-0.5b/screen": {
+   "status": "complete",
+   "attempts": 1,
+   "started": "2026-10-03T18:44:12+0530",
+   "summary": "A/qwen25-0.5b/screen.summary.json",
+   "finished": "2026-10-03T18:45:55+0530"
+  },
+  "B/round1/llama32-3b/dev_A01_fcv_seize": {
+   "status": "complete",
+   "attempts": 2,
+   "started": "2026-10-03T19:14:53+0530",
+   "summary": "B/llama32-3b/round1.dev_A01_fcv_seize.summary.json",
+   "finished": "2026-10-03T19:22:09+0530"
+  },
+  "B/round1/qwen25-0.5b/dev_A01_fcv_seize": {
+   "status": "complete",
+   "attempts": 1,
+   "started": "2026-10-03T19:22:09+0530",
+   "summary": "B/qwen25-0.5b/round1.dev_A01_fcv_seize.summary.json",
+   "finished": "2026-10-03T19:35:33+0530"
+  },
+  "B/round2/llama32-3b/dev_B01_tube_leak": {
+   "status": "incomplete",
+   "attempts": 2,
+   "started": "2026-10-03T21:21:33+0530"
+  }
+ },
+ "stages": {
+  "A": {
+   "passing": [
+    "llama32-3b",
+    "qwen3-1.7b",
+    "gemma3-1b-qat",
+    "qwen25-0.5b"
+   ],
+   "primary": "llama32-3b",
+   "second": "qwen25-0.5b",
+   "measured_verified_s": {
+    "llama32-3b": 5.752,
+    "qwen3-1.7b": 3.623,
+    "gemma3-1b-qat": 2.573,
+    "qwen25-0.5b": 1.971
+   },
+   "projected_verified_s": {
+    "llama32-3b": 5.75,
+    "qwen3-1.7b": 3.62,
+    "gemma3-1b-qat": 2.57,
+    "qwen25-0.5b": 1.97
+   },
+   "checks": {
+    "llama32-3b": {
+     "htp0_all_layers": true,
+     "gguf_all_q4_0_q8_0": true
+    },
+    "qwen3-1.7b": {
+     "htp0_all_layers": true,
+     "gguf_all_q4_0_q8_0": true
+    },
+    "gemma3-1b-qat": {
+     "htp0_all_layers": true,
+     "gguf_all_q4_0_q8_0": true
+    },
+    "qwen25-0.5b": {
+     "htp0_all_layers": true,
+     "gguf_all_q4_0_q8_0": true
+    }
+   },
+   "rule": "option C: Llama 3.2 3B plus the passing model (GGUF + offload checks) with the lowest measured verified-diagnosis time",
+   "done": true,
+   "finished": "2026-10-03T18:45:55+0530"
+  },
+  "B": {
+   "models": [
+    "llama32-3b",
+    "qwen25-0.5b"
+   ],
+   "dropped": {},
+   "round1": {
+    "llama32-3b": {
+     "broken_json_first_reply": 0.053,
+     "broken_json_after_repair": 0.018
+    },
+    "qwen25-0.5b": {
+     "broken_json_first_reply": 0.14,
+     "broken_json_after_repair": 0.088
+    }
+   }
+  }
+ },
+ "idle_temp": {
+  "max_c": 33.9,
+  "readings": [
+   33.3,
+   34.9,
+   33.2,
+   34.1,
+   33.9
+  ],
+  "t": "2026-10-03T18:38:27+0530"
+ }
+}

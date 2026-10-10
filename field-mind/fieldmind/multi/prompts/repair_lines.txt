@@ -1,0 +1,5 @@
+Your previous output was rejected by a strict JSON parser.
+Reason: {reason}
+Previous output:
+{bad_output}
+Return ONLY the corrected JSON object in the same short format. No other text.

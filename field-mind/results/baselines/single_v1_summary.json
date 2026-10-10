@@ -1,0 +1,532 @@
+{
+ "commit": "4d30c3feffaa9b617bd6b454ac9f2e46880cb2a9",
+ "backend": "mock",
+ "note": "MOCK backend: deterministic and retrieval layers only. NOT an agent result.",
+ "summary": {
+  "n_episodes": 30,
+  "Q1_macro_f1": 0.743,
+  "Q2_top1": 0.334,
+  "Q2_top3": 0.507,
+  "Q2_n_episodes_scored": 17,
+  "Q3_faithfulness": 1.0,
+  "Q4_action_precision": 0.38,
+  "Q4_action_recall": 0.926,
+  "Q5_fp_per_hour": 0.91,
+  "Q6_lead_time_min_mean": 31.5,
+  "Q6_n_faults_caught_before_trip": 6,
+  "S4_llm_invocation_rate": 0.45,
+  "S7_deadline_miss_rate": 0.0
+ },
+ "per_episode": {
+  "ep_A01_fcv_seize": {
+   "Q1_macro_f1": 0.857,
+   "Q2_top1": 0.208,
+   "Q2_top3": 0.358,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.333,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": true,
+    "first_correct_t": 1140.0,
+    "trip_t": 2350.0,
+    "lead_time_min": 20.2
+   }
+  },
+  "ep_A02_fcv_seize_fast": {
+   "Q1_macro_f1": 0.638,
+   "Q2_top1": 0.125,
+   "Q2_top3": 0.359,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.333,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": true,
+    "first_correct_t": 1410.0,
+    "trip_t": 1385.0,
+    "lead_time_min": -0.4
+   }
+  },
+  "ep_A03_bfp_suction": {
+   "Q1_macro_f1": 0.757,
+   "Q2_top1": 0.396,
+   "Q2_top3": 0.648,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.308,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": true,
+    "first_correct_t": 1380.0,
+    "trip_t": 1800.0,
+    "lead_time_min": 7.0
+   }
+  },
+  "ep_A04_strainer_choke": {
+   "Q1_macro_f1": 0.88,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_A05_fcv_caught": {
+   "Q1_macro_f1": 0.714,
+   "Q2_top1": 0.161,
+   "Q2_top3": 0.264,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.308,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_A06_fcv_seize_repeat": {
+   "Q1_macro_f1": 0.707,
+   "Q2_top1": 0.226,
+   "Q2_top3": 0.624,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.4,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": true,
+    "first_correct_t": 1380.0,
+    "trip_t": 2415.0,
+    "lead_time_min": 17.2
+   }
+  },
+  "ep_B01_tube_leak": {
+   "Q1_macro_f1": 0.494,
+   "Q2_top1": 0.68,
+   "Q2_top3": 0.953,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.444,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_B02_tube_leak_fast": {
+   "Q1_macro_f1": 0.472,
+   "Q2_top1": 0.608,
+   "Q2_top3": 1.0,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.429,
+    "recall": 0.75
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_B03_tube_leak_slow": {
+   "Q1_macro_f1": 0.5,
+   "Q2_top1": 0.402,
+   "Q2_top3": 0.603,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.4,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_B04_cbd_left_open": {
+   "Q1_macro_f1": 0.462,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_B05_tube_leak_repeat": {
+   "Q1_macro_f1": 0.494,
+   "Q2_top1": 0.586,
+   "Q2_top3": 1.0,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.5,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_C01_wet_coal": {
+   "Q1_macro_f1": 0.459,
+   "Q2_top1": 0.0,
+   "Q2_top3": 0.0,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.429,
+    "recall": 0.75
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_C02_feeder_trip": {
+   "Q1_macro_f1": 0.732,
+   "Q2_top1": 0.316,
+   "Q2_top3": 0.5,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.375,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_C03_wet_coal_mild": {
+   "Q1_macro_f1": 0.593,
+   "Q2_top1": 0.0,
+   "Q2_top3": 0.0,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.375,
+    "recall": 0.75
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_C04_feeder_trip_caught": {
+   "Q1_macro_f1": 0.61,
+   "Q2_top1": 0.317,
+   "Q2_top3": 0.571,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.3,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_C05_low_cv_coal": {
+   "Q1_macro_f1": 0.446,
+   "Q2_top1": 0.0,
+   "Q2_top3": 0.0,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.3,
+    "recall": 0.75
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_C06_wet_coal_repeat": {
+   "Q1_macro_f1": 0.367,
+   "Q2_top1": 0.0,
+   "Q2_top3": 0.0,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.333,
+    "recall": 0.75
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_D01_high_cv_coal": {
+   "Q1_macro_f1": 0.76,
+   "Q2_top1": 0.774,
+   "Q2_top3": 0.86,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.4,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": true,
+    "first_correct_t": 930.0,
+    "trip_t": 7820.0,
+    "lead_time_min": 114.8
+   }
+  },
+  "ep_D02_low_primary_air": {
+   "Q1_macro_f1": 0.778,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_D03_high_cv_severe": {
+   "Q1_macro_f1": 0.86,
+   "Q2_top1": 0.875,
+   "Q2_top3": 0.883,
+   "Q4": {
+    "applicable": true,
+    "precision": 0.5,
+    "recall": 1.0
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": true,
+    "first_correct_t": 1170.0,
+    "trip_t": 2985.0,
+    "lead_time_min": 30.2
+   }
+  },
+  "ep_D04_low_pa_caught": {
+   "Q1_macro_f1": 0.736,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_E01_fouling_drift": {
+   "Q1_macro_f1": 1.0,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_E02_fouling_drift": {
+   "Q1_macro_f1": 0.999,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_E03_fouling_drift": {
+   "Q1_macro_f1": 1.0,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": false
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_N01_normal": {
+   "Q1_macro_f1": 1.0,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": true,
+    "fp_ticks": 0,
+    "fp_per_hour": 0.0
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_N02_normal": {
+   "Q1_macro_f1": 1.0,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": true,
+    "fp_ticks": 0,
+    "fp_per_hour": 0.0
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_N03_normal": {
+   "Q1_macro_f1": 0.977,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": true,
+    "fp_ticks": 5,
+    "fp_per_hour": 5.45
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_N04_normal": {
+   "Q1_macro_f1": 1.0,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": true,
+    "fp_ticks": 0,
+    "fp_per_hour": 0.0
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_N05_normal": {
+   "Q1_macro_f1": 1.0,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": true,
+    "fp_ticks": 0,
+    "fp_per_hour": 0.0
+   },
+   "Q6": {
+    "applicable": false
+   }
+  },
+  "ep_N06_normal": {
+   "Q1_macro_f1": 1.0,
+   "Q2_top1": null,
+   "Q2_top3": null,
+   "Q4": {
+    "applicable": false,
+    "precision": null,
+    "recall": null
+   },
+   "Q5": {
+    "applicable": true,
+    "fp_ticks": 0,
+    "fp_per_hour": 0.0
+   },
+   "Q6": {
+    "applicable": false
+   }
+  }
+ }
+}

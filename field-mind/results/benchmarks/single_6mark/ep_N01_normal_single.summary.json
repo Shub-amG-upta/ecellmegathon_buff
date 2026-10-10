@@ -1,0 +1,91 @@
+{
+ "meta": {
+  "test": "single_6mark",
+  "episode": "ep_N01_normal",
+  "run": 1,
+  "params": {
+   "arch": "single",
+   "mode": "lockstep",
+   "tick_s": null,
+   "overlay": null,
+   "overlay_sha256": null,
+   "merge_rule": null,
+   "backend": "llamaserver",
+   "models": {
+    "npu": "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf"
+   },
+   "prompts_saved": true
+  },
+  "started": "2026-10-07T16:32:15+0530",
+  "finished": "2026-10-07T16:32:38+0530",
+  "wall_s": 8.5,
+  "git": {
+   "commit": "8acbc13",
+   "branch": "multi-agent-fix",
+   "uncommitted_changes": true
+  },
+  "chip_c_before": 34.7,
+  "chip_c_after": 36.6,
+  "cool_wait_s": 0,
+  "where": "agent code on the laptop, model calls on the board",
+  "energy_mwh": null
+ },
+ "evaluation": {
+  "episode_id": "ep_N01_normal",
+  "family": "N",
+  "tier": "A",
+  "backend": "llamaserver",
+  "ablate_text": false,
+  "T1_state": {
+   "per_state_f1": {
+    "NORMAL": 1.0,
+    "DEVIATION": 0.0,
+    "DEGRADED": 0.0,
+    "ALARM": 0.0,
+    "TRIP_IMMINENT": 0.0
+   },
+   "macro_f1": 1.0,
+   "confusion": {
+    "NORMAL->NORMAL": 80
+   }
+  },
+  "T2_root_cause": {
+   "applicable": false
+  },
+  "T3_faithfulness": {
+   "n_citations": 0,
+   "faithfulness": 1.0,
+   "rel": null,
+   "n_rel_citations": 0
+  },
+  "T4_actions": {
+   "applicable": false
+  },
+  "T5_false_positives": {
+   "applicable": true,
+   "fp_ticks": 0,
+   "fp_per_hour": 0.0
+  },
+  "T6_lead_time": {
+   "applicable": false
+  },
+  "T9_injection": {
+   "applicable": false
+  },
+  "S1_tick_latency_ms_p50": 0.27,
+  "S1_tick_latency_ms_p95": 0.45,
+  "S4_llm_invocation_rate": 0.0,
+  "S7_deadline_miss_rate": 0.0,
+  "parse_failure_rate": 0.0,
+  "verifier_disagreement_rate": 0.0,
+  "S3_energy_mwh": null
+ },
+ "calls": {
+  "ticks": 80,
+  "by_agent": {},
+  "calls": 0,
+  "unusable": 0,
+  "tokens_in": 0,
+  "tokens_out": 0
+ }
+}

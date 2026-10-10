@@ -1,0 +1,6 @@
+lane,agent,calls,prompt_tokens_median,answer_tokens_mean,prefill_tok_s,decode_tok_s,decode_share_of_model_time,call_ms_median
+"multi-agent CPU lane (Gemma 3 1B), answer grammar on",text_reader,174,404.0,17.4,357,27.1,0.362,1792
+"multi-agent CPU lane (Gemma 3 1B), answer grammar on",verifier,280,406.0,25.1,341,37.0,0.361,1937
+"multi-agent NPU lane (Llama 3.2 3B), answer grammar on",diagnostician,1492,749.0,34.1,809,15.9,0.701,3066
+"single agent NPU lane (Llama 3.2 3B), no grammar",diagnostician,657,1931,159.1,666,13.6,0.819,13788
+"single agent NPU lane (Llama 3.2 3B), no grammar",verifier,177,1107,193.2,678,14.4,0.892,14419

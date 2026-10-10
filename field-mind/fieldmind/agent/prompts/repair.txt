@@ -1,0 +1,10 @@
+Your previous output was rejected by a strict JSON parser.
+
+Reason: {reason}
+
+Previous output:
+{bad_output}
+
+Return ONLY the corrected JSON object. No explanation, no code fences, no text
+before or after. Every key from the schema must be present. If you cannot
+recover the content, return an empty hypotheses list rather than malformed JSON.
