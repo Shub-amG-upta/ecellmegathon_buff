@@ -1,0 +1,11 @@
+| run | commit | ctx | fast path | tool | field (turn) | field (dialog) | ended right | exact | extras | LLM calls | by code | LLM ms | prefill ms | decode ms | NPU C start->peak | crash |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| v1 #1 | 594d593 | 4096 | off | 97.5% | 65.7% | 62.9% | 27/44 | 2 | 71 | 157 | - | 918 | 83 | 788 | 40->106 | no |
+| v2 #1 | 8ab331b | 2048 | on | 97.5% | 65.7% | 63.7% | 29/44 | 2 | 51 | 68 | 89 | 1,573 | 82 | 1,426 | 42->105 | no |
+
+Per field, teacher-forced (correct / gold):
+
+| run | t | s | l | d | a | e | p | w |
+|---|---|---|---|---|---|---|---|---|
+| v1 #1 | 33/43 | 36/42 | 35/44 | 29/42 | 12/27 | 6/20 | 7/18 | 1/6 |
+| v2 #1 | 33/43 | 36/42 | 35/44 | 29/42 | 12/27 | 6/20 | 7/18 | 1/6 |
