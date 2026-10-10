@@ -265,7 +265,7 @@ def teacher_forced(cases, backend, said: dict | None = None, only: set | None = 
                             "raw": call, "dropped": dropped, "error": err, "fast_path": quick is not None,
                             "llm": {"prefill_ms": reply.prefill_ms, "decode_ms": reply.decode_ms,
                                     "wall_ms": reply.latency_ms, "decode_tokens": reply.decode_tokens,
-                                    "prefill_tokens": reply.prefill_tokens}})
+                                    "prefill_tokens": reply.prefill_tokens, "parts": reply.parts}})
     return out
 
 
@@ -509,6 +509,15 @@ def main() -> int:
     from app.prompt import prompt_version
     res["prompt"] = prompt_version()
     res["answer"] = Dialog(backend).answer
+    b = backend                                           # the v7 type router, possibly inside Throttled
+    while b is not None:
+        if hasattr(b, "overrides") and hasattr(b, "type_backend"):
+            res["router"] = b.summary()
+            r = res["router"]
+            print(f"  type router: {r['type_model']} · {r['calls']} calls · type changed {r['changed']} · "
+                  f"failures {r['failures']}")
+            break
+        b = getattr(b, "inner", None)
     if isinstance(backend, Throttled):
         res["throttle"] = backend.summary()
         t = res["throttle"]

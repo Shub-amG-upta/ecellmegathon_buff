@@ -58,7 +58,7 @@ DEVICE_LOGS = "/data/local/tmp/llm/logs"
 # case (every field at its limit + a long sentence) is ~1,260. --ctx overrides it.
 CTX_SIZE = 2048
 N_PARALLEL = 1
-LANE_PORT = {"npu": 8080, "cpu": 8081}
+LANE_PORT = {"npu": 8080, "cpu": 8081, "type": 8084}      # "type": v7's type model, also on the NPU
 
 # Copy-ahead (prompt-lookup) speculative decoding, off by default. Most of our answer is copied from the
 # user's own words, so llama-server can draft the next tokens by matching the last N generated tokens
@@ -124,7 +124,7 @@ def check_model(model_file: str, serial: str = "") -> str:
 
 def lane_command(lane: str, model_file: str, threads: int = 6,
                  log_level: int | None = 4, ctx: int = CTX_SIZE, spec: bool = False,
-                 cool_cpu: bool = False) -> str:
+                 cool_cpu: bool = False, swa_full: bool = False) -> str:
     """The board-side shell command for one llama-server (no redirection, no &).
 
     -fit off      the server may not change the context or the offload itself
@@ -133,7 +133,7 @@ def lane_command(lane: str, model_file: str, threads: int = 6,
     -lv 4         prints "offloaded N/N layers" and the HTP0 buffer sizes that
                   npu_proof reads; measured cost under 2%
     """
-    if lane == "npu":
+    if lane in ("npu", "type"):
         offload = "--device HTP0 -ngl 99"
     elif lane == "cpu":
         offload = f"--device none -ngl 0 -t {threads}"
@@ -144,7 +144,10 @@ def lane_command(lane: str, model_file: str, threads: int = 6,
             f"-m {DEVICE_MODELS}/{model_file} --host 0.0.0.0 --port {LANE_PORT[lane]} "
             f"-c {ctx} -np {N_PARALLEL} {offload} -fit off --cache-ram 0"
             + (" " + SPEC_FLAGS.format(n=SPEC_N, m=SPEC_M) if spec else "")
-            + (" " + COOL_CPU_FLAGS if cool_cpu and lane == "npu" else "")
+            + (" " + COOL_CPU_FLAGS if cool_cpu and lane in ("npu", "type") else "")
+            # Gemma 3 uses sliding-window attention: without --swa-full llama-server doesn't reuse the cached
+            # prompt (board: 660 ms prefill per call instead of ~100 ms)
+            + (" --swa-full" if swa_full else "")
             + (f" -lv {log_level}" if log_level is not None else ""))
 
 
@@ -173,13 +176,14 @@ def start_lane(lane: str, model_file: str, threads: int = 6, serial: str = "",
         cool_cpu = os.environ.get("COOL_CPU", "0") == "1"
     if cool_cpu and not server_has_flag("--poll", serial):
         raise RuntimeError("the board's llama-server has no --poll flag; start without COOL_CPU=1")
-    cmd = lane_command(lane, model_file, threads, log_level, ctx, spec, cool_cpu)
+    swa_full = "gemma" in model_file.lower() and server_has_flag("--swa-full", serial)
+    cmd = lane_command(lane, model_file, threads, log_level, ctx, spec, cool_cpu, swa_full)
     port = LANE_PORT[lane]
     _adb("shell", f"mkdir -p {DEVICE_LOGS}", serial=serial)
     _adb("shell", f"nohup sh -c '{cmd}' > {lane_log_path(lane)} 2>&1 &", serial=serial)
     _adb("forward", f"tcp:{port}", f"tcp:{port}", serial=serial)
     return {"lane": lane, "started_laptop_time": laptop_time(), "command": cmd, "ctx": ctx, "spec": spec,
-            "cool_cpu": cool_cpu,
+            "cool_cpu": cool_cpu, "swa_full": swa_full,
             "model_file": model_file, "model_sha256": sha,
             "board_log": lane_log_path(lane), "url": f"http://localhost:{port}"}
 

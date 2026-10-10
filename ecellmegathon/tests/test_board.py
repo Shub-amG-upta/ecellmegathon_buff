@@ -151,3 +151,9 @@ def test_cool_cpu_option_and_thermal_status(monkeypatch):
         board.start_lane("npu", name)                        # env asks for it, the build can't: refuse
     monkeypatch.setattr(board, "_adb", fake("--poll <0...100>"))
     assert board.start_lane("npu", name)["cool_cpu"] is True
+
+
+def test_type_lane_on_the_npu_with_swa_full_for_gemma():
+    cmd = board.lane_command("type", "gemma-3-4b-it-Q4_0-pure-embq8.gguf", swa_full=True)
+    assert "--device HTP0 -ngl 99" in cmd and "--port 8084" in cmd and "--swa-full" in cmd
+    assert "--swa-full" not in board.lane_command("npu", "m.gguf")

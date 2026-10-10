@@ -181,3 +181,22 @@ PY benchmarks/compare.py
 
 The baseline is v4 (`ANSWER=full`); v6 changes only `ANSWER`. The eval output records
 `answer`; compare `decode_tokens` per LLM call as well as accuracy.
+
+## 12. v7 on the board: Gemma decides the incident type (rule: `eval/DECISION_v7.md`, written before these runs)
+
+`v7` = the v4 configuration + a type router: Llama answers every turn; on the first description Gemma 3 4B decides
+the incident type (it beat Llama on type 8–0 on the board). Gemma runs as a second llama-server on the NPU
+(lane `type`, port 8084, `--swa-full`); `run_bench.py` starts it when `TYPE_MODEL` is set. The Gemma file must be
+on the board (`/data/local/tmp/llm/gemma-3-4b-it-Q4_0-pure-embq8.gguf`, sha256 in `board/board.py`).
+
+```
+git fetch origin && git checkout v7
+EVAL_HEAT_PAUSE=90:80 PY benchmarks/run_bench.py --tag v7-baseline --runs 1
+EVAL_HEAT_PAUSE=90:80 TYPE_MODEL=gemma-3-4b-it-Q4_0-pure-embq8.gguf PY benchmarks/run_bench.py --tag v7 --runs 2
+PY benchmarks/compare.py
+```
+
+The eval prints `type router: … calls · type changed … · failures …` and saves it under `router`.
+Same cooling (fan) for both; write it down. Then, in the same session if time allows, the CPU heat test:
+`COOL_CPU=1 EVAL_HEAT_PAUSE=90:80 PY benchmarks/run_bench.py --tag v7-coolcpu --runs 1` (with or without
+`TYPE_MODEL`, whichever v7's rule keeps).

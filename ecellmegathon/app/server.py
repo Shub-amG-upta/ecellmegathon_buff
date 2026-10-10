@@ -16,6 +16,8 @@ Environment:
   POSTFIX    on | off   the v4 post-model fixes (app/postfix.py; default on)
   PROMPT     1 | 2      system prompt version (2 from v5)
   ANSWER     full | compact   compact (v6): the model writes only the fields object or S/C/N
+  TYPE_MODEL <gguf>     v7: a second model decides the incident type on the first description (app/router.py);
+             TYPE_MODEL_URL default http://127.0.0.1:8084 (board.board lane "type")
   LLM_CONSTRAINT  schema | gbnf   how the answer is constrained (gbnf: no whitespace; compare on the board)
 
 Speech is Track B's `app/voice.py` (§4.1). Until it exists, the server runs
@@ -73,6 +75,21 @@ def _join(errors: str, new: str, stage: str) -> str:
 
 
 def make_backend():
+    """The LLM backend from the environment; wrapped in the v7 type router when TYPE_MODEL is set."""
+    main = _main_backend()
+    tm = os.environ.get("TYPE_MODEL")
+    if not tm or isinstance(main, MockBackend):
+        return main
+    from app.form import load_schema
+    from app.router import TypeRouter
+    types = next(f for f in load_schema()["fields"] if f.get("key") == "t")["values"]
+    tb = LlamaServerBackend(url=os.environ.get("TYPE_MODEL_URL", "http://127.0.0.1:8084"), lane="npu",
+                            model_file=tm, cache_prompt=True, timeout_s=30,
+                            thinking=False if "qwen3" in tm.lower() else None)
+    return TypeRouter(main, tb, types)
+
+
+def _main_backend():
     kind = os.environ.get("LLM", "mock")
     if kind == "mock":
         return MockBackend()

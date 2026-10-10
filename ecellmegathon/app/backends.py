@@ -39,6 +39,7 @@ class LLMReply:
     prefill_ms: float | None = None   # server-side prefill time (llama-server prompt_ms)
     decode_ms: float | None = None    # server-side decode time (llama-server predicted_ms)
     error: str = ""
+    parts: list | None = None         # extra calls folded into this reply (v7 type router), else None
 
 
 class LlamaServerBackend:

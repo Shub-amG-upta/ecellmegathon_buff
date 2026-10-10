@@ -109,8 +109,26 @@ def start_server(bb, model: str, ctx: int, spec: bool) -> dict:
     p = placement(logtxt)
     log(f"llama-server ready in {ready} s: {p['offloaded']}/{p['layers']} layers on HTP0, "
         f"{p['htp0_model_mib']} MiB, ctx {ctx}, spec {spec}")
-    return {"ready_after_s": ready, "placement": p, "command": info["command"], "model_sha256": info["model_sha256"],
-            "ctx": ctx, "spec": spec}
+    out = {"ready_after_s": ready, "placement": p, "command": info["command"], "model_sha256": info["model_sha256"],
+           "ctx": ctx, "spec": spec}
+    tm = os.environ.get("TYPE_MODEL")               # v7 type router: a second llama-server, also on the NPU
+    if tm:
+        ti = bb.start_lane("type", tm, ctx=ctx)
+        if bb.wait_health(f"http://127.0.0.1:{bb.LANE_PORT['type']}") is None:
+            raise RuntimeError("type model server did not become healthy")
+        tp = ["no log yet"]
+        for _ in range(10):
+            tlog = bb.lane_log("type")
+            tp = check_lane_log("npu", tlog)       # same rule as the main lane: every layer on HTP0
+            if not tp:
+                break
+            time.sleep(1)
+        if tp:
+            raise RuntimeError("type model NPU placement not confirmed: " + "; ".join(tp))
+        log(f"type model {tm} ready: {placement(tlog)}, swa_full {ti['swa_full']}")
+        out["type_model"] = {"model": tm, "placement": placement(tlog), "command": ti["command"],
+                             "model_sha256": ti["model_sha256"], "swa_full": ti["swa_full"]}
+    return out
 
 
 class TempSampler(threading.Thread):

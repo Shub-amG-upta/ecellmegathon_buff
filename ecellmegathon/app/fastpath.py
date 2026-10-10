@@ -59,6 +59,13 @@ NOT_A_PLACE = {"is", "was", "were", "are", "be", "been", "it", "it's", "its", "h
 _PLACE_LEAD = re.compile(r"^(?:(?:it\s+(?:was|is)|it'?s|that\s+was)\s+)?(?:in\s+|at\s+|inside\s+)?(?:the\s+)?", re.I)
 
 
+# v7: "…, cancel this" / "ok then cancel this one" anywhere in the turn (not "don't cancel it")
+_CANCEL_IN = re.compile(r"\b(?:cancel|discard|scrap)\s+(?:this|it|that|the report|this report|this one|"
+                        r"the whole thing|everything)\b")
+_NO_CANCEL = re.compile(r"\b(?:don'?t|do not|not|no need to|never)\s+(?:\w+\s+)?(?:cancel|discard|scrap)\b")
+FILLER_ONLY = {"um", "uh", "umm", "uhh", "uhm", "hmm", "erm", "er", "ah", "eh", "mm", "..."}
+
+
 def _norm(text: str) -> str:
     t = text.lower().strip()
     t = re.sub(r"[“”\"!?,.;]+(?=\s|$)", " ", t)          # punctuation at word ends (keeps 10:30, a.m.)
@@ -71,10 +78,12 @@ def answer(text: str, asked: str | None, state: str, type_values: list[str]) -> 
     if not t:
         return None
     words = t.split()
-    if t in CANCEL:
+    if t in CANCEL or (_CANCEL_IN.search(t) and not _NO_CANCEL.search(t)):
         return {"tool": "cancel_report"}
-    if state == "review" and t in SUBMIT:
-        return {"tool": "submit_report"}
+    if (state == "review" and t in SUBMIT) or (t in SUBMIT and "submit" in t):
+        return {"tool": "submit_report"}         # an early "submit": code then refuses and asks what's missing
+    if all(w in FILLER_ONLY for w in words):
+        return {"tool": "no_op"}                 # "um... uh...": nothing for the report
     if state != "collecting":
         return None
     if asked == "s":

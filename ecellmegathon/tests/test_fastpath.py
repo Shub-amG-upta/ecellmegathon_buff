@@ -40,6 +40,10 @@ def test_what_qualifies():
     assert answer("around 10 AM.", "d", "collecting", TYPES)["args"] == {"d": "around 10 AM"}
     assert answer("yes submit it", None, "review", TYPES) == {"tool": "submit_report"}
     assert answer("cancel this report", "l", "collecting", TYPES) == {"tool": "cancel_report"}
+    assert answer("submit", None, "collecting", TYPES) == {"tool": "submit_report"}     # code then refuses
+    assert answer("ok then cancel this one", None, "collecting", TYPES) == {"tool": "cancel_report"}
+    assert answer("um... uh...", None, "collecting", TYPES) == {"tool": "no_op"}
+    assert answer("don't cancel it, the time is wrong", None, "review", TYPES) is None
     assert answer("near gate 3", "l", "collecting", TYPES)["args"] == {"l": "near gate 3"}
     assert answer("the store room on ground floor", "l", "collecting", TYPES)["args"] == {"l": "store room on ground floor"}
 
@@ -52,7 +56,6 @@ def test_what_goes_to_the_llm():
         ("around 3, no wait, closer to 3:30", "d", "collecting"),  # correction
         ("at 3 PM in the lab", "d", "collecting"),        # a place too
         ("electrical problem", "t", "collecting"),        # not a bare type name
-        ("submit", None, "collecting"),                   # submit while incomplete: the LLM + code decide
         ("yes but the time is wrong", None, "review"),
         ("medium", "l", "collecting"),                    # severity word, but location was asked
         ("near the lab at 3 PM", "l", "collecting"),      # a time too
