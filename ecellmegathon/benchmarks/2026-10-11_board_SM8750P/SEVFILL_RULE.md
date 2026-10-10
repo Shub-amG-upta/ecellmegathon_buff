@@ -49,3 +49,14 @@ description, as in v2. ld-01 and fi-04 get their severity but still miss the tim
 
 **Verdict: keep**, on the two valid runs (1 and 3), which agree exactly. Run 2's only failure is the board
 rebooting under load, not the change; the decision is Shubham's.
+
+## Published as `v3`
+
+Branch `v3` = this change (FINDINGS.md item **A1, severity fallback**) on top of v2 and the analysis commit
+`5af60e6`. It does **not** include A2, A7, A3 or A4, which FINDINGS.md's plan also groups under "v3"; if those
+come later, call that bundle v4 (or rename this one) so the benchmark table stays unambiguous. In the
+benchmark files and tables v3 runs carry the tag `sevfill`.
+
+`ANALYSIS_v3_run1.md` (by `benchmarks/analyze.py`, compared with run 3, monitor log
+`live_monitor_20261011_through_v3.log`): severity 42/42 with no errors; the 68 LLM calls of runs 1 and 3 gave
+**identical output (68/68)**. A1's projection in FINDINGS.md (6 of 6 recovered, 0 wrong) is confirmed on the board.
