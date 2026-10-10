@@ -98,3 +98,14 @@ def test_lane_logs_prove_placement():
 def test_meminfo_parsing():
     m = parse_meminfo("MemTotal:       11633360 kB\nMemAvailable:    6290000 kB\nCached: 1 kB\n")
     assert m == {"MemTotal_kB": 11633360, "MemAvailable_kB": 6290000}
+
+
+def test_context_size_is_4096_unless_asked_and_bounded(monkeypatch):
+    assert " -c 4096 " in board.lane_command("npu", "m.gguf")
+    assert " -c 2048 " in board.lane_command("npu", "m.gguf", ctx=2048)
+    name = "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf"
+    fake, calls = _fake_adb(board.CANDIDATES[name])
+    monkeypatch.setattr(board, "_adb", fake)
+    assert board.start_lane("npu", name, ctx=2048)["ctx"] == 2048
+    with pytest.raises(ValueError):
+        board.start_lane("npu", name, ctx=64)

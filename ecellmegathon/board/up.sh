@@ -3,6 +3,7 @@
 # start the app. BUILD_PLAN §9.
 #
 #   board/up.sh [model.gguf]       default: Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf
+#   CTX=2048 board/up.sh           context size (default 4096); compare speed before changing it
 #
 # Exit 1 if the board isn't there or placement isn't confirmed: nothing measured
 # after a failed check counts as NPU.
@@ -20,7 +21,7 @@ $PY -m board.board temp | grep -E '"(t|cpu_max_c|npu_max_c)"'
 
 echo "== LLM on the NPU: $MODEL"
 $PY -m board.board stop >/dev/null || true
-$PY -m board.board start npu "$MODEL" | grep -E '"(url|model_sha256|ready_after_s)"'
+$PY -m board.board start npu "$MODEL" ${CTX:+--ctx "$CTX"} | grep -E '"(url|model_sha256|ready_after_s|ctx)"'
 $PY -m board.board check npu || { echo "STOP: LLM placement not confirmed"; exit 1; }
 $PY -m board.board log npu | grep -E 'offloaded [0-9]+/[0-9]+ layers|HTP0 .*buffer size' || true
 

@@ -4,7 +4,7 @@ QIDK helpers, host side: shells out to adb and talks HTTP to llama-server.
 Ported from FieldMind (bench/board.py), where every function here ran against
 the same board (SM8650). Dropped: the multi-lane campaign helpers.
 
-  python -m board.board start npu <model.gguf>   start llama-server on HTP0, forward :8080
+  python -m board.board start npu <model.gguf> [--ctx 2048]   start llama-server on HTP0, forward :8080
   python -m board.board start cpu <model.gguf>   same model on the CPU, :8081 (comparison only)
   python -m board.board check npu                prove NPU placement from the startup log
   python -m board.board speed http://localhost:8080 [prompt_file]
@@ -51,8 +51,9 @@ DEVICE_MODELS = "/data/local/tmp/llm"
 DEVICE_LOGS = "/data/local/tmp/llm/logs"
 
 # FieldMind's fixed launch settings. -c 4096 is larger than this project's
-# prompts need; context size changes NPU speed, so measure -c 2048 before
-# switching rather than assuming it is faster.
+# prompts need (~600-token instructions + a short turn); context size changes NPU
+# speed, so -c 2048 is an option (--ctx / CTX=2048 board/up.sh) to compare on the
+# board, not the default until measured.
 CTX_SIZE = 4096
 N_PARALLEL = 1
 LANE_PORT = {"npu": 8080, "cpu": 8081}
@@ -101,7 +102,7 @@ def check_model(model_file: str, serial: str = "") -> str:
 
 
 def lane_command(lane: str, model_file: str, threads: int = 6,
-                 log_level: int | None = 4) -> str:
+                 log_level: int | None = 4, ctx: int = CTX_SIZE) -> str:
     """The board-side shell command for one llama-server (no redirection, no &).
 
     -fit off      the server may not change the context or the offload itself
@@ -119,7 +120,7 @@ def lane_command(lane: str, model_file: str, threads: int = 6,
     return (f"cd {DEVICE_PKG} && LD_LIBRARY_PATH={DEVICE_PKG}/lib "
             f"ADSP_LIBRARY_PATH={DEVICE_PKG}/lib ./bin/llama-server "
             f"-m {DEVICE_MODELS}/{model_file} --host 0.0.0.0 --port {LANE_PORT[lane]} "
-            f"-c {CTX_SIZE} -np {N_PARALLEL} {offload} -fit off --cache-ram 0"
+            f"-c {ctx} -np {N_PARALLEL} {offload} -fit off --cache-ram 0"
             + (f" -lv {log_level}" if log_level is not None else ""))
 
 
@@ -128,15 +129,17 @@ def lane_log_path(lane: str) -> str:
 
 
 def start_lane(lane: str, model_file: str, threads: int = 6, serial: str = "",
-               log_level: int | None = 4) -> dict:
+               log_level: int | None = 4, ctx: int = CTX_SIZE) -> dict:
     """Start llama-server in the background on the board and forward its port."""
     sha = check_model(model_file, serial)
-    cmd = lane_command(lane, model_file, threads, log_level)
+    if not 512 <= ctx <= 32768:
+        raise ValueError(f"context size {ctx} out of range")
+    cmd = lane_command(lane, model_file, threads, log_level, ctx)
     port = LANE_PORT[lane]
     _adb("shell", f"mkdir -p {DEVICE_LOGS}", serial=serial)
     _adb("shell", f"nohup sh -c '{cmd}' > {lane_log_path(lane)} 2>&1 &", serial=serial)
     _adb("forward", f"tcp:{port}", f"tcp:{port}", serial=serial)
-    return {"lane": lane, "started_laptop_time": laptop_time(), "command": cmd,
+    return {"lane": lane, "started_laptop_time": laptop_time(), "command": cmd, "ctx": ctx,
             "model_file": model_file, "model_sha256": sha,
             "board_log": lane_log_path(lane), "url": f"http://localhost:{port}"}
 
@@ -242,7 +245,8 @@ if __name__ == "__main__":
     drop_pythonpath()
     a = sys.argv[1:]
     if len(a) >= 3 and a[0] == "start":
-        info = start_lane(a[1], a[2])
+        ctx = int(a[a.index("--ctx") + 1]) if "--ctx" in a else CTX_SIZE
+        info = start_lane(a[1], a[2], ctx=ctx)
         info["ready_after_s"] = wait_health(info["url"])
         print(json.dumps(info, indent=1))
     elif len(a) >= 2 and a[0] == "check":

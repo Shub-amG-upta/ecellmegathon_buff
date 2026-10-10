@@ -443,8 +443,19 @@ Ports: **8080** llama-server (NPU) · **8082** STT · **8083** TTS · **8000** o
 | 7 | speech: typed vs spoken (E3) | same env + `.venv/bin/python eval/run_eval.py --label BOARD --audio eval/audio` | results saved |
 | 8 | chip temperature after, stop | `.venv/bin/python -m board.board temp`, then `board/voice_up.sh stop` and `.venv/bin/python -m board.board stop` | — |
 
-Step 5 is about 250 LLM calls; at the screening rates that's roughly 10–20 min per run (ESTIMATE). Leave cooling
-gaps between runs.
+Step 5 sends ~120 turns to the LLM (the fast path answers the other ~130 in code); at the screening rates that's
+roughly 5–10 min per run (ESTIMATE). Leave cooling gaps between runs.
+
+**Speed comparisons (after step 5, dev split, one change at a time; keep a change only if latency improves and
+field accuracy doesn't drop):**
+
+| switch | baseline | variant | how |
+|---|---|---|---|
+| fast path | on | off | `eval/run_eval.py --label BOARD --no-fast-path` (shows what the fast path saves) |
+| answer constraint | `LLM_CONSTRAINT=schema` | `LLM_CONSTRAINT=gbnf` (no whitespace) | same eval with the env var; first run `eval/smoke_llm.py` to check llama-server accepts the grammar |
+| context size | `-c 4096` | `-c 2048` | `CTX=2048 board/up.sh`, then the same eval |
+
+Compare the eval's `decode_tokens` and `wall_ms` per LLM call, and the field accuracy.
 
 **Fixed facts:** llama-server flags `-c 4096 -np 1 -fit off --cache-ram 0 -lv 4` + `--device HTP0 -ngl 99`
 (`--cache-ram 0` is required: without it board memory ran out after ~36 calls). `LD_LIBRARY_PATH` and
