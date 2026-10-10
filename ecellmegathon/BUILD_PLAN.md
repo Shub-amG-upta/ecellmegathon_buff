@@ -17,7 +17,8 @@ because the other track depends on it.
    §4.3 format, so `eval/wer.py` reads all 250 turns as before.
 3. **New Track B work: record the speech eval subset** (§4.3 "Speech eval", §7 "Speech eval" and "TTS check"):
    36 turns × 3 speakers + 10 noisy, a record mode in the UI, WER on the subset. No TTS dataset: TTS is checked
-   by ear against a fixed phrase list.
+   by ear against a fixed phrase list. **`eval/RECORDING.md` (instructions + the full script) and
+   `eval/record_lines.sh` (a terminal recorder) are written by Track A**, so skip writing them.
 
 ---
 
@@ -413,25 +414,36 @@ each template once with real values, for clarity and timing:
 
 ---
 
-## 9. Testing on the QIDK (M3 checklist)
+## 9. Testing on the QIDK in one session (M3 + M4)
 
 Ports: **8080** llama-server (NPU) · **8082** STT · **8083** TTS · **8000** our app server (laptop, tier 1).
 
-1. `adb devices` shows the board. Log the laptop time; never use the board clock.
-2. `.venv/bin/python -m board.board start npu Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf`. This refuses any file
-   whose sha256 on the board doesn't match the allow-list.
-3. `.venv/bin/python -m board.board check npu` must print `OK: placement confirmed` (all layers offloaded, nonzero
-   HTP0 buffer). **If it doesn't, nothing measured afterwards counts as NPU.**
-4. `board/voice_up.sh` (B): STT and TTS healthy on :8082 and :8083 via `adb forward`.
-5. `.venv/bin/python -m board.board temp`: chip temperature before the run.
-6. Start `app/server.py`, open `http://localhost:8000`, and run the §1 example by voice.
-7. `.venv/bin/python eval/run_eval.py` and `eval/wer.py`: save the results with the model names, flags, laptop time
-   and temperature before and after.
-8. Server flags for llama-server are fixed: `-c 4096 -np 1 -fit off --cache-ram 0 -lv 4`, plus
-   `--device HTP0 -ngl 99`. `--cache-ram 0` is required: without it, board memory ran out after ~36 calls.
-9. Known board facts: `LD_LIBRARY_PATH` and `ADSP_LIBRARY_PATH` must be set on every launch (`board.py` does it),
-   USB can drop (servers keep running; just rerun the turn), and temperature-0 replies can differ between server
-   launches, so run evals twice.
+**Have ready before you sit down with the board:**
+- recordings done and unzipped into `eval/audio/` (`eval/RECORDING.md`: 36 lines × 3 speakers + 10 noisy each);
+- Track B's `board/voice_up.sh` works on the laptop side and the board binaries are in `engines/`
+  (`docs/MODELS_AND_DEPENDENCIES.md`);
+- `main` pulled on the laptop that drives the board, `.venv/bin/python -m pytest -q` all green.
+
+**The session, in order (each step's output is saved; stop at the first failed check):**
+
+| # | step | command | pass when |
+|---|---|---|---|
+| 1 | board present, laptop time logged | `adb devices` | the board is listed |
+| 2 | everything up: LLM on the NPU, then STT + TTS | `board/up.sh` | `OK: placement confirmed`, then `ok :8082`, `ok :8083` |
+| 3 | the schema works on the board | `.venv/bin/python eval/smoke_llm.py --label BOARD --model Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf` | every constrained reply parses |
+| 4 | the demo, by voice | `LLM=llamaserver LLM_LANE=npu LLM_MODEL=Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf .venv/bin/python -m app.server`, open http://localhost:8000, say the §1 example | form fills, asks severity, read-back, submit; latency panel shows NPU |
+| 5 | extraction, typed (E4, E5, E2) | same env + `.venv/bin/python eval/run_eval.py --label BOARD` | results saved; **run it twice** |
+| 6 | speech: WER (E3) | `.venv/bin/python eval/wer.py --label BOARD` | results saved |
+| 7 | speech: typed vs spoken (E3) | same env + `.venv/bin/python eval/run_eval.py --label BOARD --audio eval/audio` | results saved |
+| 8 | chip temperature after, stop | `.venv/bin/python -m board.board temp`, then `board/voice_up.sh stop` and `.venv/bin/python -m board.board stop` | — |
+
+Step 5 is about 250 LLM calls; at the screening rates that's roughly 10–20 min per run (ESTIMATE). Leave cooling
+gaps between runs.
+
+**Fixed facts:** llama-server flags `-c 4096 -np 1 -fit off --cache-ram 0 -lv 4` + `--device HTP0 -ngl 99`
+(`--cache-ram 0` is required: without it board memory ran out after ~36 calls). `LD_LIBRARY_PATH` and
+`ADSP_LIBRARY_PATH` on every launch (`board.py` does it). USB can drop: the servers keep running, rerun the step.
+Temperature-0 replies can differ between server launches, so evals run twice. Log laptop time, never board time.
 
 ---
 

@@ -32,3 +32,11 @@ def test_every_line_is_a_dev_turn_with_the_same_text_and_1_based_turn_number():
     assert len(texts) == len(set(texts))
     assert {w for r in speech_subset.build() for w in r["why"]} >= {"demo", "number", "name", "accent",
                                                                     "flip", "short", "long"}
+
+
+def test_recording_script_lists_exactly_the_subset():
+    doc = (ROOT / "eval" / "RECORDING.md").read_text()
+    rows = [ln for ln in doc.splitlines() if ln.startswith("| ") and "_t" in ln and "`" in ln]
+    assert len(rows) == len(speech_subset.build())
+    for r in speech_subset.build():
+        assert f"`{r['case']}_t{r['turn']}`" in doc and r["say"].replace("|", "\\|") in doc
