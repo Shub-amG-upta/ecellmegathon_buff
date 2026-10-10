@@ -1,253 +1,269 @@
 # ecellmegathon: plan for the basic model
 
-**Event:** Megathon X (E-Cell, IIIT Hyderabad) · **Track:** Qualcomm, Problem Statement 1: AI Incident Report Assistant
-**Pipeline asked for:** speak → understand → extract → review → submit, with every AI model on the Snapdragon device
-and no cloud APIs.
+> **The build spec both tracks work from is [BUILD_PLAN.md](BUILD_PLAN.md)** (contracts, file ownership,
+> milestones, QIDK test steps). Where the two disagree, BUILD_PLAN.md wins; this file is the background.
+
+**Event:** Megathon X (E-Cell, IIIT Hyderabad) · **Track:** Qualcomm PS1, AI Incident Report Assistant
+**Asked for:** speak → understand → extract → review → submit. Every AI model on the Snapdragon device, no cloud APIs.
 
 ---
 
-## 1. What the judges score (from the problem statement, page 3)
+## 1. What the judges score (problem statement, page 3)
 
 | # | criterion | what it means for us |
 |---|---|---|
-| E1 | All AI models run **on-device with Snapdragon acceleration**. No cloud APIs. | Speech-to-text, the LLM and text-to-speech all run on the QIDK. The LLM runs on the NPU (HTP), and we show that it does. |
-| E2 | Understands **natural conversational speech**, not fixed commands | No keyword templates. Free narration, corrections ("actually it was 11"), and answers to follow-up questions. |
-| E3 | **Speech recognition** and transcription accuracy | Measure word error rate (WER) on our own recorded test set. Bias Whisper toward our vocabulary with a location and asset word list. |
-| E4 | **Extraction** accuracy | Measure per-field accuracy on a test set with gold labels. |
-| E5 | **Mapping** of extracted values to the right report fields | Constrain the output with a grammar so a value can only go into a real field, and an enum field can only hold an allowed value. |
+| E1 | All AI models **on-device with Snapdragon acceleration**. No cloud APIs. | STT, LLM and TTS all run on the QIDK. The LLM runs on the NPU (HTP0), and we show the log lines that prove it. |
+| E2 | Understands **natural conversational speech**, not fixed commands | Free narration, corrections ("actually it was 11"), short answers to follow-up questions. |
+| E3 | **Speech recognition** accuracy | Word error rate on our own recordings. **Teammate's part** (§4). |
+| E4 | **Extraction** accuracy | Per-field accuracy against hand-written gold labels. |
+| E5 | **Mapping** to the right report fields | A schema-constrained tool call: a value can only go into a real field, an enum only holds an allowed value. |
 
-Flow in their diagram: STT → LLM extraction → **mandatory fields present?** → function/tool calling → populate form,
-user review, submit → display on screen **and** text-to-speech.
+Their flow: STT → LLM extraction → **mandatory fields present?** → function/tool calling → populate form, user
+review, submit → display on screen **and** speak it back.
+
+Their example, which is our first test case:
+
+> "There was a water leak near Conference Room 2 around 10 AM. Maintenance has already isolated the area."
+> → type: water leak · location: Conference Room 2 · time: 10 AM · action taken: area isolated
 
 ---
 
-## 2. What we carry over from FieldMind (and what we don't)
+## 2. What we took from FieldMind, and what we dropped
 
-FieldMind already solved the hardest on-device part on this exact board (QIDK, SM8650, Hexagon HTP v75).
-These items transfer directly:
+FieldMind ran LLMs on this same board (QIDK, SM8650, Hexagon HTP v75) for six weeks. The parts that transfer are now
+in this repo, with their tests (20 pass, no board needed):
 
-| FieldMind asset | measured result (BOARD, from `fieldmind_research_dossier.md` §6) | use here |
+| now at | from FieldMind | what it gives us |
 |---|---|---|
-| llama.cpp Hexagon build (`b11371`, `99b95488`), `llama-server` on HTP0 | every layer on HTP0, including the output layer (29/29) | the LLM runtime, unchanged |
-| **pure Q4_0 recipe** (`build_candidate_gguf.sh`): every matrix Q4_0, embedding and output Q8_0 | published "Q4_0" files silently fall back to CPU; the recipe fixes this | same recipe for any model we add |
-| 4 GGUFs already built and sha256-checked | Llama 3.2 3B: 986 prefill / 21 decode tok/s; Qwen3 1.7B: 1,432 / 32; Gemma 3 1B: 1,757 / 44 | our LLM candidates |
-| launch flags `-c 4096 -np 1 -fit off --cache-ram 0 -lv 4` | without `--cache-ram 0`, board memory ran out after ~36 calls | same flags |
-| **per-request GBNF grammars** (`fieldmind/multi/grammar.py`) | unusable answers went from 25–100% to **0** | the model can only emit a valid tool call |
-| "**the model never has the last word**" gate (L6) | citations checked, actions only from a catalogue | code decides "mandatory present?", the tool catalogue is fixed, extracted text is checked against the transcript |
-| `LlamaServerBackend` (stdlib HTTP, server-side timings) | prefill/decode times from the server itself | per-stage latency panel in the UI |
-| `bench/board.py` (adb, lane start, sha256 check, chip temperature) | proven | board bring-up script |
-| evaluation habits: label every number BOARD/LAPTOP, no invented numbers, run twice | temp-0 replies differed on 13–21% of calls between launches | how we report results to judges |
+| `app/backends.py` | `fieldmind/runtime/llm_backend.py` (`LlamaServerBackend`) | stdlib HTTP client for llama-server. Prefill/decode times come from the server itself. Added: `json_schema=`, a system message, the Qwen3 thinking-off switch, and a `MockBackend` |
+| `app/grammar.py` | `fieldmind/multi/grammar.py` (generic engine only) | GBNF built in code, with exact `accepts` / `longest` checks. The fallback if the schema route misbehaves |
+| `board/board.py` | `bench/board.py` | start/stop llama-server on HTP0 over adb, sha256 allow-list, health, speed, chip temperature |
+| `board/npu_proof.py` | `bench/board_preflight.py` | reads the startup log for `offloaded 29/29 layers` and a nonzero HTP0 buffer. **This is our E1 evidence** |
+| `board/build_candidate_gguf.sh`, `board/gguf_types.py` | same | the pure Q4_0 recipe and the GGUF header checker, for any new model |
+| `docs/reference/` | reports + slide notes | build recipe (container, preset, pinned commit, model hashes), NPU stack, key numbers, full research record |
 
-**The biggest lesson for this event:** on this NPU, **decoding dominates** (70–89% of call time; decode is 20–50×
-slower than prefill). Every millisecond we save comes from **writing fewer output tokens**. That drives the design
-below: short keys, no whitespace, no model-written description, and follow-ups produced by code.
+**Board facts we rely on (all BOARD measurements from FieldMind):**
+- llama.cpp `b11371` / `99b95488`, Hexagon backend. 4 pure Q4_0 GGUFs already built and sha256-recorded.
+- NPU screening (700-token prompt): Llama 3.2 3B **986 prefill / 21 decode tok/s**; Qwen3 1.7B 1,432 / 32;
+  Gemma 3 1B 1,757 / 44; Qwen2.5 0.5B 2,960 / 53.
+- **Decode dominates**: 82–89% of model time. Every output token on the 3B costs ~50 ms, so the answer is short JSON
+  with one-letter keys, and every sentence the user hears is written by code.
+- Free-form JSON from these models broke 25–100% of the time. With a grammar it was 0. **Every call is constrained.**
+- `--cache-ram 0` is mandatory (without it, memory ran out after ~36 calls). `-lv 4` is needed for the NPU proof.
+- Replies at temperature 0 still differ between server launches on 13–21% of calls. Run evals twice.
 
-**What does not transfer:** the boiler domain, the simulator, the belief and merge-rule machinery, and the
-multi-agent scheduler. This task needs one LLM job per turn, not many.
-
-**Known constraint (`README_MACOS.md`):** Qualcomm's QAIRT/QNN host tools do not run on macOS. Building llama.cpp's
-Hexagon package needs the Linux (Fedora) laptop. The Mac is fine for app development and for driving the board
-over adb.
+**Dropped:** the boiler simulator and its data, the belief/merge machinery, the multi-agent scheduler, campaign
+runners, the LiteRT and Gemini backends, and all FieldMind results. None of them apply to a one-call-per-turn form
+filler. Everything is still in git at commit `367e9b4`.
 
 ---
 
-## 3. Architecture of the basic model
+## 3. The basic model
+
+### 3.1 One user turn
 
 ```
- ┌──────────── QIDK (Snapdragon 8 Gen 3): every AI model runs here ─────────────┐
- │                                                                                 │
- │  mic audio ──► [STT] whisper.cpp server (CPU, port 8082)                       │
- │                   │  transcript (+ initial prompt: site room/asset names)      │
- │                   ▼                                                             │
- │                [LLM] llama-server on HTP0 / NPU (port 8080)                    │
- │                   │  ONE grammar-constrained tool call per user turn:          │
- │                   │  {"tool":"update_report","args":{"t":"water_leak",...}}    │
- │                   ▼                                                             │
- │                [TTS] Piper voice via sherpa-onnx (CPU)  ◄── text to speak      │
- └────────────────────────────────────────────────────────────────────────────────┘
-                     ▲ adb forward (tier 1) / localhost (tier 2)
- ┌──────────── orchestrator: plain code, no model ───────────────────────────────┐
- │  1. GATE: drop args whose text is not supported by the transcript;            │
- │     enums are already safe because of the grammar                             │
- │  2. merge into the form state; resolve "around 10 AM" with the device clock   │
- │  3. MANDATORY CHECK (code): missing → ask the template question via TTS       │
- │  4. all present → read-back summary → user says "submit" or edits             │
- │  5. submit_report → JSON (+ PDF) saved on the device, shown on screen         │
- └────────────────────────────────────────────────────────────────────────────────┘
+ transcript (text) ──► build prompt ──► LLM on NPU, schema-constrained ──► {"tool":..., "args":{...}}
+   from STT, or                          llama-server :8080, ~80 tok cap        │
+   typed in dev                                                                  ▼
+                       ┌──────────────── plain code, no model ─────────────────────────────┐
+                       │ 1. gate: drop any free-text value not supported by the transcript │
+                       │ 2. merge into the form (a stated field overwrites, lists append)  │
+                       │ 3. time: "around 10 AM" → timestamp from the device clock         │
+                       │ 4. severity floors (injury/fire ≥ high)                           │
+                       │ 5. MANDATORY CHECK → missing? ask that field's question           │
+                       │                    → complete? read back, wait for "submit"       │
+                       └───────────────────────────────────────────────────────────────────┘
+                                         │ text to say                    │ form state
+                                         ▼                                ▼
+                                       TTS                          UI (live form)
 ```
 
-### Design decisions, and why
+### 3.2 The LLM call
 
-1. **One LLM call per turn, grammar-constrained, outputting a tool call** from a fixed set: `update_report`,
-   `submit_report`, `cancel_report`, `no_op` (`schema/incident_form.json`). This is the "function calling" box in the
-   problem statement, and the grammar makes a malformed call impossible. We don't use llama-server's native
-   `--jinja` tool calling as the main path: FieldMind measured free-form JSON from 1–3B models as 25–100% unusable on
-   this board. It can stay as a comparison point.
-2. **The per-turn grammar shrinks to the question just asked.** After "Where did it happen?", the grammar allows only
-   `l` (plus `submit` and `cancel`). That means fewer output tokens and fewer wrong mappings, the same idea as
-   FieldMind's per-request grammars.
-3. **Code decides "mandatory fields present?"** and writes the follow-up questions from templates (the `ask` strings
-   in the schema). Asking a follow-up costs no extra LLM call.
-4. **The description is the user's own transcript**, not a summary written by the model. It costs zero decode tokens
-   and cannot contain hallucinations. An optional one-line LLM summary comes later as a stretch goal.
-5. **Hallucination gate.** For every free-text value (location, persons, equipment, actions), its words must appear
-   in the transcript (normalized fuzzy match). If they don't, the value is dropped and the drop is logged. This is
-   FieldMind's citation check, adapted.
-6. **Date and time are resolved by code, not the model.** The model copies the phrase ("around 10 AM"); code turns it
-   into a timestamp against the device clock. If code can't parse it, the phrase is kept and flagged for review.
-7. **Follow-up actions come from a catalogue** keyed by incident type (`data/followup_catalogue.json`, to write),
-   the same pattern as FieldMind's action catalogue. The model never writes a procedure.
-8. **Severity:** the model suggests a value, code applies minimum levels (injury ≥ high, fire/smoke ≥ high), and the
-   user confirms at review.
-9. **Push-to-talk, not always-listening.** Hackathon venues are noisy, and voice activity detection is a stretch goal.
+**Output: one tool call, from the fixed set in `schema/incident_form.json`:** `update_report`, `submit_report`,
+`cancel_report`, `no_op`. Keys are one letter on purpose (decode cost).
 
-### Model choices (start with what is already proven on the board)
+For the problem statement's example, the target output is:
 
-| stage | first choice | backup | accelerator | status |
+```json
+{"tool":"update_report","args":{"t":"water_leak","l":"near Conference Room 2","d":"around 10 AM","a":["area isolated by maintenance"]}}
+```
+
+That's about 45 tokens, roughly 2 s of decode on the 3B (ESTIMATE from the 21 tok/s screening rate).
+
+**Constraint: a JSON schema, compiled by llama-server** (`json_schema=` in `app/backends.py`). The schema comes
+from `schema/incident_form.json`: `t` and `s` are enums, `l`/`d` strings with `maxLength`, `p`/`e`/`a`/`w` arrays
+with `maxItems`, every arg optional. That covers free text, which FieldMind's hand-built GBNF couldn't. **Check on
+day 0** that our llama.cpp build accepts it (one call with the schema). If it doesn't, build the GBNF with a
+string rule in `app/grammar.py`.
+
+**Prompt** (target under 500 tokens; prefill is cheap):
+- system: the field list with one-line meanings, the enum values, the rule "only fields the user actually said",
+  and 2 short examples. Keep it identical every turn so `cache_prompt` can reuse it.
+- user: `Form: {current compact state}` · `Asked: <field the assistant just asked about, or none>` ·
+  `User: <this turn's transcript>`
+
+`Asked:` is what turns a bare "high" or "the second floor pantry" into the right field.
+
+### 3.3 What code decides (the model never has the last word)
+
+| decision | rule |
+|---|---|
+| mandatory fields present? | `mandatory: true` in the schema: type, severity, location, date/time, description |
+| next question | the first missing mandatory field's `ask` string. No LLM call |
+| description | the user's own words, all turns joined. Never generated, so it can't contain hallucinations |
+| free-text values | each value's content words must appear in the transcript (normalised, fuzzy). If not, drop and log it |
+| date/time | the model copies the phrase; code resolves it. If parsing fails, keep the phrase and flag it for review |
+| severity | the model suggests; code applies floors; the user confirms at review |
+| follow-up action | from `data/followup_catalogue.json` by incident type. The model never writes a procedure |
+| submit | refused while any mandatory field is empty (the assistant asks for it instead) |
+
+### 3.4 Models
+
+| stage | first choice | backup | where | owner |
 |---|---|---|---|---|
-| LLM | **Llama 3.2 3B**, pure Q4_0 (already built, sha256 in `field-mind/bench/board.py`) | **Qwen3 1.7B** pure Q4_0 (1.5× faster decode; its JSON failures are removed by the grammar; run with thinking off) | NPU (HTP0) | proven on the board |
-| STT | **whisper.cpp `base.en`** (`small.en` if WER needs it) | Whisper from Qualcomm AI Hub (NPU build) | CPU first | **not yet run on this board** |
-| TTS | **Piper** voice through sherpa-onnx (arm64 binary) | Android's built-in `TextToSpeech` (tier 2 app only) | CPU | **not yet run on this board** |
+| LLM | **Llama 3.2 3B** pure Q4_0 (built, hash recorded) | **Qwen3 1.7B** (1.5× faster decode; `thinking=False`) | NPU, HTP0 | us |
+| STT | teammate's choice, e.g. whisper.cpp `base.en`/`small.en` | Whisper from Qualcomm AI Hub (NPU) | CPU or NPU | **teammate** |
+| TTS | Piper voice via sherpa-onnx (arm64) | Android `TextToSpeech` (if we build an APK) | CPU | unassigned |
 
-Using both the CPU and the NPU at once is also a pitch point. STT and TTS stay on the CPU while the LLM holds the NPU,
-so stages don't fight over one accelerator. This is the heterogeneous-scheduling idea from FieldMind's research
-question, applied on a small scale.
+STT and TTS on the CPU while the LLM holds the NPU means no two stages compete for one accelerator. That's a
+pitch point, carried over from FieldMind's scheduling work.
 
-### Latency budget for one turn (ESTIMATE from FieldMind's screening rates; must be measured)
+**Developing without the board:** llama-server also runs on the Mac (`brew install llama.cpp`) with the **same GGUF**
+(`adb pull /data/local/tmp/llm/<model>.gguf`). The whole dialog loop can be built and tested there. Numbers from it
+are LAPTOP numbers and never go on a slide as board numbers.
 
-| stage | assumption | estimate |
+---
+
+## 4. The STT contract (us ↔ teammate)
+
+Agree on this once, then neither side blocks the other. Everything downstream of the transcript is built and tested
+on typed text until the STT server is ready.
+
+| item | agreed value |
+|---|---|
+| audio in | WAV, 16 kHz, mono, 16-bit PCM. Push-to-talk, one utterance per request |
+| endpoint | `POST http://localhost:8082/inference` on the board (adb-forwarded), multipart field `file`, plus `response_format=json`. This is whisper.cpp server's own API, so no glue is needed if that's the engine. Another engine keeps the same shape |
+| optional field | `prompt`: our vocabulary list (`data/vocab.txt`: room, asset and team names), to bias recognition |
+| reply | `{"text": "..."}` at minimum. Optionally `"stt_ms"` (server-side time) and `"device"` (`cpu`/`npu`) for the latency panel |
+| empty or noise | `{"text": ""}`. The dialog asks the user to repeat; it never calls the LLM on empty text |
+| our side | `app/stt.py`: `transcribe(wav_bytes) -> SttResult(text, wall_ms, stt_ms, device)`. Measures wall time itself |
+| shared eval | `eval/cases.jsonl` holds the scripted incidents. The teammate records them (`eval/audio/`) for WER; we use the same cases' text for extraction accuracy, then run them end to end |
+
+**Questions for the teammate today:** which engine and model size; CPU or NPU; did it run on the board yet, and how
+long does a 5–8 s utterance take; does the board have a usable mic, or is the mic on the laptop?
+
+---
+
+## 5. Who does what
+
+| track | owner | delivers |
 |---|---|---|
-| STT, 8 s utterance | whisper `base.en` on 8-core CPU | ~1–2 s (unmeasured) |
-| LLM prefill | ~450-token prompt at 986 tok/s (3B) | ~0.5 s |
-| LLM decode | ~60 output tokens at 21 tok/s (3B) / 32 tok/s (1.7B) | ~2.9 s / ~1.9 s |
-| gate + merge | code | < 50 ms |
-| TTS, one sentence | Piper on CPU | ~0.5 s (unmeasured) |
-| **total** | | **~5 s (3B) / ~4 s (1.7B)**. Target < 6 s. |
+| STT | **teammate** | the §4 endpoint running on the board, WER on our recordings, the vocab prompt |
+| extraction core | **you** | `app/`: schema → prompt → LLM call → gate → merge → mandatory check → dialog; text eval |
+| board + E1 proof | you (with FieldMind's scripts) | `board/up.sh`: start llama-server (+ the STT server), forward ports, check placement, log temperature |
+| TTS + UI + report output | unassigned, the next free person | push-to-talk page, live form, tool-call log, latency panel, spoken read-back, JSON/PDF report |
 
 ---
 
-## 4. Two tiers: what "done" means
-
-**Tier 1, the basic model (must ship).** All three AI models run on the QIDK. The orchestrator and a web UI run on the
-laptop and reach the board through `adb forward`. The mic is on the laptop, and the audio goes to the board's whisper
-server. This satisfies E1 as written ("all **AI models** execute on-device"), and it reuses FieldMind's proven
-laptop-to-board setup.
-
-**Tier 2, all on the device (stretch, but judges will ask about it).** The UI shows on the QIDK's own screen. The
-cheapest way: `llama-server --path ./ui` serves our static page from the board itself, opened in the board's browser
-at `localhost:8080`. The orchestration logic moves into the page's JS. The fallback is a thin Android WebView APK
-installed with `adb install`. **Check before the event** whether the board has a browser and a usable mic. That
-decides which way tier 2 goes.
-
----
-
-## 5. Repository layout (target)
+## 6. Repository layout
 
 ```
-schema/incident_form.json     fields, keys, enums, mandatory flags, tool set   (written)
-data/followup_catalogue.json  incident type → recommended follow-up actions
-data/vocab.txt                room/asset names, fed to Whisper as its initial prompt
-app/
-  backends.py                 LlamaServerBackend (ported from FieldMind), WhisperServer, Tts
-  grammar.py                  per-turn GBNF from the schema (ported from fieldmind/multi/grammar.py)
-  prompt.py                   compact extraction prompt (instructions + form state + transcript)
-  gate.py                     grammar-valid check, transcript-support check, severity floors
-  timeparse.py                "around 10 AM" / "yesterday evening" → timestamp
-  dialog.py                   turn loop: STT → LLM → gate → merge → mandatory check → ask/confirm
-  report.py                   submit → JSON (+ PDF) on device
-  server.py                   tiny HTTP server for the UI (stdlib)
-ui/index.html                 push-to-talk, live form, tool-call log, per-stage latency panel
-board/                        bring-up: push binaries + models, sha256 check, start servers, health
-eval/
-  cases.jsonl                 40 scripted incidents with gold fields
-  audio/                      the same cases recorded by 3 team members
-  run_eval.py                 WER, per-field accuracy, hallucination rate, latency per stage
+schema/incident_form.json     fields, keys, enums, mandatory flags, tools          DONE
+app/backends.py               llama-server client (+ mock)                          DONE (ported, tested)
+app/grammar.py                GBNF engine (fallback constraint)                     DONE (ported, tested)
+board/board.py, npu_proof.py  bring-up, sha256 allow-list, NPU proof, temperature   DONE (ported, tested)
+board/build_candidate_gguf.sh, gguf_types.py   pure Q4_0 build + check              DONE (ported)
+docs/reference/               FieldMind stack, build recipe, numbers, dossier       DONE
+
+app/form.py                   load the schema; json_schema for the LLM; form state + merge        TODO
+app/prompt.py                 system prompt (fixed) + per-turn user message                         TODO
+app/gate.py                   transcript-support check, severity floors, submit guard               TODO
+app/timeparse.py              "around 10 AM", "yesterday evening", "just now" → timestamp           TODO
+app/dialog.py                 the turn loop (§3.1); text in → (say, form, log) out                  TODO
+app/stt.py                    client for the §4 contract                                            TODO
+app/tts.py                    client for the TTS server                                             TODO
+app/server.py                 stdlib HTTP server: /turn (text or WAV), /form, /submit, static UI    TODO
+ui/index.html                 push-to-talk, live form, tool-call log, latency panel ("NPU" label)    TODO
+data/followup_catalogue.json  incident type → follow-up actions                                     TODO
+data/vocab.txt                rooms / assets / teams, for STT and for the gate                      TODO
+board/up.sh                   one command: start servers, forward ports, prove placement            TODO
+eval/cases.jsonl              ~40 scripted incidents + gold fields (multi-turn ones too)            TODO
+eval/run_eval.py              per-field accuracy, mandatory recall, hallucination rate, latency     TODO
 ```
 
-The agent core stays **stdlib-only**, as in FieldMind, so tier 2 can move it with no dependencies.
+`app/` stays stdlib-only, so it can move onto the board (tier 2) without installing anything.
 
 ---
 
-## 6. Build plan
+## 7. Build order
 
-The hour counts assume about 30 hours of build time with a team of 3–4. Rescale them to the real schedule.
+The milestones are in order. Hours depend on the event schedule, which isn't known yet (§9).
 
-### Before the event (most important, and it can't be done in the venue)
+### M0: one call on the board (first thing)
+- [ ] Board up: `python -m board.board start npu Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf`, then
+      `python -m board.board check npu` must print `OK`.
+- [ ] One call with a hand-written JSON schema on the example sentence. Confirms that the schema route works at our
+      llama.cpp build, and gives the **first real latency number for this task** (BOARD).
+- [ ] Same call against llama-server on the Mac, so the core can be developed without the board.
 
-- [ ] **Confirm which board we get.** If it's our lab QIDK, the llama.cpp package and GGUFs are already in
-      `/data/local/tmp/llm/`. If Qualcomm hands out fresh boards, bring everything **prebuilt** on the laptop and use
-      a one-shot push script with a sha256 check.
-- [ ] On the Fedora laptop: build **whisper.cpp** (`whisper-server`) for Android arm64 with the same NDK and container
-      as llama.cpp. Download `ggml-base.en.bin` and `ggml-small.en.bin`.
-- [ ] Get the **sherpa-onnx** arm64 Android binaries and one Piper English voice (`en_US-lessac-medium` or similar).
-- [ ] Smoke-test each one on the board over adb: one WAV transcribed, one sentence spoken, one LLM call with a
-      grammar. **Record the timings. These are the first real numbers.**
-- [ ] Check the board's browser and mic for tier 2.
+### M1: the basic model, on typed text
+- [ ] `form.py` + `prompt.py`: schema → `json_schema`; the prompt from §3.2.
+- [ ] `gate.py`, `timeparse.py`, `dialog.py`: the full §3.1 loop, with corrections and submit/cancel.
+- [ ] A command-line loop: type a sentence, see the tool call, the form and the next question.
+- [ ] 15 text cases in `eval/cases.jsonl` and `run_eval.py` → first per-field accuracy (BOARD).
+- **Done when:** the problem statement's example fills type, location, time and action, the assistant asks for
+  severity, "it's medium" fills it, "submit" produces the report. On the board's NPU.
 
-### Phase 0 (hours 0–3): bring-up and the skeleton running end to end
-- [ ] `board/up.sh`: start llama-server (NPU, 8080) and whisper-server (CPU, 8082), set up `adb forward`, health
-      checks, chip temperature.
-- [ ] Port `LlamaServerBackend` and `grammar.py` from FieldMind. Add the whisper client.
-- [ ] Hard-coded run: WAV file → transcript → LLM → raw JSON printed. **First full run on the board.**
+### M2: voice in (joins the teammate's work)
+- [ ] `stt.py` against the teammate's endpoint. The same loop, now with WAV in.
+- [ ] Latency per stage: STT / prefill / decode / code, each labelled BOARD.
 
-### Phase 1 (hours 3–10): the basic model
-- [ ] `grammar.py`: build the per-turn GBNF from the schema (all fields on the first turn, only the asked field after
-      a follow-up).
-- [ ] `prompt.py`: compact prompt. Few-shot with 2 examples, current form state, and the latest transcript only.
-- [ ] `gate.py` + `timeparse.py` + `dialog.py`: mandatory check, template follow-ups, corrections that overwrite a
-      field, submit/cancel.
-- [ ] `ui/index.html`: push-to-talk button, form filling live, tool-call log, and a latency panel showing STT / prefill
-      / decode / TTS with **"NPU"** shown next to the LLM time.
-- [ ] TTS for follow-up questions and the final read-back.
-- **Milestone M1:** the water-leak example from the problem statement fills the form by voice, asks for the missing
-  severity, and submits. All models run on the board.
+### M3: the demo shape
+- [ ] TTS for the questions and the read-back.
+- [ ] `server.py` + `ui/index.html`: push-to-talk, live form, tool-call log, latency panel with **NPU** shown next
+      to the LLM time, and a "proof" panel with the `offloaded 29/29` and HTP0 lines from the startup log.
+- [ ] Spoken review: "Here's what I have: … Say submit, or tell me what to change."
+- [ ] Report saved as JSON (+ PDF if time allows) and listed on screen.
 
-### Phase 2 (hours 10–18): measure, then improve
-- [ ] `eval/cases.jsonl`: 40 incidents across all 10 types, including messy speech (fillers, corrections, Indian
-      English, relative times, nothing to extract). Gold labels written by hand.
-- [ ] Record the cases, 3 voices × 40 = 120 clips.
-- [ ] `run_eval.py`: WER (tiny / base / small), per-field accuracy, mandatory-field recall, hallucination rate
-      (filled when the gold is empty), per-stage latency. **Run each configuration twice** (temp-0 drift).
-- [ ] Decide **3B vs 1.7B** and **base vs small** on these numbers. Write the decision rule down before looking at
-      the results.
-- [ ] Improve extraction from the failures: prompt examples, vocab list, severity floors.
-- **Milestone M2:** a results table, every number labelled BOARD.
+### M4: measure, then improve
+- [ ] 40 cases across all 10 incident types, including messy speech: fillers, corrections, Indian English,
+      relative times, and nothing to extract. The teammate records them (3 voices if possible).
+- [ ] Write the decision rules down **before** looking at the results: 3B vs 1.7B, and narrowing the schema to the
+      asked field vs not.
+- [ ] Run each configuration twice (temperature-0 drift). Fix from failures: prompt examples, vocab, floors.
+- [ ] A results table, every number labelled BOARD.
 
-### Phase 3 (hours 18–26): polish for the demo and tier 2
-- [ ] Tier 2: UI on the QIDK screen (static page from `llama-server --path`, or the WebView APK).
-- [ ] Spoken review step: "Here's what I have: … Say submit, or tell me what to change."
-- [ ] Report saved as JSON + PDF on the device, plus a list of past reports.
-- [ ] Stretch: Hindi/Hinglish narration (multilingual Whisper `small`); one-line LLM summary; voice activity
-      detection; an airplane-mode demo to prove there is no network.
-
-### Phase 4 (hours 26–30): freeze and rehearse
-- [ ] Code freeze. Rehearse 3 demo scripts: (1) the happy path, (2) missing information triggers follow-ups, (3) a
-      mid-conversation correction plus noise.
-- [ ] Slides: problem → architecture → on-device proof (llama-server log lines showing `offloaded 29/29 layers`,
-      HTP0 buffer) → measured accuracy and latency → FieldMind lineage.
-- [ ] A recorded backup video of the full demo in case the board or USB fails.
+### M5: stretch, then freeze
+- [ ] Tier 2: the UI on the QIDK's own screen (static page served by our server on the board, or a WebView APK).
+- [ ] Hinglish (multilingual Whisper), voice activity detection, a one-line LLM summary, an airplane-mode demo.
+- [ ] Code freeze, 3 rehearsed scripts (happy path · missing info → follow-ups · correction + noise), slides,
+      a recorded backup video.
 
 ---
 
-## 7. Risks
+## 8. Risks
 
 | risk | likelihood | mitigation |
 |---|---|---|
-| A fresh board at the event with no llama.cpp Hexagon package | medium | prebuild everything on the Fedora laptop before the event; one-shot push script with sha256 check |
-| A published "Q4_0" GGUF silently runs on the CPU | high if we download one | only use files built with the pure recipe; check the startup log for `offloaded N/N` and a nonzero HTP0 buffer |
-| whisper.cpp or sherpa-onnx fails to run on Android | medium | test before the event; fallback is Whisper from Qualcomm AI Hub, or the Android system TTS in the APK |
-| Noisy venue hurts WER | high | push-to-talk, close-talk mic, Whisper initial prompt with our vocabulary |
-| USB/adb drops (seen 5 times in FieldMind) | medium | orchestrator retries; servers keep running on the board; the demo resumes |
-| Board memory runs out after many calls | known | `--cache-ram 0` (FieldMind soak test) |
-| The model maps a value to the wrong field | medium | grammar + per-turn narrowing + the review step; measured in eval |
-| Judges ask whether the app is really on-device | certain | show the tier 2 screen, airplane mode, and the HTP0 log lines live |
+| A fresh board at the venue, without our llama.cpp package | medium | everything prebuilt on the Fedora laptop; push script with sha256 check (`docs/reference/phase0b_board_setup.md` has the full recipe) |
+| Qualcomm's QAIRT host tools don't run on macOS | known | the Fedora laptop builds; the Mac develops and drives the board over adb |
+| llama-server rejects or mis-compiles our JSON schema | low–medium | checked at M0; fallback is GBNF from `app/grammar.py` |
+| A downloaded "Q4_0" model has other tensor types | high if we download one | only build with `board/build_candidate_gguf.sh`; `board check npu` on every launch |
+| STT is late or slow | medium | the core is built and evaluated on typed text; the contract (§4) is fixed, so integration is one file |
+| The model puts a value in the wrong field | medium | schema + `Asked:` line + review step; measured in eval |
+| Noisy venue hurts recognition | high | push-to-talk, close mic, vocab prompt |
+| USB/adb drops (5 times in FieldMind) | medium | servers keep running on the board; the client retries; the demo resumes |
+| Judges ask whether it's really on-device | certain | the proof panel, airplane mode, tier 2 on the board's screen |
 
 ---
 
-## 8. Open questions for the team
+## 9. Open questions
 
-1. How long is the build window, and how many people? (This sets the hours in §6.)
-2. Do we get our own lab QIDK, or a board from Qualcomm at the venue?
-3. Is tier 1 (models on the board, UI on the laptop) acceptable to the judges, or do they want everything on the board's
-   screen? Ask the Qualcomm mentors early.
-4. Which language mix should we support: English only, or Hinglish too?
+1. How long is the build window, and how many of us are there? (This sets the hours and who takes TTS + UI.)
+2. Our lab QIDK, or a board handed out at the venue?
+3. Is tier 1 (models on the board, UI on the laptop) acceptable, or must everything run on the board's screen?
+   Ask the Qualcomm mentors early.
+4. English only, or Hinglish too? (This decides the STT model: `*.en` or multilingual.)
+5. Teammate: engine, device, measured time per utterance, mic location (§4).

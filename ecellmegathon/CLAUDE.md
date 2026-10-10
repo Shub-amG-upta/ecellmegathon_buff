@@ -15,12 +15,23 @@ AI Incident Report Assistant for Megathon X (Qualcomm PS1). Read PLAN.md first.
   without measuring the cost.
 - The agent core (`app/`) is stdlib-only, so it can move onto the device.
 
-## Board facts (from field-mind/bench/board.py; verify, don't assume)
+## Ownership
+
+- **Read `BUILD_PLAN.md` first.** It is the shared build spec. Track A (extraction core, server, board) and Track B
+  (STT, TTS, `app/voice.py`, `ui/`) own separate files (§5 there). Never edit the other track's files; the contracts
+  in its §4 are frozen unless both humans agree.
+
+## Python
+
+- `.venv/bin/python` (tests: `.venv/bin/python -m pytest -q`). Board scripts: `.venv/bin/python -m board.board ...`.
+
+## Board facts (from board/board.py; verify, don't assume)
 
 - llama.cpp `b11371` / `99b95488`, package at `/data/local/tmp/llm/llama.cpp`, GGUFs in `/data/local/tmp/llm/`.
 - Every launch: `LD_LIBRARY_PATH` and `ADSP_LIBRARY_PATH` = `/data/local/tmp/llm/llama.cpp/lib`.
 - llama-server flags: `-c 4096 -np 1 -fit off --cache-ram 0 -lv 4`. NPU: `--device HTP0 -ngl 99`.
 - Prove NPU placement from the startup log: `offloaded N/N layers` and a nonzero `HTP0 model buffer size`.
-- Only use pure-Q4_0 GGUFs (`field-mind/bench/build_candidate_gguf.sh`). Published Q4_0 files silently fall back
-  to the CPU.
+- Only use pure-Q4_0 GGUFs (`board/build_candidate_gguf.sh`, checked by `board/gguf_types.py`). Published Q4_0
+  files carry other tensor types; FieldMind standardised on pure Q4_0 + Q8_0 embedding/output.
+- Full build recipe (container, preset, pinned commit, model sources and hashes): `docs/reference/phase0b_board_setup.md`.
 - After any `adb push`, compare sha256 on the board with the laptop.
