@@ -2,11 +2,17 @@
 {"case": "ps-01", "turn": 2, "say": "it's medium", "why": ["demo", "short"], "noisy": true}
 {"case": "ps-01", "turn": 3, "say": "submit", "why": ["demo", "short"], "noisy": true}
 {"case": "ps-02", "turn": 1, "say": "water leaking near conf room 2 since 10 or so, maintenance guys have isolated it", "why": ["accent", "number"], "noisy": true}
+{"case": "ps-02", "turn": 2, "say": "medium", "why": ["short"], "noisy": false}
+{"case": "ps-02", "turn": 3, "say": "yes submit it", "why": ["short"], "noisy": false}
 {"case": "ps-03", "turn": 1, "say": "water leak near Conference Room 2", "why": ["number"], "noisy": true}
 {"case": "ps-03", "turn": 3, "say": "around 10 AM", "why": ["number", "short"], "noisy": true}
 {"case": "el-01", "turn": 1, "say": "This is to report a serious incident in the meter room on the ground floor around 3 PM today. Our electrical contractor's foreman was installing panels and got a shock from the 480 volt pull panel. The cover was off and one live wire was hanging loose. He was working alone, coworkers found him on the floor and called the ambulance. He has been taken to hospital.", "why": ["long", "number"], "noisy": true}
+{"case": "el-03", "turn": 1, "say": "electrical problem", "why": ["short"], "noisy": false}
+{"case": "el-03", "turn": 2, "say": "meter room", "why": ["short"], "noisy": false}
 {"case": "el-03", "turn": 3, "say": "3 PM", "why": ["number", "short"], "noisy": true}
+{"case": "el-03", "turn": 4, "say": "high", "why": ["short"], "noisy": false}
 {"case": "sl-01", "turn": 1, "say": "Around 10:30 this morning one of our staff slipped on the wet floor in the emergency room while preparing medical equipment. He hit his right arm on a metal cabinet, looks like his elbow and wrist are fractured. He has been admitted. I'd say severity high.", "why": ["long", "number"], "noisy": true}
+{"case": "sl-03", "turn": 1, "say": "Sir one housekeeping staff fell down in the ER corridor, floor was wet after mopping, she is having pain in wrist", "why": ["accent"], "noisy": false}
 {"case": "sl-03", "turn": 2, "say": "today morning 10:30", "why": ["number", "short"], "noisy": true}
 {"case": "na-01", "turn": 1, "say": "Last night around 8 PM a nursing aide tripped over the metal strip in the first floor shower room and hurt her ankle on the wet floor, it's fractured. She was showering a resident at the time. The floor is still wet and the strip is still loose.", "why": ["long", "number"], "noisy": false}
 {"case": "fk-01", "turn": 1, "say": "At about 2 in the afternoon in the warehouse, a forklift driver hit the stacked material, got down to straighten it and the load fell on his chest. He couldn't move it. We called an ambulance and he's being taken to hospital. This is critical.", "why": ["long", "number"], "noisy": false}
@@ -14,22 +20,16 @@
 {"case": "fk-03", "turn": 2, "say": "quarter past two", "why": ["number", "short"], "noisy": false}
 {"case": "lw-01", "turn": 1, "say": "There's water leaking from a valve in the basement parking driveway. Our maintenance mechanic went up the extension ladder at 11:30 to shut it, the ladder slipped in the water and he fell onto the concrete. Both his arms look broken. The water is still leaking.", "why": ["long", "number"], "noisy": false}
 {"case": "lw-03", "turn": 1, "say": "I saw the maintenance guy fall off the ladder at the parking ramp, me and Ravi both saw it, he was trying to shut the water valve", "why": ["name"], "noisy": false}
+{"case": "lw-03", "turn": 2, "say": "11:30", "why": ["number", "short"], "noisy": false}
 {"case": "wit-01", "turn": 1, "say": "A box fell off the top shelf in the store room, it just missed a delivery boy. Anil and I both saw it.", "why": ["name"], "noisy": false}
 {"case": "wit-02", "turn": 1, "say": "There's oil spilled near the generator room entrance. The guard Mahesh saw the drum tip over around 1 PM.", "why": ["name", "number"], "noisy": false}
 {"case": "wit-03", "turn": 4, "say": "Priya from the lab saw the sparks", "why": ["name"], "noisy": false}
 {"case": "wit-05", "turn": 1, "say": "Two cars scraped each other in the basement parking around 6 PM yesterday. Ravi, Sunita and the parking attendant saw it.", "why": ["name", "number"], "noisy": false}
 {"case": "wit-09", "turn": 1, "say": "A man fainted in the canteen queue around 1:30, Deepak and Farah saw him fall", "why": ["name", "number"], "noisy": false}
-{"case": "sl-03", "turn": 1, "say": "Sir one housekeeping staff fell down in the ER corridor, floor was wet after mopping, she is having pain in wrist", "why": ["accent"], "noisy": false}
 {"case": "cl-03", "turn": 1, "say": "False ceiling has fallen down in the conference hall on 2nd floor, luckily meeting was not going on. Light fittings broken.", "why": ["accent", "flip", "number"], "noisy": false}
 {"case": "cv-02", "turn": 2, "say": "sorry, it's fine actually, maintenance already fixed it, cancel this", "why": ["flip"], "noisy": false}
 {"case": "fi-03", "turn": 4, "say": "sorry, it's the UPS room, not the server room", "why": ["flip"], "noisy": false}
-{"case": "ps-02", "turn": 2, "say": "medium", "why": ["short"], "noisy": false}
-{"case": "ps-02", "turn": 3, "say": "yes submit it", "why": ["short"], "noisy": false}
-{"case": "el-03", "turn": 1, "say": "electrical problem", "why": ["short"], "noisy": false}
-{"case": "el-03", "turn": 2, "say": "meter room", "why": ["short"], "noisy": false}
-{"case": "el-03", "turn": 4, "say": "high", "why": ["short"], "noisy": false}
 {"case": "na-02", "turn": 2, "say": "low", "why": ["short"], "noisy": false}
-{"case": "lw-03", "turn": 2, "say": "11:30", "why": ["number", "short"], "noisy": false}
 {"case": "ld-01", "turn": 1, "say": "A carpenter fell from the thirty foot extension ladder near the east wall about twenty minutes ago. Someone moved the base while the top was tied, then he cut the tie wires and the top section came down. He is conscious, we have called the ambulance and informed the site supervisor.", "why": ["long"], "noisy": false}
 {"case": "ch-01", "turn": 1, "say": "Reporting a chemical splash at the tanker wash bay around 9 AM. The manager was checking the vapour cleaning, he pressurised the internal valve before closing the outer one and the solvent splashed into his eyes. He wasn't wearing goggles. We flushed his eyes at the eyewash and he has gone to the clinic. Medium severity.", "why": ["long", "number"], "noisy": false}
 {"case": "cv-01", "turn": 1, "say": "One of the mechanics got his finger caught in the conveyor chain while taking tyres off. The fingertip is cut off. It happened at about 1:45 at the tyre line. We stopped the conveyor and he is on the way to hospital. Critical.", "why": ["long", "number"], "noisy": false}

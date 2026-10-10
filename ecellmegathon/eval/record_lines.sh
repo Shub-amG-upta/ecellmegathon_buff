@@ -74,26 +74,29 @@ sys.path.insert(0, ".")
 from app.form import load_schema
 asks = {f["key"]: f["ask"] for f in load_schema()["fields"] if f.get("key")}
 cases = {c["id"]: c for c in map(json.loads, open("eval/nlu/cases.jsonl"))}
+order = []
 for ln in open("eval/speech_subset.jsonl"):
     r = json.loads(ln)
+    if r["case"] not in order:
+        order.append(r["case"])
     if sys.argv[1] == "1" and not r["noisy"]:
         continue
     asked = cases[r["case"]]["turns"][r["turn"] - 1]["asked"]
     q = asks.get(asked, "(start of the report, or the review)") if asked else "(start of the report, or the review)"
-    print("\t".join([r["case"], str(r["turn"]), q, r["say"]]))
+    print("\t".join([r["case"], str(r["turn"]), q, r["say"], str(order.index(r["case"]) + 1)]))
 EOF
 }
 
 total=$(lines | wc -l | tr -d ' ')
 k=0
-while IFS=$'\t' read -r case turn question say <&3; do
+while IFS=$'\t' read -r case turn question say casenum <&3; do
     k=$((k + 1))
     f="$OUT/${case}_t${turn}_${speaker}.wav"
     if [[ -f "$f" ]] && check "$f" >/dev/null; then
         continue
     fi
     while true; do
-        printf '\n\033[1m[%d/%d]  %s turn %s  →  %s\033[0m\n' "$k" "$total" "$case" "$turn" "$(basename "$f")"
+        printf '\n\033[1m[%d/%d]  Case %s, turn %s  →  %s\033[0m\n' "$k" "$total" "$casenum" "$turn" "$(basename "$f")"
         printf '  assistant asked:  %s\n' "$question"
         printf '\n  SAY:  \033[1;36m%s\033[0m\n\n' "$say"
         read -r -p "  Enter = start recording " _

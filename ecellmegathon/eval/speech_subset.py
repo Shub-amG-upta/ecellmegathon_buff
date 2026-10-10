@@ -14,7 +14,8 @@ Picked by rule, not by hand, in this order (each turn once, each text once):
   short    a short answer (≤ 4 words) that fills a field or a tool ("it's medium", "submit")
   long     a long narration (the densest first turns)
 Dev and demo only: the locked test split is never recorded for tuning.
-The first NOISY turns are also recorded in a noisy room.
+The first NOISY turns picked are also recorded in a noisy room. The list is written
+case by case, and eval/RECORDING_SCRIPT.md (the reading script) is generated from it.
 """
 from __future__ import annotations
 
@@ -72,7 +73,52 @@ def build() -> list[dict]:
     for k, p in enumerate(picked):
         del p["_key"]
         p["noisy"] = k < NOISY
-    return picked
+    # read case by case: cases in the order they were first picked, turns in order
+    rank = {}
+    for p in picked:
+        rank.setdefault(p["case"], len(rank))
+    return sorted(picked, key=lambda p: (rank[p["case"]], p["turn"]))
+
+
+def script_md(rows: list[dict]) -> str:
+    """The reading script, case by case (eval/RECORDING_SCRIPT.md)."""
+    import sys
+    sys.path.insert(0, str(HERE.parent))
+    from app.dialog import GREETING, _TYPE_SAID
+    from app.form import load_schema
+    asks = {f["key"]: f["ask"] for f in load_schema()["fields"] if f.get("key")}
+    cases = {c["id"]: c for c in map(json.loads, CASES.read_text().splitlines())}
+    order = list(dict.fromkeys(r["case"] for r in rows))
+    noisy = [r for r in rows if r["noisy"]]
+    out = ["# Recording script", "",
+           f"**{len(rows)} lines in {len(order)} cases.** Read every line once in a quiet room. The "
+           f"{len(noisy)} lines marked 🔊 are read again in a noisy room (list at the end).",
+           "How to set up, read and share: `eval/RECORDING.md`. Record with `eval/record_lines.sh <your name>`: it "
+           "shows the same lines in the same order and names the files for you.", "",
+           "Each case is one conversation with the assistant. Lines in *italics* are what the assistant said "
+           "before; you only say the **bold** lines. Some cases skip turns: only the turns we need are recorded.",
+           "", "Speaker: ________   Quiet pass ☐   Noisy pass ☐", ""]
+    for n, cid in enumerate(order, 1):
+        c = cases[cid]
+        final = c["gold_final"]
+        title = _TYPE_SAID.get(final.get("t", ""), "Incident")
+        where = f" · {final['l']}" if final.get("l") else ""
+        out += ["---", "", f"## Case {n} · {title}{where}", ""]
+        for r in (r for r in rows if r["case"] == cid):
+            t = c["turns"][r["turn"] - 1]
+            if t["asked"]:
+                before = asks[t["asked"]]
+            elif r["turn"] == 1:
+                before = GREETING
+            else:
+                before = "(reads the report back) Say submit, or tell me what to change."
+            out += [f"**Turn {r['turn']}** · file `{cid}_t{r['turn']}_<you>.wav`" + (" · 🔊 noisy too" if r["noisy"] else ""),
+                    "", f"> 🤖 *{before}*", ">", f"> 🗣️ **{r['say']}**", ""]
+    out += ["---", "", "## Noisy pass: these lines again, in a noisy room", "",
+            "Run `eval/record_lines.sh <your name> --noisy`. Same laptop, same distance.", ""]
+    for r in noisy:
+        out.append(f"- Case {order.index(r['case']) + 1}, turn {r['turn']}: **{r['say']}**")
+    return "\n".join(out) + "\n"
 
 
 if __name__ == "__main__":
@@ -82,5 +128,7 @@ if __name__ == "__main__":
     for r in rows:
         for w in r["why"]:
             counts[w] = counts.get(w, 0) + 1
-    print(f"wrote {len(rows)} turns to {OUT} ({sum(r['noisy'] for r in rows)} also recorded noisy)")
+    (HERE / "RECORDING_SCRIPT.md").write_text(script_md(rows))
+    print(f"wrote {len(rows)} turns to {OUT} ({sum(r['noisy'] for r in rows)} also recorded noisy)"
+          f" and eval/RECORDING_SCRIPT.md")
     print("turns per reason (a turn can have several):", counts)

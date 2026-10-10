@@ -34,9 +34,17 @@ def test_every_line_is_a_dev_turn_with_the_same_text_and_1_based_turn_number():
                                                                     "flip", "short", "long"}
 
 
-def test_recording_script_lists_exactly_the_subset():
-    doc = (ROOT / "eval" / "RECORDING.md").read_text()
-    rows = [ln for ln in doc.splitlines() if ln.startswith("| ") and "_t" in ln and "`" in ln]
-    assert len(rows) == len(speech_subset.build())
-    for r in speech_subset.build():
-        assert f"`{r['case']}_t{r['turn']}`" in doc and r["say"].replace("|", "\\|") in doc
+def test_recording_script_is_generated_from_the_subset_case_by_case():
+    rows = speech_subset.build()
+    doc = (ROOT / "eval" / "RECORDING_SCRIPT.md").read_text()
+    assert doc == speech_subset.script_md(rows)                      # committed file is up to date
+    cases = list(dict.fromkeys(r["case"] for r in rows))
+    assert [ln for ln in doc.splitlines() if ln.startswith("## Case ")][-1].startswith(f"## Case {len(cases)} ")
+    for r in rows:
+        assert f"`{r['case']}_t{r['turn']}_<you>.wav`" in doc and f"**{r['say']}**" in doc
+    # one order everywhere: the list is grouped by case, turns ascending
+    seen = []
+    for r in rows:
+        if r["case"] not in seen:
+            seen.append(r["case"])
+        assert r["case"] == seen[-1], "a case's turns must be together"
