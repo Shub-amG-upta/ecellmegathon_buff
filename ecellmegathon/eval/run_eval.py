@@ -176,8 +176,7 @@ def teacher_forced(cases, backend, said: dict | None = None, only: set | None = 
                                      prefill_tokens=None, decode_tokens=None)
                 else:
                     reply = backend.generate(user_message(d.form.compact(), t["asked"], text),
-                                             system=d.system, json_schema=d.json_schema,
-                                             max_tokens=d.max_tokens)
+                                             system=d.system, max_tokens=d.max_tokens, **d.constrain())
                 call, err = d._parse(reply.text) if reply.status == "ok" else ({"tool": None}, reply.error)
                 kept, dropped = gated(call, " ".join(heard))
                 gold = t["gold"]
@@ -420,6 +419,7 @@ def main() -> int:
     fr = free_running(cases, backend, fast=fast) if a.mode in ("both", "free") else []
     res = summarise(tf, fr, a.label, backend, a.split)
     res["fast_path"] = fast
+    res["constraint"] = Dialog(backend).constraint
     print_summary(res)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)

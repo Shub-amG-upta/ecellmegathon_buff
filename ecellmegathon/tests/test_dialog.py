@@ -23,7 +23,7 @@ class Scripted:
         self.calls = []
 
     def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None):
-        self.calls.append({"prompt": prompt, "json_schema": json_schema, "system": system})
+        self.calls.append({"prompt": prompt, "json_schema": json_schema, "grammar": grammar, "system": system})
         r = self.replies.pop(0)
         if isinstance(r, LLMReply):
             return r
@@ -164,3 +164,15 @@ def test_fast_path_can_be_switched_off(tmp_path):
     d.turn("there is a fire")
     d.asked = "s"
     assert not d.turn("low")["fast_path"] and len(b.calls) == 2
+
+
+def test_gbnf_constraint_sends_the_grammar_instead_of_the_schema(tmp_path, monkeypatch):
+    b = Scripted({"tool": "update_report", "args": {"t": "fire"}})
+    d = Dialog(b, clock=CLOCK, report_dir=tmp_path, constraint="gbnf")
+    d.turn("there is a fire")
+    assert b.calls[0]["json_schema"] is None and b.calls[0]["grammar"].startswith("root ::= ")
+    monkeypatch.setenv("LLM_CONSTRAINT", "gbnf")
+    assert Dialog(b, clock=CLOCK, report_dir=tmp_path).constraint == "gbnf"
+    monkeypatch.setenv("LLM_CONSTRAINT", "regex")
+    with pytest.raises(ValueError):
+        Dialog(b, clock=CLOCK, report_dir=tmp_path)

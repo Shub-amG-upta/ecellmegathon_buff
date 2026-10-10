@@ -13,11 +13,13 @@ Stdlib only.
 from __future__ import annotations
 
 import json
+import os
 import time
 from datetime import datetime
 
 from app import fastpath, gate, report
 from app.form import FormState, llm_json_schema, load_catalogue, load_schema
+from app.grammar import incident_gbnf
 from app.prompt import system_prompt, user_message
 from app.timeparse import resolve
 
@@ -40,7 +42,8 @@ def _now() -> datetime:
 
 class Dialog:
     def __init__(self, backend, schema: dict | None = None, catalogue: dict | None = None,
-                 clock=_now, report_dir=None, max_tokens: int = 128, use_fast_path: bool = True):
+                 clock=_now, report_dir=None, max_tokens: int = 128, use_fast_path: bool = True,
+                 constraint: str | None = None):
         self.backend = backend
         self.schema = schema or load_schema()
         self.catalogue = load_catalogue() if catalogue is None else catalogue
@@ -49,6 +52,12 @@ class Dialog:
         self.max_tokens = max_tokens
         self.system = system_prompt(self.schema)
         self.json_schema = llm_json_schema(self.schema)
+        # how the answer is constrained: "schema" (llama-server compiles the JSON schema; default) or
+        # "gbnf" (our own grammar, no whitespace: fewer decode tokens). LLM_CONSTRAINT picks it.
+        self.constraint = constraint or os.environ.get("LLM_CONSTRAINT", "schema")
+        if self.constraint not in ("schema", "gbnf"):
+            raise ValueError(f"LLM_CONSTRAINT must be schema or gbnf, not {self.constraint!r}")
+        self.gbnf = incident_gbnf(self.schema)
         self.type_values = next(f for f in self.schema["fields"] if f.get("key") == "t")["values"]
         self.use_fast_path = use_fast_path
         self.turn_id = 0
@@ -81,8 +90,8 @@ class Dialog:
             call, err, llm = dict(fast), "", {"fast_path": True}
         else:
             reply = self.backend.generate(user_message(self.form.compact(), self.asked, text),
-                                          system=self.system, json_schema=self.json_schema,
-                                          max_tokens=self.max_tokens)
+                                          system=self.system, max_tokens=self.max_tokens,
+                                          **self.constrain())
             llm = {"llm_prefill": reply.prefill_ms, "llm_decode": reply.decode_ms,
                    "llm_wall": reply.latency_ms, "device": reply.backend, "model": reply.model,
                    "prefill_tokens": reply.prefill_tokens, "decode_tokens": reply.decode_tokens}
@@ -131,6 +140,10 @@ class Dialog:
         if field == "date_time":
             self.form.date_time = resolve(str(value), self.clock())
         return self._result(transcript="", say="Updated. " + self._next_line(), t0=t0)
+
+    def constrain(self) -> dict:
+        """The keyword argument that constrains the LLM's answer, for backend.generate."""
+        return {"grammar": self.gbnf} if self.constraint == "gbnf" else {"json_schema": self.json_schema}
 
     # ---- internals ---------------------------------------------------------
     @staticmethod

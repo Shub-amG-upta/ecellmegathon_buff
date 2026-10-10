@@ -55,7 +55,8 @@ def main() -> int:
     backend = LlamaServerBackend(url=a.url, lane=a.label.lower(), model_file=a.model,
                                  thinking=False if "qwen3" in a.model.lower() else None)
     d = Dialog(backend)
-    print(f"[{a.label}] {time.strftime('%Y-%m-%dT%H:%M:%S%z')} · {a.url} · model {a.model}")
+    print(f"[{a.label}] {time.strftime('%Y-%m-%dT%H:%M:%S%z')} · {a.url} · model {a.model} · "
+          f"constraint {d.constraint} (LLM_CONSTRAINT)")
     rows = []
     for schema_on in (True, False):
         for form, asked, text in (TURNS if schema_on else TURNS[:1]):
@@ -63,8 +64,7 @@ def main() -> int:
             d.form.apply(form)
             for k in range(a.repeat if schema_on else 1):
                 r = backend.generate(user_message(d.form.compact(), asked, text), system=d.system,
-                                     json_schema=d.json_schema if schema_on else None,
-                                     max_tokens=d.max_tokens)
+                                     max_tokens=d.max_tokens, **(d.constrain() if schema_on else {}))
                 call, err = d._parse(r.text) if r.status == "ok" else ({"tool": None}, r.error)
                 kept, dropped = gate.check(dict(call.get("args") or {}), text)
                 rows.append({"schema": schema_on, "turn": text[:30], "call": k + 1, "status": r.status,

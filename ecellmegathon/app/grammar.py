@@ -89,3 +89,39 @@ def sample(rules: dict, rng, start: str = "root") -> str:
     """A random sentence (uniform over alternatives at each rule)."""
     return "".join(v if kind == "lit" else sample(rules, rng, v)
                    for kind, v in rng.choice(rules[start]))
+
+
+# ======================================================================
+#  The incident tool call as GBNF, with no whitespace anywhere
+# ======================================================================
+# The JSON schema route (llama-server compiles it) allows optional spaces between tokens; this grammar
+# allows none, so the model can't spend decode tokens on them. Members of `args` may come in any order
+# (and repeat; json.loads keeps the last). Text is any JSON string character except quotes, backslashes and
+# control characters, up to the field's max length. Off by default: LLM_CONSTRAINT=gbnf (app/server.py).
+_CHR = r'[^"\\\x7F\x00-\x1F]'
+
+
+def incident_gbnf(schema: dict) -> str:
+    q = _quote                                   # a GBNF string literal
+    rules = {"chr": _CHR}
+    members = []
+    for f in schema["fields"]:
+        k = f.get("key")
+        if not k:
+            continue
+        members.append(f"m-{k}")
+        if f["kind"] == "enum":
+            rules[f"v-{k}"] = " | ".join(q(v) for v in f["values"])
+            rules[f"m-{k}"] = f'{q(f'"{k}":"')} v-{k} {q('"')}'
+        elif f["kind"] == "text":
+            rules[f"s-{k}"] = f'{q('"')} chr{{1,{f["max_chars"]}}} {q('"')}'
+            rules[f"m-{k}"] = f'{q(f'"{k}":')} s-{k}'
+        elif f["kind"] == "text_list":
+            rules[f"s-{k}"] = f'{q('"')} chr{{1,{f["max_chars"]}}} {q('"')}'
+            rules[f"m-{k}"] = f'{q(f'"{k}":[')} s-{k} ({q(",")} s-{k}){{0,{f["max_items"] - 1}}} {q("]")}'
+    rules["member"] = " | ".join(members)
+    rules["update"] = f'{q('update_report","args":{')} member ({q(",")} member)* {q("}}")}'
+    rules["root"] = (f'{q('{"tool":"')} ( update | '
+                     + " | ".join(q(f'{t}"}}') for t in ("submit_report", "cancel_report", "no_op")) + " )")
+    order = ["root"] + sorted(k for k in rules if k != "root")
+    return "\n".join(f"{k} ::= {rules[k]}" for k in order) + "\n"

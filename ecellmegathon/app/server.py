@@ -11,6 +11,7 @@ Environment:
   LLM_MODEL  model file name, for the report and the proof panel
   PORT       8000
   VOICE      on | off   off = text only, even when app/voice.py is present
+  LLM_CONSTRAINT  schema | gbnf   how the answer is constrained (gbnf: no whitespace; compare on the board)
 
 Speech is Track B's `app/voice.py` (§4.1). Until it exists, the server runs
 text-only: WAV turns return an error and no audio is produced.
