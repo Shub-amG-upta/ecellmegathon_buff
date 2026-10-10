@@ -210,7 +210,12 @@ Served at `http://localhost:8000`. It also serves `ui/` as static files at `/`.
   shows `timings_ms.tts` and `devices.tts`. UI: render the form at once, then play `audio_url`, then read the TTS
   time from the header or from `/api/state`.
 - `fast_path: true` when code answered the turn without the LLM (bare severity word, exact type name, pure time
-  answer, submit / cancel); the `llm_*` timings are then `null`.
+  answer, short plain location, submit / cancel); the `llm_*` timings are then `null`.
+- `audio_parts` (only with `TTS_SPLIT=on` and a reply of several sentences): one URL per sentence, in order, each
+  ready as soon as that sentence is made. Play them one after another to start speaking sooner; `audio_url` is
+  still the whole reply. `/api/state` then also has `timings_ms.tts_first` (time to the first sentence).
+- `audio_trim` (voice turns): `{"in_ms", "out_ms"}`, the clip length before and after cutting silence at the
+  ends (`STT_TRIM`, default on).
 
 ### 4.3 Shared eval cases: `eval/cases.jsonl`
 
@@ -454,6 +459,9 @@ field accuracy doesn't drop):**
 | fast path | on | off | `eval/run_eval.py --label BOARD --no-fast-path` (shows what the fast path saves) |
 | answer constraint | `LLM_CONSTRAINT=schema` | `LLM_CONSTRAINT=gbnf` (no whitespace) | same eval with the env var; first run `eval/smoke_llm.py` to check llama-server accepts the grammar |
 | context size | `-c 2048` (default, human decision) | `-c 4096` (FieldMind's value), only if 2048 shows problems | `CTX=4096 board/up.sh`, then the same eval |
+| copy-ahead decoding | off | `SPEC=1 board/up.sh` (`--spec-type ngram-simple`, lookup 3 / draft 8) | the same eval; also tune 2-4 / 6-12 |
+| TTS by sentence | `TTS_SPLIT=off` | `TTS_SPLIT=on` (needs the UI to play `audio_parts`) | time to first audio (`tts_first`) vs whole reply |
+| silence trimming | `STT_TRIM=on` | `--no-trim` | `eval/run_eval.py --audio` STT time and accuracy |
 
 Compare the eval's `decode_tokens` and `wall_ms` per LLM call, and the field accuracy.
 

@@ -188,3 +188,47 @@ def test_silence_is_trimmed_before_stt_unless_switched_off(run, monkeypatch):
     monkeypatch.setenv("STT_TRIM", "off")
     call(url, "/api/turn", clip, ctype="audio/wav")
     assert heard[-1] == len(clip)
+
+
+def test_tts_split_serves_the_first_sentence_before_the_rest(run, monkeypatch):
+    import io
+    import time as _t
+    import wave
+    from app.server import split_sentences
+
+    def tiny_wav(n):
+        b = io.BytesIO()
+        with wave.open(b, "wb") as w:
+            w.setnchannels(1), w.setsampwidth(2), w.setframerate(16000), w.writeframes(b"\x01\x00" * n)
+        return b.getvalue()
+    spoken = []
+
+    def speak(text):
+        _t.sleep(0.4)                                     # each sentence takes a while to make
+        spoken.append(text)
+        return Tts(tiny_wav(len(text)), 400.0, "cpu", "piper")
+    monkeypatch.setenv("TTS_SPLIT", "on")
+    voice = SimpleNamespace(transcribe=FAKE_VOICE.transcribe, speak=speak)
+    url = run([{"tool": "update_report", "args": {"t": "water_leak", "s": "low", "l": "pantry", "d": "just now"}}],
+              voice_mod=voice)
+    t0 = _t.perf_counter()
+    r = call(url, "/api/turn", {"text": "water leak in the pantry just now, low severity"})[1]
+    n = len(split_sentences(r["say"]))
+    assert r["state"] == "review" and n >= 3 and len(r["audio_parts"]) == n
+    code, first = call(url, r["audio_parts"][0])
+    t_first = _t.perf_counter() - t0
+    code, whole = call(url, r["audio_url"])
+    t_whole = _t.perf_counter() - t0
+    assert t_first < 1.0 < t_whole                         # first sentence long before the whole reply
+    with wave.open(io.BytesIO(whole)) as w:
+        assert w.getnframes() == sum(len(s) for s in spoken)   # the parts, joined in order
+    assert spoken == split_sentences(r["say"])
+    state = call(url, "/api/state")[1]
+    assert state["timings_ms"]["tts_first"] < state["timings_ms"]["tts"]
+
+
+def test_sentences_split_after_full_stops_only():
+    from app.server import split_sentences
+    assert split_sentences("Here's what I have. Fire, low severity. When: 10:45 AM today. Say submit.") == \
+        ["Here's what I have.", "Fire, low severity.", "When: 10:45 AM today.", "Say submit."]
+    assert split_sentences("Report IR-0001 submitted.") == ["Report IR-0001 submitted."]
