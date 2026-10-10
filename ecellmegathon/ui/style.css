@@ -41,6 +41,8 @@ button {
   border-radius: 8px; padding: .5rem .9rem; cursor: pointer;
 }
 button.ghost { background: transparent; color: var(--accent); }
+.ghost-link { color: var(--accent); font-size: .9rem; text-decoration: none; }
+.ghost-link:hover { text-decoration: underline; }
 button.small { padding: .2rem .55rem; font-size: .85rem; }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 input {

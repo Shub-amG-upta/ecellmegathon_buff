@@ -1,30 +1,49 @@
-Conference Room 1
 Conference Room 2
-Conference Room 3
-Server Room
-Pantry
-Reception
-Lobby
-Main Gate
-Parking Lot
-Stairwell B
-Ground Floor
-First Floor
-Second Floor
-Electrical Panel
-Generator Room
-Fire Extinguisher
-Fire Alarm
-Sprinkler
-Forklift
-HVAC Unit
-Water Cooler
-UPS
-Maintenance
+conf room
+UPS room
+server room
+meter room
+generator room
+ER corridor
+emergency room
+pantry
+canteen
+cafeteria
+reception
+front desk
+store room
+terrace
+warehouse aisle
+tanker wash bay
+tyre line
+basement parking
+parking ramp
+Block C
+tower B
+gate 3
+chemistry lab
+computer lab
+shower room
+AHU-2
+CCTV
+LPG cylinder
+switchboard
+forklift
+conveyor chain
+extension ladder
+scaffolding
+Anil
+Deepak
+Farah
+Mahesh
+Priya
+Ravi
+Rakesh
+Sunita
+EHS
+KIMS
+CPR
+Facilities
 Housekeeping
+Maintenance
 Security
-Facilities Team
-IT Team
-first aid
-isolated the area
-near miss

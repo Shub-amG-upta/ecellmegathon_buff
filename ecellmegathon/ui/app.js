@@ -27,7 +27,6 @@ const LATENCY_ROWS = [
   ["total", "Total turn", null],
 ];
 const MIN_RECORD_MS = 300;
-const TARGET_RATE = 16000;
 
 const $ = id => document.getElementById(id);
 let last = null;          // the last TurnResult
@@ -261,7 +260,7 @@ function setBusy(on) {
   busy = on;
   $("ptt").classList.toggle("busy", on);
   $("ptt").setAttribute("aria-busy", on ? "true" : "false");
-  if (!rec.active) $("ptt-label").textContent = on ? "Thinking…" : "Hold to talk";
+  if (!Mic.isActive()) $("ptt-label").textContent = on ? "Thinking…" : "Hold to talk";
 }
 
 function play(url) {
@@ -344,107 +343,36 @@ async function loadReports() {
 }
 
 // ---------------------------------------------------------------- microphone
-// Capture raw PCM with an AudioWorklet (MediaRecorder gives webm/opus, which the
-// STT engine cannot take), resample to 16 kHz mono, encode a 16-bit WAV.
-const rec = { active: false, ctx: null, stream: null, node: null, chunks: [], started: 0 };
-
-const WORKLET = `
-class Capture extends AudioWorkletProcessor {
-  process(inputs) {
-    const ch = inputs[0] && inputs[0][0];
-    if (ch) this.port.postMessage(ch.slice(0));
-    return true;
-  }
-}
-registerProcessor("capture", Capture);`;
-
-async function micReady() {
-  if (rec.ctx) {
-    if (rec.ctx.state === "suspended") await rec.ctx.resume();
-    return;
-  }
-  rec.stream = await navigator.mediaDevices.getUserMedia({
-    audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-  });
-  rec.ctx = new AudioContext();
-  const url = URL.createObjectURL(new Blob([WORKLET], { type: "application/javascript" }));
-  await rec.ctx.audioWorklet.addModule(url);
-  URL.revokeObjectURL(url);
-  const src = rec.ctx.createMediaStreamSource(rec.stream);
-  rec.node = new AudioWorkletNode(rec.ctx, "capture");
-  rec.node.port.onmessage = e => {
-    if (!rec.active) return;
-    rec.chunks.push(e.data);
-    let sum = 0;
-    for (const s of e.data) sum += s * s;
-    const rms = Math.sqrt(sum / e.data.length);
-    $("level-bar").style.width = `${Math.min(100, rms * 400)}%`;
-  };
-  src.connect(rec.node);
-}
+// Capture and WAV encoding live in audio.js (shared with record mode).
+let recStarted = 0;
 
 async function startRecording() {
-  if (rec.active || busy) return;
+  if (Mic.isActive() || busy) return;
   if (player) player.pause();
   showError("");
   try {
-    await micReady();
+    await Mic.start(rms => { $("level-bar").style.width = `${Math.min(100, rms * 400)}%`; });
   } catch (e) {
     showError(`Microphone unavailable (${e.message}). Type instead.`);
     return;
   }
-  rec.chunks = [];
-  rec.active = true;
-  rec.started = performance.now();
+  recStarted = performance.now();
   $("ptt").classList.add("recording");
   $("ptt-label").textContent = "Listening… release to send";
 }
 
 async function stopRecording() {
-  if (!rec.active) return;
-  rec.active = false;
+  if (!Mic.isActive()) return;
+  const tooShort = performance.now() - recStarted < MIN_RECORD_MS;
+  const clip = await Mic.stop();
   $("ptt").classList.remove("recording");
   $("level-bar").style.width = "0";
   $("ptt-label").textContent = "Hold to talk";
-  if (performance.now() - rec.started < MIN_RECORD_MS) {
+  if (tooShort || !clip) {
     showError("That was too short. Hold the button while you speak.");
     return;
   }
-  const length = rec.chunks.reduce((n, c) => n + c.length, 0);
-  const pcm = new Float32Array(length);
-  let o = 0;
-  for (const c of rec.chunks) { pcm.set(c, o); o += c.length; }
-  rec.chunks = [];
-  const wav = encodeWav(await resample(pcm, rec.ctx.sampleRate, TARGET_RATE), TARGET_RATE);
-  await send(wav, "audio/wav");
-}
-
-async function resample(pcm, fromRate, toRate) {
-  if (fromRate === toRate) return pcm;
-  const frames = Math.ceil(pcm.length * toRate / fromRate);
-  const off = new OfflineAudioContext(1, frames, toRate);
-  const buf = off.createBuffer(1, pcm.length, fromRate);
-  buf.copyToChannel(pcm, 0);
-  const src = off.createBufferSource();
-  src.buffer = buf;
-  src.connect(off.destination);
-  src.start();
-  return (await off.startRendering()).getChannelData(0);
-}
-
-function encodeWav(samples, rate) {
-  const buf = new ArrayBuffer(44 + samples.length * 2);
-  const v = new DataView(buf);
-  const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-  str(0, "RIFF"); v.setUint32(4, 36 + samples.length * 2, true); str(8, "WAVE");
-  str(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-  v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true);
-  v.setUint16(34, 16, true); str(36, "data"); v.setUint32(40, samples.length * 2, true);
-  for (let i = 0; i < samples.length; i++) {
-    const s = Math.max(-1, Math.min(1, samples[i]));
-    v.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true);
-  }
-  return new Blob([buf], { type: "audio/wav" });
+  await send(clip.wav, "audio/wav");
 }
 
 // ---------------------------------------------------------------- wiring
