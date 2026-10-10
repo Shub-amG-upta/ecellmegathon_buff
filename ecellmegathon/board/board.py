@@ -88,6 +88,9 @@ CANDIDATES = {
         "3a229fece56839877093042f0699939d9c4a65691dda81999f80ff27dae2cc5f",
     "Qwen2.5-0.5B-Instruct-Q4_0-pure-embq8.gguf":
         "00d3bb3f9210f132ef246cc5db2a7d8c9f8b63785679a95aef3558875b50e341",
+    # unsloth/gemma-3-4b-it @ bf46152c47f5, llama.cpp 99b95488, --override-kv tokenizer.ggml.eos_token_id=int:1
+    "gemma-3-4b-it-Q4_0-pure-embq8.gguf":
+        "ff8946f75978c5796ec1f752585eac34e394f4737c0954995943754c8f5677df",
 }
 
 
