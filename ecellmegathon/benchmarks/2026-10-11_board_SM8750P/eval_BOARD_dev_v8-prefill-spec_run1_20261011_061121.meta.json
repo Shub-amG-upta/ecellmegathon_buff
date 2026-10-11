@@ -1,0 +1,85 @@
+{
+ "tag": "v8-prefill-spec",
+ "run": 1,
+ "label": "BOARD",
+ "split": "dev",
+ "soc": "SM8750P",
+ "git": {
+  "commit": "5edb25e",
+  "branch": "HEAD",
+  "dirty": false
+ },
+ "model": "Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf",
+ "ctx": 2048,
+ "spec": false,
+ "fast_path": true,
+ "cases": null,
+ "hinglish": "0",
+ "via_monitor": true,
+ "llm_url": "http://127.0.0.1:8090",
+ "started": "20261011_061121",
+ "duration_s": 109,
+ "eval_exit_code": 0,
+ "result_file": "eval_BOARD_dev_v8-prefill-spec_run1_20261011_061121.json",
+ "cool_down": {
+  "waited_s": 6,
+  "npu_c": 38.4,
+  "cpu_c": 45.7,
+  "timed_out": false
+ },
+ "server": {
+  "ready_after_s": 4.0,
+  "placement": {
+   "offloaded": 29,
+   "layers": 29,
+   "htp0_model_mib": 1911.9
+  },
+  "command": "cd /data/local/tmp/llm/llama.cpp && LD_LIBRARY_PATH=/data/local/tmp/llm/llama.cpp/lib ADSP_LIBRARY_PATH=/data/local/tmp/llm/llama.cpp/lib ./bin/llama-server -m /data/local/tmp/llm/Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf --host 0.0.0.0 --port 8080 -c 2048 -np 1 --device HTP0 -ngl 99 -fit off --cache-ram 0 --spec-type ngram-simple --spec-ngram-simple-size-n 3 --spec-ngram-simple-size-m 8 -lv 4",
+  "model_sha256": "5aa3ece50ab33d09a7181888a75f8755f924c662dc99626e7f45440adfeadcdb",
+  "ctx": 2048,
+  "spec": false
+ },
+ "temperature": {
+  "peak_npu_c": 63.6,
+  "peak_cpu_c": 71.9,
+  "samples": [
+   {
+    "t": "06:11:31",
+    "npu_c": 42.6,
+    "cpu_c": 70.3
+   },
+   {
+    "t": "06:11:49",
+    "npu_c": 48.8,
+    "cpu_c": 71.1
+   },
+   {
+    "t": "06:12:05",
+    "npu_c": 59.3,
+    "cpu_c": 60.3
+   },
+   {
+    "t": "06:12:22",
+    "npu_c": 49.6,
+    "cpu_c": 64.6
+   },
+   {
+    "t": "06:12:38",
+    "npu_c": 63.6,
+    "cpu_c": 71.1
+   },
+   {
+    "t": "06:12:56",
+    "npu_c": 57.4,
+    "cpu_c": 71.9
+   },
+   {
+    "t": "06:13:12",
+    "npu_c": 50.8,
+    "cpu_c": 64.6
+   }
+  ]
+ },
+ "server_alive_after": true,
+ "board_log_crash_lines": []
+}
