@@ -24,6 +24,7 @@
     <button id="reply-mode" class="ghost small dev-only" type="button" aria-label="Change how replies are given">🔊 Voice</button>
     <span id="state" class="badge dev-only" data-state="collecting">collecting</span>
     <button id="reset" class="ghost dev-only" type="button">New report</button>
+    <!-- User view: always. Developer view: only on narrow screens, where the header buttons move into this menu. -->
     <button id="menu-btn" class="icon-btn user-only" type="button" aria-label="Menu" aria-haspopup="dialog">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"></circle>
         <circle cx="12" cy="12" r="1.8"></circle><circle cx="12" cy="19" r="1.8"></circle></svg>
@@ -58,6 +59,16 @@
       </p>
       <p id="ptt-hint" class="sr-only">Hold the button (or the Space bar) while you speak, then release.</p>
     </div>
+  </section>
+
+  <!-- Last turn: who answered it, what is still missing, and this session's totals -->
+  <section class="card dev-only" aria-label="Last turn">
+    <div class="card-head">
+      <h2>Last turn</h2>
+      <span id="lt-turn" class="muted"></span>
+    </div>
+    <dl id="last-turn" class="kv"></dl>
+    <div id="session-stats" class="stats" aria-label="This session"></div>
   </section>
 
   <!-- Live form -->
@@ -147,7 +158,8 @@
   <button type="button" data-act="reply" id="menu-reply">Replies: voice</button>
   <button type="button" data-act="lang" id="menu-lang" hidden>Language: English</button>
   <button type="button" data-act="report" id="menu-report" hidden>View submitted report</button>
-  <button type="button" data-act="dev">Developer mode</button>
+  <button type="button" data-act="record" class="dev-only">Record mode</button>
+  <button type="button" data-act="dev" id="menu-view">Developer mode</button>
   <button type="button" data-act="close" class="ghost">Close</button>
 </dialog>
 

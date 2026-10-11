@@ -246,3 +246,48 @@ body.view-user .convo { grid-row: auto; height: calc(100dvh - 62px); min-height:
 .menu-dialog button:hover, .menu-dialog button:focus-visible { background: var(--accent-soft); }
 .menu-dialog button.ghost { color: var(--muted); }
 .menu-dialog button[hidden] { display: none; }
+
+/* ---- developer view, refined: last-turn card, session stats, readable tool log, narrow screens ---- */
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: .35rem .9rem; margin: .2rem 0 0; font-size: .9rem; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.who { display: inline-block; border-radius: 999px; padding: .05rem .55rem; font-size: .78rem; font-weight: 600;
+       border: 1px solid var(--line); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+       vertical-align: middle; }
+.who.code { color: var(--ok); border-color: var(--ok); }
+.who.llm { color: var(--npu); border-color: var(--npu); }
+.chip.warn { background: var(--missing-bg); color: var(--warn); }
+.ok-text { color: var(--ok); }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.stat { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: .45rem .5rem; text-align: center; min-width: 0; }
+.stat strong { display: block; font-size: 1.05rem; }
+.stat span { display: block; color: var(--muted); font-size: .72rem; }
+.tools { max-height: 420px; }
+.tools li { padding: .35rem .7rem; display: flex; flex-direction: column; gap: .3rem; }
+.tool-head { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .6rem; }
+.tool-turn { font-weight: 600; font-size: .85rem; }
+.said { color: var(--muted); font-size: .85rem; font-style: italic; overflow-wrap: anywhere; }
+.tool-call { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; }
+.tool-name { font-family: var(--mono); font-size: .8rem; font-weight: 700; }
+.arg { background: var(--bot-bg); border-radius: 6px; padding: .05rem .45rem; font-size: .82rem; overflow-wrap: anywhere; }
+.arg b { color: var(--muted); font-weight: 600; margin-right: .3rem; }
+.raw summary { cursor: pointer; color: var(--muted); font-size: .75rem; }
+.raw code { display: block; margin-top: .25rem; }
+
+/* narrow screens (the QIDK, phones): the header keeps title, switch and state; the rest moves into the ⋮ menu */
+@media (max-width: 760px) {
+  body.view-dev .top { flex-wrap: nowrap; padding: .55rem 10px .55rem 14px; gap: .5rem; }
+  body.view-dev .brand { min-width: 0; flex: 1 1 auto; overflow: hidden; flex-direction: column; align-items: flex-start; gap: 2px; }
+  body.view-dev .brand h1 { font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  body.view-dev .sub { font-size: .74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  body.view-dev .top-right { gap: .4rem; flex-shrink: 0; }
+  body.view-dev .top-right > .ghost-link, body.view-dev #lang, body.view-dev #reply-mode,
+  body.view-dev #reset { display: none !important; }
+  body.view-dev #menu-btn { display: flex !important; width: 38px; height: 38px; }
+  body.view-dev .view-switch button { padding: .2rem .6rem; font-size: .8rem; }
+  body.view-dev .badge { font-size: .7rem; padding: .1rem .45rem; }
+  body.view-dev .grid { padding: 10px 10px 24px; gap: 10px; }
+  body.view-dev .convo { height: min(56dvh, 520px); min-height: 340px; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 400px) { body.view-dev .badge { display: none !important; } }

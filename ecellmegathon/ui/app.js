@@ -35,6 +35,7 @@ const $ = id => document.getElementById(id);
 let last = null;          // the last TurnResult
 let busy = false;
 let player = null;        // the assistant audio currently playing
+const session = { turns: 0, code: 0, llm: 0, llmMs: [] };   // turns sent from this page (developer view)
 // "voice" = play each reply (TTS) and show it; "text" = show it only. Chosen when the page opens.
 let replyMode = "voice";
 const MODE_KEY = "reply-mode";
@@ -64,7 +65,9 @@ async function send(body, contentType, headers) {
   setBusy(true);
   showError("");
   try {
-    render(await api("POST", "/api/turn", body, contentType, headers));
+    const r = await api("POST", "/api/turn", body, contentType, headers);
+    countTurn(r);
+    render(r);
   } catch (e) {
     showError(`Could not reach the assistant: ${e.message}`);
   } finally {
@@ -90,6 +93,7 @@ function render(r) {
 
   renderForm(r, prev);
   renderLatency(r);
+  renderLastTurn(r);
   if (r.tool_call || (r.dropped && r.dropped.length)) addTool(r);
   $("view-report").hidden = !(r.state === "submitted" && r.report_id);
   $("menu-report").hidden = $("view-report").hidden;
@@ -303,23 +307,105 @@ function renderLatency(r) {
   }
 }
 
+// ---------------------------------------------------------------- developer view: turn details
+// Who answered a turn: code (the fast path, no model) or the LLM, with its model, device and time.
+function answeredBy(r) {
+  if (r.fast_path) return { text: "code · fast path", cls: "code" };
+  const m = (r.llm && r.llm.model) || "";
+  const file = m ? m.split("/").pop().replace(/\.gguf$/i, "") : "";
+  const size = file.match(/^(.*?\d+(?:\.\d+)?[bB])(?![a-zA-Z])/);   // "Llama-3.2-3B-Instruct-…" -> "Llama-3.2-3B"
+  const name = file ? (size ? size[1] : file) : "LLM";
+  const dev = r.devices && r.devices.llm ? r.devices.llm.toUpperCase() : "";
+  return { text: dev ? `${name} · ${dev}` : name, cls: "llm" };
+}
+
+function countTurn(r) {
+  if (!r || r.turn_id == null) return;
+  session.turns += 1;
+  if (r.fast_path) session.code += 1;
+  else if (r.timings_ms && r.timings_ms.llm_wall != null) {
+    session.llm += 1;
+    session.llmMs.push(r.timings_ms.llm_wall);
+  }
+}
+
+function kvRow(dl, label, value) {
+  const dt = el("dt", "", label);
+  const dd = document.createElement("dd");
+  if (value instanceof Node) dd.appendChild(value); else dd.textContent = value;
+  dl.append(dt, dd);
+}
+
+function chipList(items, cls) {
+  const span = el("span", "chips");
+  for (const x of items) span.appendChild(el("span", cls ? `chip ${cls}` : "chip", x));
+  return span;
+}
+
+function renderLastTurn(r) {
+  const dl = $("last-turn");
+  dl.replaceChildren();
+  $("lt-turn").textContent = r.turn_id != null ? `turn ${r.turn_id}` : "";
+  const by = answeredBy(r);
+  const who = el("span", `who ${by.cls}`, by.text);
+  kvRow(dl, "Answered by", who);
+  const t = r.timings_ms || {};
+  if (!r.fast_path && (t.llm_wall != null || (r.llm && r.llm.decode_tokens != null))) {
+    const tok = r.llm && r.llm.prefill_tokens != null
+      ? ` · ${r.llm.prefill_tokens} in / ${r.llm.decode_tokens ?? "—"} out tokens` : "";
+    kvRow(dl, "LLM", `${fmt(t.llm_wall)} ms${tok}`);
+  }
+  kvRow(dl, "Total", t.total != null ? `${fmt(t.total)} ms` : "—");
+  const asked = r.asked && BY_KEY[r.asked] ? BY_KEY[r.asked].label : null;
+  kvRow(dl, "Next question", asked || (r.state === "review" ? "read-back, waiting for submit" : r.state || "—"));
+  const missing = (r.missing || []).map(n => (FIELDS.find(f => f.name === n) || { label: n }).label);
+  kvRow(dl, "Still missing", missing.length ? chipList(missing, "warn") : el("span", "ok-text", "nothing: ready"));
+  if (r.dropped && r.dropped.length) kvRow(dl, "Dropped", `${r.dropped.length} value(s), see Tool calls`);
+  if (r.error) kvRow(dl, "Error", el("span", "dropped", r.error));
+
+  const st = $("session-stats");
+  st.replaceChildren();
+  const avg = session.llmMs.length ? session.llmMs.reduce((a, b) => a + b, 0) / session.llmMs.length : null;
+  for (const [n, label] of [
+    [session.turns, "turns"],
+    [session.turns ? `${Math.round(100 * session.code / session.turns)}%` : "—", "by code"],
+    [session.llm, "LLM calls"],
+    [avg != null ? `${(avg / 1000).toFixed(2)} s` : "—", "avg LLM"],
+  ]) {
+    const box = el("div", "stat");
+    box.append(el("strong", "", String(n)), el("span", "", label));
+    st.appendChild(box);
+  }
+}
+
 function addTool(r) {
   const li = document.createElement("li");
-  const head = document.createElement("div");
-  head.className = "muted";
-  head.textContent = `turn ${r.turn_id}`;
+  const by = answeredBy(r);
+  const head = el("div", "tool-head");
+  head.append(el("span", "tool-turn", `turn ${r.turn_id ?? "—"}`), el("span", "muted", clock()),
+              el("span", `who ${by.cls}`, by.text));
+  const ms = r.timings_ms && (r.fast_path ? r.timings_ms.code : r.timings_ms.llm_wall);
+  if (ms != null) head.appendChild(el("span", "muted", `${fmt(ms)} ms`));
   li.appendChild(head);
+  if (r.transcript) li.appendChild(el("q", "said", r.transcript));
   if (r.tool_call) {
-    const code = document.createElement("code");
-    code.textContent = JSON.stringify(r.tool_call);
-    li.appendChild(code);
+    const call = el("div", "tool-call");
+    call.appendChild(el("span", "tool-name", r.tool_call.tool || "?"));
+    for (const [k, v] of Object.entries(r.tool_call.args || {})) {
+      const f = BY_KEY[k];
+      const kv = el("span", "arg");
+      kv.append(el("b", "", f ? f.label : k), document.createTextNode(Array.isArray(v) ? v.join(", ") : String(v)));
+      call.appendChild(kv);
+    }
+    li.appendChild(call);
+    const raw = document.createElement("details");
+    raw.className = "raw";
+    raw.append(el("summary", "", "raw JSON"), el("code", "", JSON.stringify(r.tool_call)));
+    li.appendChild(raw);
   }
   for (const d of r.dropped || []) {
-    const p = document.createElement("div");
-    p.className = "dropped";
     const field = BY_KEY[d.field] ? BY_KEY[d.field].label : d.field;
-    p.textContent = `dropped ${field} = ${JSON.stringify(d.value)} (${d.reason})`;
-    li.appendChild(p);
+    li.appendChild(el("div", "dropped", `dropped ${field} = ${JSON.stringify(d.value)} (${d.reason})`));
   }
   $("tools").prepend(li);
 }
@@ -383,6 +469,7 @@ function setView(v) {
   document.body.classList.toggle("view-user", view === "user");
   document.querySelectorAll("[data-view]").forEach(b =>
     b.setAttribute("aria-pressed", b.dataset.view === view ? "true" : "false"));
+  $("menu-view").textContent = view === "dev" ? "User mode" : "Developer mode";
   try { localStorage.setItem(VIEW_KEY, view); } catch { /* storage blocked: this session only */ }
   if (view === "dev") { loadProof(); loadReports(); }
 }
@@ -400,7 +487,8 @@ function menuAction(act) {
   else if (act === "reply") askReplyMode();
   else if (act === "lang") $("lang").click();
   else if (act === "report") $("view-report").click();
-  else if (act === "dev") setView("dev");
+  else if (act === "record") location.href = "record.html";
+  else if (act === "dev") setView(view === "dev" ? "user" : "dev");
 }
 
 // ---------------------------------------------------------------- language
