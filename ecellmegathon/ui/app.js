@@ -133,7 +133,8 @@ function render(r, opts = {}) {
 // Hands-free: after a report is submitted or cancelled, start a fresh one so the next "Hey Qualcomm" begins
 // on a clean screen. Waits for the confirmation to finish playing, then a few seconds; silent (no greeting:
 // nobody has woken it yet); skipped if the user has already started talking again.
-const AUTO_RESET_MS = { submitted: 5000, cancelled: 2000 };
+const AUTO_RESET_MS = { submitted: 3000, cancelled: 2000 };
+const AUTO_RESET_RETRY_MS = 1000, AUTO_RESET_GIVE_UP_MS = 30000;
 function scheduleAutoReset(r, willPlay) {
   let started = false;
   const start = () => {
@@ -148,8 +149,14 @@ function scheduleAutoReset(r, willPlay) {
   } else start();
 }
 
-async function autoReset(r) {
-  if (!HandsFree.isOn() || last !== r || busy || HandsFree.state() !== "idle") return;   // moved on already
+async function autoReset(r, since = performance.now()) {
+  if (!HandsFree.isOn() || last !== r) return;                       // hands-free off, or a new turn came in
+  const st = HandsFree.state();
+  if (["listen", "sending", "wait", "await-audio"].includes(st)) return;   // the user already started a new report
+  if (busy || st !== "idle") {                  // a wake check is running (background talk): try again shortly
+    if (performance.now() - since < AUTO_RESET_GIVE_UP_MS) setTimeout(() => autoReset(r, since), AUTO_RESET_RETRY_MS);
+    return;
+  }
   const dlg = $("report-dialog");
   if (dlg && dlg.open) dlg.close();
   $("chat").replaceChildren();
