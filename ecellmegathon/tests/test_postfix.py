@@ -24,6 +24,11 @@ def test_gold_answers_are_never_changed():
 
 def test_each_fix():
     assert postfix.drop_repeats({"t": "fire", "w": ["Ravi", "Anil"]}, {"t": "fire", "w": ["ravi"]}) == {"w": ["Anil"]}
+    assert postfix.drop_parts({"e": ["forklift mast"]}, {"e": ["forklift"]}, "the forklift mast is bent") == {}
+    assert postfix.drop_parts({"e": ["forklift mast"]}, {"e": ["forklift"]}, "check the forklift mast") == \
+        {"e": ["forklift mast"]}                                       # no damage word: kept
+    assert postfix.drop_parts({"e": ["charger"]}, {"e": ["forklift"]}, "the charger is broken") == {"e": ["charger"]}
+    assert postfix.drop_parts({"p": ["Ravi"]}, {"e": ["forklift"]}, "it is bent") == {"p": ["Ravi"]}
     assert postfix.veto({"e": ["meter room", "panel"], "p": ["ambulance", "the foreman"]}, None) == \
         {"e": ["panel"], "p": ["the foreman"]}
     assert postfix.witnesses({"p": ["Anil", "a delivery boy"]}, "Anil and I both saw it") == \
@@ -40,6 +45,14 @@ def test_each_fix():
     assert postfix.fill_time({}, "she's in hospital now", False) == {}            # a bare "now" is not a time
     assert postfix.fill_time({"d": "x"}, "at 3 PM", False) == {"d": "x"}           # never replaces the model's
     assert postfix.fill_time({}, "at 3 PM", True) == {}                            # nor the form's
+
+
+def test_eval_scores_the_action_the_app_takes():
+    from run_eval import effective_tool
+    assert effective_tool({"tool": "update_report", "args": {"e": ["x"]}}, {}) == "no_op"   # nothing survived
+    assert effective_tool({"tool": "update_report"}, {"e": ["x"]}) == "update_report"
+    assert effective_tool({"tool": "submit_report"}, {}) == "submit_report"
+    assert effective_tool({"tool": None}, {}) is None
 
 
 def test_switch_off(monkeypatch):

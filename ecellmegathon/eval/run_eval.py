@@ -129,6 +129,13 @@ def score_args(pred: dict, gold: dict, accept: dict) -> dict:
             "extra": extras(pred, gold, accept)}
 
 
+def effective_tool(call: dict, kept: dict) -> str | None:
+    """The action the app takes, as app/dialog.py does: an update with nothing left after the gate and the
+    post-model fixes is a no_op ("Sorry, I didn't get anything…"). The model's own choice is kept as raw_tool."""
+    tool = call.get("tool")
+    return "no_op" if tool == "update_report" and not kept else tool
+
+
 def gated(call: dict, transcript: str, text: str = "", form_has_severity: bool = True,
           form_before: dict | None = None) -> tuple[dict, list]:
     """The gate, the severity fallback and the v4 post-model fixes, exactly as app/dialog.py applies them."""
@@ -260,9 +267,10 @@ def teacher_forced(cases, backend, said: dict | None = None, only: set | None = 
                 kept, dropped = gated(call, " ".join(heard), text, bool(t["form_before"].get("s")),
                                       t["form_before"])
                 gold = t["gold"]
+                tool = effective_tool(call, kept)
                 out.append({"case": c["id"], "turn": t["i"], "user": text, "asked": t["asked"],
-                            "gold_tool": gold["tool"], "pred_tool": call.get("tool"),
-                            **score_args(kept if call.get("tool") == "update_report" else {},
+                            "gold_tool": gold["tool"], "pred_tool": tool, "raw_tool": call.get("tool"),
+                            **score_args(kept if tool == "update_report" else {},
                                          gold["args"], c.get("accept", {})),
                             "raw": call, "dropped": dropped, "error": err, "fast_path": quick is not None,
                             "llm": {"prefill_ms": reply.prefill_ms, "decode_ms": reply.decode_ms,
