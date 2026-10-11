@@ -42,3 +42,16 @@ code with none of PREFILL / SPEC / TYPE_MODEL**, 1 run (replies have been identi
 
 If both are kept, one run with `PREFILL=on SPEC=1` to confirm they stack (no rule; report it). The type router's
 rule (`DECISION_v7.md`) is decided separately, with the speed switches it keeps.
+
+## Run 1 (BOARD, Sarthak, code 5edb25e): PREFILL=on SPEC=1, INVALID
+
+Every LLM answer was `}}` → no_op (64/64, 2 decode tokens): tool 0.618, fields 19.4%, ended right 2/44. Not a
+measurement of either switch. **Cause (found 2026-10-11): the pre-fill ended inside a token.** Llama 3 writes
+`"args":{"t"` as `args | ":{" | t` (read from the model's GGUF vocab); the prefix ended `args | ": | {`, and after a
+lone `{` the model closed an empty object. Fixed in `f514c6d`: the prefix ends after `args` (the model writes
+`":{"`), the Gemma type prefix after `{"t`; a test keeps prefixes ending on a letter. SPEC=1 alone answered
+normally in Sarthak's one-call check. **Re-run all PREFILL / SPEC runs of HOW_TO_RUN §13 on the fixed code.**
+
+Also merged before those re-runs (`fix-tool`, Sarthak): teacher-forced tool = the action the app takes, and
+`postfix.drop_parts`. Projected on saved answers: tool 153 → 155/157, extra 37 → 36; so compare new runs only with
+a baseline run on the same code.
