@@ -28,7 +28,31 @@ _KEY_MEANING = {
     "e": "equipment or assets involved",
     "a": "actions already taken, by anyone, including calling or informing someone",
     "w": "witnesses: only people said to have seen it (never the speaker)",
+    # FORM=15 only (schema/incident_form_15.json); the 10-field prompt never lists these
+    "g": "task: what the person was doing just before it happened",
+    "c": "immediate cause, only if the user names it (\"floor was wet\", \"not locked out\")",
+    "k": "property or equipment damage, as said (\"the mast is bent\")",
+    "h": "hazard status",
+    "n": "who has been informed or called (ambulance, 108, supervisor, police, EHS)",
 }
+
+# FORM=15 only: extra rules and one example with the context fields. Shares no name, place or wording with
+# eval/nlu15/cases.jsonl.
+_RULES_15 = [
+    "- h: controlled if the user says it is stopped, out or made safe; ongoing if it is still happening.",
+    "- A call or message to someone is an action (a) and also goes in n.",
+    "- An injury is never damage (k); a cause (c) is never just the event itself.",
+]
+_EXAMPLE_15 = """
+
+Example 4
+Form: {}
+Asked: none
+User: Ramesh was refilling the hydraulic press when a hose burst because the clamp was missing. Oil is all over \
+the bay floor and the press guard is cracked. We switched the pump off and told the shift supervisor.
+Answer: {"tool":"update_report","args":{"t":"chemical","p":["Ramesh"],"e":["hydraulic press"],\
+"a":["switched the pump off","told the shift supervisor"],"g":"refilling the hydraulic press",\
+"c":"the clamp was missing","k":["the press guard is cracked"],"h":"controlled","n":["the shift supervisor"]}}"""
 
 _EXAMPLES = """\
 Example 1
@@ -111,10 +135,17 @@ def system_prompt_v1(schema: dict) -> str:
               "- Type: if someone was hurt or nearly hurt, pick how (slip_trip, fall_height, struck_by, caught_in).",
               "  fire if there were flames or smoke; gas_leak only without fire; chemical for spills, splashes",
               "  and fumes; structural when something cracks or collapses; equipment_failure when something",
-              "  broke and nobody was hurt; medical when someone fell ill.",
-              "",
-              _EXAMPLES]
+              "  broke and nobody was hurt; medical when someone fell ill."]
+    if _has_context_fields(schema):
+        lines += _RULES_15
+    lines += ["",
+              _EXAMPLES + (_EXAMPLE_15 if _has_context_fields(schema) else "")]
     return "\n".join(lines)
+
+
+def _has_context_fields(schema: dict) -> bool:
+    """The 15-field form (FORM=15): its prompt adds the rules and the example for the context fields."""
+    return any(f["key"] == "n" for f in keyed_fields(schema))
 
 
 # ---- prompt v2 (v5) ---------------------------------------------------------------------------------------
@@ -135,6 +166,7 @@ _MEANING_V2 = {
     "a": "actions taken: what someone did in response (shut the valve, called a doctor, told the "
          "shift lead). Never what happened in the incident itself",
     "w": "witnesses: people the user says saw it (\"Kiran saw it\" -> Kiran). Never the speaker",
+    **{k: _KEY_MEANING[k] for k in ("g", "c", "k", "h", "n")},     # FORM=15 only
 }
 _TYPES_V2 = """Incident types, how to choose:
 - slip_trip: slipped or tripped on the same level (wet floor, cable, step)
@@ -182,7 +214,7 @@ def system_prompt_v2(schema: dict) -> str:
              "Fields (args keys):"]
     for f in keyed_fields(schema):
         meaning = _MEANING_V2[f["key"]]
-        if f["key"] == "s":
+        if f["key"] in ("s", "h"):
             meaning += ": one of " + ", ".join(f["values"])
         elif f["kind"] == "text_list":
             meaning += " (a list)"
@@ -197,9 +229,11 @@ def system_prompt_v2(schema: dict) -> str:
               "- Copy text fields from the user's own words.",
               "- Don't repeat fields that are already in Form, unless the user changes them.",
               "- \"Asked\" is the field the assistant just asked about: a short answer belongs there.",
-              "- If the user corrects something, send the corrected field again.",
-              "",
-              _EXAMPLES_V2]
+              "- If the user corrects something, send the corrected field again."]
+    if _has_context_fields(schema):
+        lines += _RULES_15
+    lines += ["",
+              _EXAMPLES_V2 + (_EXAMPLE_15.replace("Example 4", "Example 6") if _has_context_fields(schema) else "")]
     return "\n".join(lines)
 
 

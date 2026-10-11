@@ -149,10 +149,12 @@ class TempSampler(threading.Thread):
                 "samples": self.samples}
 
 
-def run_eval(env: dict, split: str, no_fast_path: bool, transcript: Path) -> tuple[int, Path | None]:
+def run_eval(env: dict, split: str, no_fast_path: bool, transcript: Path, cases: str = "") -> tuple[int, Path | None]:
     cmd = [sys.executable, str(ROOT / "eval" / "run_eval.py"), "--label", "BOARD", "--split", split]
     if no_fast_path:
         cmd.append("--no-fast-path")
+    if cases:
+        cmd += ["--cases", cases]
     saved = None
     with transcript.open("w", encoding="utf-8") as out:
         p = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -176,6 +178,8 @@ def main() -> int:
     ap.add_argument("--spec", action="store_true", help="copy-ahead speculative decoding (board.board --spec)")
     ap.add_argument("--no-fast-path", action="store_true", help="every turn to the LLM, as v1 did")
     ap.add_argument("--split", default="dev", choices=["dev"], help="dev only: the test split stays locked")
+    ap.add_argument("--cases", default="", help="another cases file for run_eval, e.g. eval/nlu15/cases.jsonl "
+                                               "(with FORM=15 for all 15 fields)")
     ap.add_argument("--cool-to", type=float, default=50.0, help="NPU °C to wait for before each run")
     ap.add_argument("--cool-timeout", type=float, default=1200.0)
     ap.add_argument("--adb", default="", help="path to adb if it is not on PATH")
@@ -214,7 +218,7 @@ def main() -> int:
         stamp = time.strftime("%Y%m%d_%H%M%S")
         base = f"eval_BOARD_{a.split}_{a.tag}_run{i}_{stamp}"
         t0 = time.time()
-        code, saved = run_eval(env, a.split, a.no_fast_path, out / f"{base}.stdout.txt")
+        code, saved = run_eval(env, a.split, a.no_fast_path, out / f"{base}.stdout.txt", a.cases)
         duration = round(time.time() - t0)
         sampler.stop.set()
         sampler.join(timeout=20)
@@ -224,6 +228,7 @@ def main() -> int:
             shutil.copy2(saved, out / f"{base}.json")
         meta = {"tag": a.tag, "run": i, "label": "BOARD", "split": a.split, "soc": soc, "git": git,
                 "model": a.model, "ctx": ctx, "spec": a.spec, "fast_path": not a.no_fast_path,
+                "form": os.environ.get("FORM", "10"), "cases": a.cases or "eval/nlu/cases.jsonl",
                 "via_monitor": via_monitor, "llm_url": llm_url, "started": stamp, "duration_s": duration,
                 "eval_exit_code": code, "result_file": f"{base}.json" if saved else None,
                 "cool_down": cool, "server": server, "temperature": sampler.summary(),
