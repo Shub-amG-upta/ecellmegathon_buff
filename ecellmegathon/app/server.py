@@ -6,7 +6,7 @@ The app server: the HTTP API of BUILD_PLAN §4.2, and the UI's static files.
 
 Environment:
   LLM        mock | llamaserver                     (default mock)
-  LLM_URL    http://localhost:8080                  (llama-server; adb-forwarded on the board)
+  LLM_URL    http://127.0.0.1:8080                  (llama-server; adb-forwarded on the board)
   LLM_LANE   npu | cpu | laptop                     (label only: where that server runs)
   LLM_MODEL  model file name, for the report and the proof panel
   PORT       8000
@@ -20,6 +20,10 @@ Environment:
   TYPE_MODEL <gguf>     v7: a second model decides the incident type on the first description (app/router.py);
              TYPE_MODEL_URL default http://127.0.0.1:8084 (board.board lane "type")
   LLM_CONSTRAINT  schema | gbnf   how the answer is constrained (gbnf: no whitespace; compare on the board)
+  HINGLISH   0 | 1      Hindi / Hinglish speech (default 0): the UI may then choose "hi" per turn; STT gets
+             language=hi + translate (Whisper must be multilingual: board/voice_up.sh HINGLISH=1), and the
+             prompt gets the Hinglish rules (app/prompt.py). Replies stay English. eval/hinglish/README.md
+  STT_LANGUAGE, STT_TRANSLATE   the Hindi turns' Whisper language (default hi) and translate (default 1)
 
 Speech is Track B's `app/voice.py` (§4.1). Until it exists, the server runs
 text-only: WAV turns return an error and no audio is produced.
@@ -43,6 +47,7 @@ from app.audio import trim_silence
 from app.backends import LlamaServerBackend, MockBackend
 from app.dialog import Dialog
 from app.form import ROOT
+from app.prompt import hinglish
 
 try:                                    # Track B's module; VOICE=off runs text-only
     from app import voice
@@ -95,7 +100,7 @@ def _main_backend():
     if kind == "mock":
         return MockBackend()
     if kind == "llamaserver":
-        return LlamaServerBackend(url=os.environ.get("LLM_URL", "http://localhost:8080"),
+        return LlamaServerBackend(url=os.environ.get("LLM_URL", "http://127.0.0.1:8080"),
                                   lane=os.environ.get("LLM_LANE", "npu"),
                                   model_file=os.environ.get("LLM_MODEL", "unknown"),
                                   cache_prompt=True,
@@ -105,6 +110,22 @@ def _main_backend():
 
 
 TTS_WAIT_S = 30.0
+LANGUAGES = {"en": "English", "hi": "Hindi / Hinglish"}
+
+
+def stt_settings(lang: str | None) -> dict | None:
+    """What a spoken turn in this UI language asks Whisper for, or None to send nothing (HINGLISH=0, or
+    a client that names no language, like record mode: Whisper's launch flags apply, as before).
+    English: language=en, no translation. Hindi / Hinglish: the language (STT_LANGUAGE, default hi;
+    "auto" detects) and translation into English (STT_TRANSLATE, default 1), so everything after STT
+    stays English."""
+    if not hinglish() or lang not in LANGUAGES:
+        return None
+    if lang == "hi":
+        language = os.environ.get("STT_LANGUAGE", "hi")
+        return {"language": "hi" if language == "en" else language,
+                "translate": os.environ.get("STT_TRANSLATE", "1") != "0"}
+    return {"language": "en", "translate": False}
 
 
 def split_sentences(text: str) -> list[str]:
@@ -209,7 +230,7 @@ class App:
         with self.lock:
             return self._speak(self.dialog.turn(text))
 
-    def turn_wav(self, wav: bytes) -> dict:
+    def turn_wav(self, wav: bytes, lang: str | None = None) -> dict:
         with self.lock:
             if self.voice is None:
                 r = self.dialog.turn("")
@@ -218,8 +239,14 @@ class App:
             trim = {"skipped": "off"}
             if os.environ.get("STT_TRIM", "on") != "off":
                 wav, trim = trim_silence(wav)
-            stt = self.voice.transcribe(wav, prompt=self.vocab)
+            asked = stt_settings(lang)
+            stt = self.voice.transcribe(wav, prompt=self.vocab, **(asked or {}))
             r = self.dialog.turn(stt.text)
+            if asked:                                  # the UI shows "translated from Hindi"
+                r["stt_language"] = {"lang": lang, **asked}
+            elif lang == "hi":
+                r["error"] = _join(r["error"], "Hindi needs the server started with HINGLISH=1 "
+                                   "(multilingual Whisper); this turn was heard as English", "stt")
             r["audio_trim"] = trim
             r["timings_ms"]["stt"] = stt.wall_ms
             if r["timings_ms"]["total"] is not None:
@@ -236,6 +263,12 @@ class App:
     def reset(self) -> dict:
         with self.lock:
             return self._speak(self.dialog.reset())
+
+    def config(self) -> dict:
+        """What the UI may offer: languages (Hindi only with HINGLISH=1) and whether speech works."""
+        langs = ["en", "hi"] if hinglish() else ["en"]
+        return {"languages": [{"code": c, "name": LANGUAGES[c]} for c in langs],
+                "voice": self.voice is not None, "replies": "en"}
 
     def proof(self) -> dict:
         """NPU placement from llama-server's startup log, read over adb. Null
@@ -258,6 +291,11 @@ class App:
         except Exception as e:                       # noqa: BLE001 (no adb, no board)
             out["llm"]["error"] = f"could not read the board log: {e}"
         return out
+
+
+def _query(path: str) -> dict:
+    from urllib.parse import parse_qsl, urlsplit
+    return dict(parse_qsl(urlsplit(path).query))
 
 
 def make_handler(app: App):
@@ -288,9 +326,10 @@ def make_handler(app: App):
             try:
                 body = self._body()
                 ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip()
-                if self.path == "/api/turn":
+                if self.path.split("?")[0] == "/api/turn":
                     if ctype in ("audio/wav", "audio/x-wav", "audio/wave"):
-                        return self._json(app.turn_wav(body))
+                        lang = self.headers.get("X-Language") or _query(self.path).get("lang")
+                        return self._json(app.turn_wav(body, lang))
                     return self._json(app.turn_text(json.loads(body or b"{}").get("text", "")))
                 if self.path == "/api/edit":
                     req = json.loads(body)
@@ -316,6 +355,8 @@ def make_handler(app: App):
                     return self._json({"error": (job.error if job else "") or "no audio"}, 404)
                 return self._send(200, job.wav, "audio/wav",
                                   {"X-TTS-Ms": f"{job.ms:.1f}"} if job.ms is not None else None)
+            if path == "/api/config":
+                return self._json(app.config())
             if path == "/api/proof":
                 return self._json(app.proof())
             return self._static(path)

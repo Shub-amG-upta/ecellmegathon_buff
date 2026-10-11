@@ -10,12 +10,26 @@
 #   whisper/Release/whisper-server(.exe), whisper/ggml-<model>.bin
 #   sherpa/sherpa-onnx-*/bin/sherpa-onnx-offline-tts(.exe)
 #   voices/vits-piper-en_US-lessac-medium/
-# STT_MODEL_FILE (default ggml-base.en.bin) picks the Whisper model.
+# STT_MODEL_FILE (default ggml-base.en.bin) picks the Whisper model. HINGLISH=1: Hindi / Hinglish speech in,
+# English text out (a multilingual model, default ggml-base.bin; see below).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 REPO=$(pwd)
 ENGINES=${ENGINES:-$(cd "$REPO/../.." && pwd)/engines}
 MODEL=${STT_MODEL_FILE:-ggml-base.en.bin}
+# Hindi / Hinglish speech (HINGLISH=1, off by default): a multilingual Whisper model (not *.en), the language
+# detected per clip (-l auto) and the text translated into English (--translate), so the app, the form and the
+# spoken replies stay English. Off: "-l en", whisper-server's own default, so nothing changes.
+# STT_TRANSLATE=0 keeps the words as said (for comparing; eval/hinglish/README.md).
+HINGLISH=${HINGLISH:-0}
+if [ "$HINGLISH" = "1" ]; then
+    MODEL=${STT_MODEL_FILE:-ggml-base.bin}
+    case "$MODEL" in *.en.bin|*.en-*.bin) echo "HINGLISH=1 needs a multilingual Whisper model, not $MODEL" >&2; exit 1;; esac
+    STT_LANG_FLAGS="-l ${STT_LANGUAGE:-auto}"                 # STT_LANGUAGE=hi forces Hindi
+    [ "${STT_TRANSLATE:-1}" = "1" ] && STT_LANG_FLAGS="$STT_LANG_FLAGS --translate"   # STT_TRANSLATE=0: as said
+else
+    STT_LANG_FLAGS="-l ${STT_LANGUAGE:-en}"
+fi
 VOICE=${TTS_VOICE:-vits-piper-en_US-lessac-medium}
 LOGS="$REPO/logs"
 mkdir -p "$LOGS"
@@ -41,7 +55,7 @@ for p in "$WHISPER" "$ENGINES/whisper/$MODEL" "$TTS_BIN" "$ENGINES/voices/$VOICE
     [ -e "$p" ] || { echo "missing: $p" >&2; exit 1; }
 done
 
-"$WHISPER" -m "$ENGINES/whisper/$MODEL" --host 127.0.0.1 --port 8082 -t 6 \
+"$WHISPER" -m "$ENGINES/whisper/$MODEL" --host 127.0.0.1 --port 8082 -t 6 $STT_LANG_FLAGS \
     > "$LOGS/stt_laptop.log" 2>&1 &
 echo $! > "$LOGS/stt_laptop.pid"
 "$PY" -m voice.tts_server --mode local --bin "$TTS_BIN" --model-dir "$ENGINES/voices/$VOICE" \
@@ -57,4 +71,5 @@ for port in 8082 8083; do
         && echo "ok   :$port" || { echo "FAIL :$port (see $LOGS)" >&2; exit 1; }
 done
 echo "export STT_URL=http://127.0.0.1:8082 STT_DEVICE=laptop STT_MODEL=$MODEL"
+echo "export HINGLISH=$HINGLISH"
 echo "export TTS_URL=http://127.0.0.1:8083"

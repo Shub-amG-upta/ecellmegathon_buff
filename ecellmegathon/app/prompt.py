@@ -60,7 +60,44 @@ def prompt_version() -> str:
 def system_prompt(schema: dict, answer: str | None = None) -> str:
     from app.form import answer_mode
     text = system_prompt_v2(schema) if prompt_version() == "2" else system_prompt_v1(schema)
+    if hinglish():
+        text = add_hinglish(text)
     return compact_prompt(text) if (answer or answer_mode()) == "compact" else text
+
+
+# ---- Hinglish input (HINGLISH=1, off by default) ---------------------------------------------------------
+# The app stays in English. STT runs in translate mode (board/voice_up.sh, HINGLISH=1), so Hindi speech
+# mostly arrives as English text; a Hinglish clip Whisper takes for English arrives in Latin-letter Hindi.
+# These lines tell the model so. Text fields are still copied as said (the gate keeps only the user's own
+# words), so a Hinglish answer gives Hinglish text values; times are resolved by app/timeparse.py.
+# Off by default: it changes the prompt, so it is measured before it is used (eval/hinglish/README.md).
+_HINGLISH_RULES = [
+    "- The user may speak Hinglish: Hindi written in English letters, mixed with English words. Fill the",
+    "  same fields. Copy text fields in the user's own words, Hindi or English; leave out a trailing",
+    "  mein / pe / par after a place. Copy a Hindi time phrase exactly (\"kal shaam 6 baje\").",
+    "- \"nahi\" means not: \"high nahi, medium\" is medium.",
+]
+_HINGLISH_EXAMPLE = """
+
+Example H
+Form: {}
+Asked: none
+User: sir godown number 2 mein ek rack gir gaya, Ramesh ka pair dab gaya, humne first aid diya, kal shaam 6 baje hua
+Answer: {"tool":"update_report","args":{"t":"struck_by","l":"godown number 2","d":"kal shaam 6 baje",\
+"p":["Ramesh"],"e":["rack"],"a":["humne first aid diya"]}}"""
+
+
+def hinglish() -> bool:
+    v = os.environ.get("HINGLISH", "0")
+    if v not in ("0", "1"):
+        raise ValueError(f"HINGLISH must be 0 or 1, not {v!r}")
+    return v == "1"
+
+
+def add_hinglish(text: str) -> str:
+    """The prompt with the Hinglish rules after "Rules:" and one Hinglish example at the end."""
+    assert "\nRules:\n" in text
+    return text.replace("\nRules:\n", "\nRules:\n" + "\n".join(_HINGLISH_RULES) + "\n", 1) + _HINGLISH_EXAMPLE
 
 
 _COMPACT_TOOLS = """Answers:

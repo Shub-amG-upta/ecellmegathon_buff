@@ -232,3 +232,52 @@ def test_sentences_split_after_full_stops_only():
     assert split_sentences("Here's what I have. Fire, low severity. When: 10:45 AM today. Say submit.") == \
         ["Here's what I have.", "Fire, low severity.", "When: 10:45 AM today.", "Say submit."]
     assert split_sentences("Report IR-0001 submitted.") == ["Report IR-0001 submitted."]
+
+
+# ---- Hindi / Hinglish (HINGLISH=1) --------------------------------------------
+
+def _voice_seeing(seen):
+    def transcribe(wav, prompt="", **kw):
+        seen.append(kw)
+        return Stt("water leak in the pantry", 800.0, 700.0, "cpu", "base")
+    return SimpleNamespace(transcribe=transcribe, speak=FAKE_VOICE.speak)
+
+
+def test_config_offers_hindi_only_with_hinglish(run, monkeypatch):
+    monkeypatch.delenv("HINGLISH", raising=False)
+    url = run([])
+    assert [x["code"] for x in call(url, "/api/config")[1]["languages"]] == ["en"]
+    monkeypatch.setenv("HINGLISH", "1")
+    cfg = call(url, "/api/config")[1]
+    assert [x["code"] for x in cfg["languages"]] == ["en", "hi"] and cfg["replies"] == "en"
+
+
+def test_hindi_turn_asks_whisper_for_hindi_translated_and_english_for_english(run, monkeypatch):
+    monkeypatch.setenv("HINGLISH", "1")
+    seen = []
+    replies = [{"tool": "update_report", "args": {"t": "water_leak"}}, {"tool": "no_op"}]
+    url = run(replies, voice_mod=_voice_seeing(seen))
+    req = urllib.request.Request(url + "/api/turn", data=b"RIFF....", method="POST",
+                                 headers={"Content-Type": "audio/wav", "X-Language": "hi"})
+    with urllib.request.urlopen(req, timeout=5) as resp:
+        r = json.loads(resp.read())
+    assert seen[-1] == {"language": "hi", "translate": True}
+    assert r["stt_language"] == {"lang": "hi", "language": "hi", "translate": True}
+    r = call(url, "/api/turn?lang=en", b"RIFF....", ctype="audio/wav")[1]
+    assert seen[-1] == {"language": "en", "translate": False} and r["stt_language"]["lang"] == "en"
+
+
+def test_without_hinglish_the_stt_request_is_unchanged_and_hindi_is_explained(run, monkeypatch):
+    monkeypatch.delenv("HINGLISH", raising=False)
+    seen = []
+    url = run([{"tool": "no_op"}], voice_mod=_voice_seeing(seen))
+    r = call(url, "/api/turn?lang=hi", b"RIFF....", ctype="audio/wav")[1]
+    assert seen == [{}] and "stt_language" not in r and "HINGLISH=1" in r["error"]
+
+
+def test_a_turn_naming_no_language_sends_nothing_extra_even_with_hinglish(run, monkeypatch):
+    monkeypatch.setenv("HINGLISH", "1")
+    seen = []
+    url = run([{"tool": "no_op"}], voice_mod=_voice_seeing(seen))
+    r = call(url, "/api/turn", b"RIFF....", ctype="audio/wav")[1]
+    assert seen == [{}] and "stt_language" not in r and not r["error"]

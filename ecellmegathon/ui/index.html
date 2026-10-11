@@ -14,6 +14,7 @@
   </div>
   <div class="top-right">
     <a class="ghost-link" href="record.html">Record mode</a>
+    <button id="lang" class="ghost small" type="button" aria-label="Change the language you speak" hidden>🌐 English</button>
     <button id="reply-mode" class="ghost small" type="button" aria-label="Change how replies are given">🔊 Voice</button>
     <span id="state" class="badge" data-state="collecting">collecting</span>
     <button id="reset" class="ghost" type="button">New report</button>
@@ -40,6 +41,11 @@
         <span id="ptt-label">Hold to speak</span>
       </button>
       <div class="level" aria-hidden="true"><div id="level-bar"></div></div>
+      <p id="lang-hint" class="lang-hint" hidden>
+        <strong lang="hi">हिंदी या Hinglish में बोलिए.</strong>
+        Your speech is translated to English on the device; the assistant replies in English.
+        Try: <q>Godown number 2 mein rack gir gaya, kal shaam 6 baje</q>.
+      </p>
       <p id="ptt-hint" class="sr-only">Hold the button (or the Space bar) while you speak, then release.</p>
     </div>
   </section>
@@ -92,6 +98,15 @@
 
 <!-- Reply mode: asked when the page opens; the header button changes it later. -->
 <dialog id="mode-dialog" class="mode-dialog" aria-labelledby="mode-title">
+  <!-- Language: shown only when the server runs with HINGLISH=1 (GET /api/config). -->
+  <div id="lang-pick" class="lang-pick" hidden>
+    <h2 id="lang-title">Which language will you speak?</h2>
+    <div class="seg" role="group" aria-labelledby="lang-title">
+      <button type="button" data-lang="en" aria-pressed="true">English</button>
+      <button type="button" data-lang="hi" aria-pressed="false"><span lang="hi">हिंदी</span> / Hinglish</button>
+    </div>
+    <p class="hint">Hindi and Hinglish speech is translated to English on the device. Replies and the report are in English.</p>
+  </div>
   <h2 id="mode-title">How should the assistant reply?</h2>
   <p class="hint">You can talk or type either way. You can change this later with the button at the top.</p>
   <div class="mode-choices">

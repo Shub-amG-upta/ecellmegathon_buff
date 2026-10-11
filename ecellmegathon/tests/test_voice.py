@@ -128,6 +128,15 @@ def test_transcribe_sends_whisper_server_fields_and_cleans_text(server):
     assert (r.device, r.model) == ("laptop", "ggml-base.en.bin")
 
 
+def test_language_and_translate_are_sent_only_when_given(server):
+    voice.transcribe(WAV, language="hi", translate=True)
+    assert Fake.last["fields"]["language"] == "hi" and Fake.last["fields"]["translate"] == "true"
+    voice.transcribe(WAV, language="en", translate=False)
+    assert Fake.last["fields"]["language"] == "en" and Fake.last["fields"]["translate"] == "false"
+    voice.transcribe(WAV)
+    assert "language" not in Fake.last["fields"] and "translate" not in Fake.last["fields"]
+
+
 def test_no_prompt_field_when_prompt_empty(server):
     voice.transcribe(WAV, prompt="  ")
     assert "prompt" not in Fake.last["fields"]

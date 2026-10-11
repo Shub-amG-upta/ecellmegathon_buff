@@ -168,9 +168,12 @@ def _header(headers: dict, name: str, default: str) -> str:
     return default
 
 
-def transcribe(wav: bytes, prompt: str = "") -> SttResult:
+def transcribe(wav: bytes, prompt: str = "", language: str | None = None,
+               translate: bool | None = None) -> SttResult:
     """Speech to text. wav: 16 kHz mono 16-bit PCM WAV. prompt: vocabulary hint
-    (the contents of data/vocab.txt). Never raises."""
+    (the contents of data/vocab.txt). language ("en", "hi", "auto") and translate (into English) are
+    whisper-server's per-request settings; None sends nothing, so the server's launch flags apply
+    (Hindi / Hinglish: eval/hinglish/README.md). Never raises."""
     t0 = time.perf_counter()
     url = _cfg("STT_URL", "http://127.0.0.1:8082").rstrip("/")
     device = _cfg("STT_DEVICE", "laptop")
@@ -189,6 +192,10 @@ def transcribe(wav: bytes, prompt: str = "") -> SttResult:
     fields = {"response_format": "json", "temperature": "0.0"}
     if prompt and prompt.strip():
         fields["prompt"] = prompt.strip()
+    if language:
+        fields["language"] = language
+    if translate is not None:
+        fields["translate"] = "true" if translate else "false"
     body, ctype = _multipart(fields, "file", "audio.wav", bytes(wav), "audio/wav")
     req = urllib.request.Request(f"{url}/inference", data=body, method="POST",
                                  headers={"Content-Type": ctype})

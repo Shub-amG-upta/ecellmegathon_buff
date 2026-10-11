@@ -220,3 +220,27 @@ PY benchmarks/compare.py
 (This baseline also serves section 12's router comparison.) If `SPEC=1` stops with "no --spec-type ngram-simple flags", the board's
 llama.cpp is too old for it: skip that run and note it. The eval output records `prefill`; the server command saved by
 run_bench shows the `--spec-…` flags.
+
+## 14. Hindi / Hinglish (off by default; rule: `eval/hinglish/README.md`, written before any run)
+
+The user may speak English, Hindi or Hinglish; the form, the questions and the spoken replies stay English.
+One switch, `HINGLISH=1`, for both the voice script and the app server:
+
+```
+HINGLISH=1 board/voice_up.sh            # multilingual Whisper (default ggml-base.bin; not *.en), prints export HINGLISH=1
+HINGLISH=1 LLM=llamaserver PY -m app.server
+```
+
+The page then asks **which language you will speak** (English / हिंदी-Hinglish) next to the reply-mode choice;
+the 🌐 button at the top switches it. Hindi turns go to Whisper as `language=hi` + translate (into English on the
+device); English turns as `language=en`. Typed text is sent as typed: English or Hinglish in Roman letters.
+Whisper model files (`ggml-base.bin`, `ggml-small.bin`) come from the models person, like the others.
+
+Board runs, same session and cooling, on `v8` (the English run checks that English does not get worse):
+
+```
+EVAL_HEAT_PAUSE=90:80 HINGLISH=1 PY benchmarks/run_bench.py --tag v8-hinglish-en --runs 2
+EVAL_HEAT_PAUSE=90:80 HINGLISH=1 PY benchmarks/run_bench.py --tag v8-hinglish --runs 2 --cases eval/hinglish/cases.jsonl
+```
+
+Compare `v8-hinglish-en` with `v8-baseline` (section 13), and `v8-hinglish` with the README's rule 3.

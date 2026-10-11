@@ -16,6 +16,11 @@ goes to the LLM as before:
   review            "submit", "yes submit it", "go ahead"                     -> submit_report
   any state         "cancel", "cancel this report", "discard it"              -> cancel_report
 
+Hinglish (Hindi in Latin letters, when STT leaves it untranslated) is handled the same way, with a closed
+list of its own words: "haan, submit kar do", "cancel karo", "medium hai", "subah 10 baje",
+"conference room 2 mein". "nahi" / "mat" (not / don't) are in no vocabulary, so a Hinglish negation also
+goes to the LLM.
+
 A negation or a correction ("not high, medium", "no wait, 3:30") never
 qualifies: those words are not in any vocabulary below. Checked against every
 turn of eval/nlu/cases.jsonl: when the fast path answers, it matches the gold
@@ -31,21 +36,38 @@ from app.timeparse import resolve
 
 FILLERS = {"uh", "um", "umm", "hmm", "ok", "okay", "so", "well", "i", "think", "guess", "would", "say",
            "i'd", "it's", "its", "it", "is", "was", "please", "maybe", "probably", "just", "the", "severity",
-           "level", "pretty", "about", "around", "sir", "madam", "ma'am"}
+           "level", "pretty", "about", "around", "sir", "madam", "ma'am",
+           # Hinglish fillers: "medium hai", "mujhe lagta hai high", "critical hai sir"
+           "hai", "tha", "thi", "ji", "toh", "yeh", "ye", "woh", "bhai", "bas", "mujhe", "lagta", "lagti",
+           "main", "keh", "sakte", "hain"}
 SEVERITY_WORDS = {"low": "low", "minor": "low", "medium": "medium", "moderate": "medium",
                   "high": "high", "serious": "high", "critical": "critical"}
 SUBMIT = {"submit", "submit it", "yes submit", "yes submit it", "submit the report", "please submit",
           "yes please submit", "go ahead", "yes go ahead", "go ahead and submit", "ok submit", "okay submit",
           "now submit", "yes", "yes please", "confirm", "correct submit", "that's correct submit",
-          "submit please", "okay submit it", "ok submit it"}
+          "submit please", "okay submit it", "ok submit it",
+          # Hinglish
+          "haan", "haan ji", "ji haan", "haan submit", "haan submit karo", "haan submit kar do",
+          "haan submit kardo", "submit karo", "submit kar do", "submit kardo", "submit kar dijiye",
+          "submit kar dijie", "report submit karo", "report submit kar do", "haan report submit kar do",
+          "haan theek hai submit karo", "theek hai submit karo", "ok submit karo", "okay submit karo"}
 CANCEL = {"cancel", "cancel it", "cancel this", "cancel the report", "cancel this report", "discard it",
-          "discard the report", "discard this report", "never mind cancel", "please cancel"}
+          "discard the report", "discard this report", "never mind cancel", "please cancel",
+          # Hinglish
+          "cancel karo", "cancel kar do", "cancel kardo", "cancel kar dijiye", "report cancel karo",
+          "report cancel kar do", "isko cancel karo", "isko cancel kar do"}
 TIME_WORDS = {"at", "around", "about", "approximately", "roughly", "by", "since", "today", "yesterday", "this",
               "morning", "afternoon", "evening", "night", "tonight", "last", "am", "pm", "a.m.", "p.m.", "a", "m",
               "p", "o'clock", "oclock", "clock", "quarter", "half", "past", "to", "ago", "back", "minute", "minutes",
               "min", "mins", "a.m", "p.m", "hour", "hours", "hr", "hrs", "an", "just", "now", "noon", "midnight", "or", "so",
               "ish", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven",
-              "twelve", "fifteen", "twenty", "thirty", "forty", "fifty", "few", "couple", "of", "the", "in"}
+              "twelve", "fifteen", "twenty", "thirty", "forty", "fifty", "few", "couple", "of", "the", "in",
+              # Hinglish time words (app/timeparse.py rewrites them)
+              "baje", "subah", "dopahar", "shaam", "sham", "raat", "kal", "aaj", "abhi", "pehle", "pahle",
+              "ghante", "ghanta", "minute", "mint", "lagbhag", "kareeb", "karib", "saadhe", "sadhe", "sawa",
+              "paune", "dedh", "dhai", "aadha", "aadhe", "ke", "aas", "paas", "aaspaas", "ek", "do", "teen",
+              "char", "chaar", "paanch", "chhe", "saat", "aath", "nau", "das", "gyarah", "barah", "bees",
+              "tees", "hai", "tha", "ji"}
 
 
 # a location answer must not contain any of these: they mean the reply says more than the place
@@ -55,13 +77,21 @@ NOT_A_PLACE = {"is", "was", "were", "are", "be", "been", "it", "it's", "its", "h
                "smoke", "think", "guess", "not", "no", "yes", "and", "but", "because", "then", "also", "still",
                "actually", "sorry", "wait", "correction", "instead", "submit", "cancel", "ago", "today",
                "yesterday", "morning", "afternoon", "evening", "night", "tonight", "now", "am", "pm", "a.m",
-               "p.m", "o'clock", "minutes", "hours", "when", "where", "what", "who", "why", "how"}
+               "p.m", "o'clock", "minutes", "hours", "when", "where", "what", "who", "why", "how",
+               # Hinglish: verbs, pronouns, negation, question and time words mean more than a place
+               "hai", "tha", "thi", "hua", "hui", "hue", "gaya", "gayi", "gaye", "gira", "giri", "gire",
+               "ho", "raha", "rahi", "rahe", "nahi", "nahin", "mat", "haan", "kab", "kahan", "kya", "kaun",
+               "mujhe", "maine", "usne", "humne", "hum", "woh", "yeh", "ye", "aag", "lagi", "laga", "baje",
+               "subah", "shaam", "raat", "kal", "aaj", "abhi", "pehle", "ke", "paas", "ki", "ka", "se"}
+# Hinglish postposition after a place ("conference room 2 mein", "gate pe"): dropped, the place is kept
+_PLACE_TAIL = re.compile(r"\s+(?:mein|me|mai|pe|par)\s*$", re.I)
 _PLACE_LEAD = re.compile(r"^(?:(?:it\s+(?:was|is)|it'?s|that\s+was)\s+)?(?:in\s+|at\s+|inside\s+)?(?:the\s+)?", re.I)
 
 
 # v7: "…, cancel this" / "ok then cancel this one" anywhere in the turn (not "don't cancel it")
 _CANCEL_IN = re.compile(r"\b(?:cancel|discard|scrap)\s+(?:this|it|that|the report|this report|this one|"
-                        r"the whole thing|everything)\b")
+                        r"the whole thing|everything)\b"
+                        r"|\bcancel\s+(?:kar\s*do|karo|kar\s+dijiye)\b")
 _NO_CANCEL = re.compile(r"\b(?:don'?t|do not|not|no need to|never)\s+(?:\w+\s+)?(?:cancel|discard|scrap)\b")
 FILLER_ONLY = {"um", "uh", "umm", "uhh", "uhm", "hmm", "erm", "er", "ah", "eh", "mm", "..."}
 
@@ -96,6 +126,9 @@ def answer(text: str, asked: str | None, state: str, type_values: list[str]) -> 
         if t in spoken:
             return {"tool": "update_report", "args": {"t": spoken[t]}}
     if asked == "l":
+        stripped = _PLACE_TAIL.sub("", text.strip().rstrip(".!?"))
+        if stripped != text.strip().rstrip(".!?"):
+            text, words = stripped, _norm(stripped).split()
         if (1 <= len(words) <= 8 and not any(w in NOT_A_PLACE or w in SEVERITY_WORDS for w in words)
                 and not resolve(text)["resolved"]):
             place = _PLACE_LEAD.sub("", text.strip().rstrip(".!?")).strip()

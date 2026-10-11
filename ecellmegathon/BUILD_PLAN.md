@@ -7,7 +7,17 @@ Megathon X, Qualcomm PS1. Background and rationale: `PLAN.md`. This file is what
 files your track owns (§5). Treat §4 (contracts) as frozen. If a contract has to change, stop and tell your human,
 because the other track depends on it.
 
-### What's new (2026-10-10, evening): read this first, Track B
+### What's new (2026-10-11): Hindi / Hinglish, read this first, Track B
+
+Done on `v8` by Track A **in Track B's files**, at the team lead's request (please review): `app/voice.py`
+`transcribe()` takes optional `language` / `translate` (§4.1; old calls send exactly the same request), and
+`ui/` (on top of the `ui-chat` design) has a language choice: in the opening dialog and the 🌐 header button,
+shown only when `GET /api/config` offers Hindi. Spoken turns then carry `X-Language: en|hi`; the user's bubble
+says "translated from Hindi"; field labels and severity choices get Hindi subtitles. Replies stay English
+(the TTS voice is English). Switch: `HINGLISH=1` for `board/voice_up.sh` / `voice/laptop_up.sh` (multilingual
+Whisper) **and** for `app.server`. Details and the keep/drop rule: `eval/hinglish/README.md`.
+
+### What's new (2026-10-10, evening)
 
 1. **The form is the problem statement's 10 fields** (§3, `schema/incident_form.json` version 2). Field names,
    keys and the spoken questions are unchanged, so the UI and `voice.py` need no change. What changed: 15 incident
@@ -145,8 +155,11 @@ class TtsResult:
     model: str
     error: str = ""
 
-def transcribe(wav: bytes, prompt: str = "") -> SttResult: ...
+def transcribe(wav: bytes, prompt: str = "", language: str | None = None,
+               translate: bool | None = None) -> SttResult: ...
     # wav: 16 kHz, mono, 16-bit PCM WAV. prompt: vocabulary hint (contents of data/vocab.txt).
+    # language ("en" | "hi" | "auto") and translate (into English): whisper-server's per-request fields,
+    # sent only when given (2026-10-11, Hindi / Hinglish; the server passes them only with HINGLISH=1).
     # Must not raise on a network or engine error: return SttResult(text="", error=...).
 
 def speak(text: str) -> TtsResult: ...
@@ -174,6 +187,7 @@ Served at `http://localhost:8000`. It also serves `ui/` as static files at `/`.
 | `GET /api/audio/<turn_id>.wav` | — | the TTS audio for that turn (404 if none) |
 | `GET /api/reports` | — | `[{"id","incident_type","location","submitted_at"}, ...]` |
 | `GET /api/reports/<id>` | — | the full report JSON (§4.4) |
+| `GET /api/config` | — | `{"languages": [{"code": "en", "name": "English"}, {"code": "hi", "name": "Hindi / Hinglish"}], "voice": true, "replies": "en"}` (`hi` only with `HINGLISH=1`) |
 | `GET /api/proof` | — | `{"llm": {"offloaded": 29, "layers": 29, "htp0_model_mib": 1911.9, "log_lines": [...]}, "stt": {...}, "tts": {...}}` |
 
 `TurnResult`:
@@ -214,6 +228,10 @@ Served at `http://localhost:8000`. It also serves `ui/` as static files at `/`.
 - `audio_parts` (only with `TTS_SPLIT=on` and a reply of several sentences): one URL per sentence, in order, each
   ready as soon as that sentence is made. Play them one after another to start speaking sooner; `audio_url` is
   still the whole reply. `/api/state` then also has `timings_ms.tts_first` (time to the first sentence).
+- **Language (2026-10-11):** a WAV turn may name the language spoken, header `X-Language: en|hi` (or
+  `?lang=`). With `HINGLISH=1` the server asks Whisper for `en` as is, or `hi` translated into English, and the
+  result has `stt_language: {"lang", "language", "translate"}`. No language named, or `HINGLISH=0`: Whisper's
+  launch flags apply, as before (`hi` then gives an `error` saying so).
 - `audio_trim` (voice turns): `{"in_ms", "out_ms"}`, the clip length before and after cutting silence at the
   ends (`STT_TRIM`, default on).
 

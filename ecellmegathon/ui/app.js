@@ -5,16 +5,16 @@
 // The form, as in schema/incident_form.json (kept in sync by hand: the server
 // only serves ui/). key = the one-letter LLM key; null = filled by code.
 const FIELDS = [
-  { name: "incident_type", key: "t", label: "Incident type", mandatory: true, kind: "enum" },
-  { name: "severity", key: "s", label: "Severity", mandatory: true, kind: "enum" },
-  { name: "location", key: "l", label: "Location", mandatory: true, kind: "text" },
-  { name: "date_time", key: "d", label: "Date & time", mandatory: true, kind: "time" },
-  { name: "persons_involved", key: "p", label: "Persons involved", mandatory: false, kind: "list" },
-  { name: "equipment_involved", key: "e", label: "Equipment / asset", mandatory: false, kind: "list" },
-  { name: "description", key: null, label: "Description", mandatory: true, kind: "derived" },
-  { name: "immediate_actions", key: "a", label: "Actions taken", mandatory: false, kind: "list" },
-  { name: "witnesses", key: "w", label: "Witnesses", mandatory: false, kind: "list" },
-  { name: "follow_up", key: null, label: "Follow-up", mandatory: false, kind: "list" },
+  { name: "incident_type", key: "t", label: "Incident type", mandatory: true, kind: "enum", hi: "घटना का प्रकार" },
+  { name: "severity", key: "s", label: "Severity", mandatory: true, kind: "enum", hi: "गंभीरता" },
+  { name: "location", key: "l", label: "Location", mandatory: true, kind: "text", hi: "स्थान" },
+  { name: "date_time", key: "d", label: "Date & time", mandatory: true, kind: "time", hi: "दिनांक और समय" },
+  { name: "persons_involved", key: "p", label: "Persons involved", mandatory: false, kind: "list", hi: "शामिल लोग" },
+  { name: "equipment_involved", key: "e", label: "Equipment / asset", mandatory: false, kind: "list", hi: "उपकरण" },
+  { name: "description", key: null, label: "Description", mandatory: true, kind: "derived", hi: "विवरण" },
+  { name: "immediate_actions", key: "a", label: "Actions taken", mandatory: false, kind: "list", hi: "उठाए गए कदम" },
+  { name: "witnesses", key: "w", label: "Witnesses", mandatory: false, kind: "list", hi: "गवाह" },
+  { name: "follow_up", key: null, label: "Follow-up", mandatory: false, kind: "list", hi: "आगे की कार्रवाई" },
 ];
 const BY_KEY = Object.fromEntries(FIELDS.filter(f => f.key).map(f => [f.key, f]));
 const LATENCY_ROWS = [
@@ -29,6 +29,7 @@ const LATENCY_ROWS = [
 const MIN_RECORD_MS = 300;
 // Shown under the severity question as a reminder; the user answers by voice or text.
 const SEVERITY_CHOICES = ["Low", "Medium", "High", "Critical"];
+const SEVERITY_HI = { Low: "कम", Medium: "मध्यम", High: "गंभीर", Critical: "अति गंभीर" };
 
 const $ = id => document.getElementById(id);
 let last = null;          // the last TurnResult
@@ -37,10 +38,15 @@ let player = null;        // the assistant audio currently playing
 // "voice" = play each reply (TTS) and show it; "text" = show it only. Chosen when the page opens.
 let replyMode = "voice";
 const MODE_KEY = "reply-mode";
+// The language the user speaks: "en", or "hi" (Hindi / Hinglish, translated to English by STT on the
+// device). Offered only when GET /api/config lists it (server started with HINGLISH=1). Replies stay English.
+let speakLang = "en";
+let languages = ["en"];
+const LANG_KEY = "speak-lang";
 
 // ---------------------------------------------------------------- API
-async function api(method, path, body, contentType) {
-  const opts = { method, headers: {} };
+async function api(method, path, body, contentType, headers) {
+  const opts = { method, headers: { ...(headers || {}) } };
   if (body !== undefined) {
     opts.body = body;
     opts.headers["Content-Type"] = contentType || "application/json";
@@ -53,12 +59,12 @@ async function api(method, path, body, contentType) {
   return data;
 }
 
-async function send(body, contentType) {
+async function send(body, contentType, headers) {
   if (busy) return;
   setBusy(true);
   showError("");
   try {
-    render(await api("POST", "/api/turn", body, contentType));
+    render(await api("POST", "/api/turn", body, contentType, headers));
   } catch (e) {
     showError(`Could not reach the assistant: ${e.message}`);
   } finally {
@@ -76,9 +82,10 @@ function render(r) {
   $("report-id").textContent = r.report_id ? `Report ${r.report_id}` : "";
 
   hideTyping();
-  if (r.transcript) addChat("user", r.transcript, r.timings_ms && r.timings_ms.stt != null
-    ? `heard in ${fmt(r.timings_ms.stt)} ms` : "");
-  if (r.say) addChat("bot", r.say, "", r.audio_url, r.asked === "s" ? SEVERITY_CHOICES : null);
+  if (r.transcript) addChat("user", r.transcript, [
+    r.timings_ms && r.timings_ms.stt != null ? `heard in ${fmt(r.timings_ms.stt)} ms` : "",
+    heardAs(r.stt_language)].filter(Boolean).join(" · "));
+  if (r.say) addChat("bot", r.say, "", r.audio_url, r.asked === "s" ? severityChoices() : null);
   if (r.error) showError(r.error);
 
   renderForm(r, prev);
@@ -123,6 +130,16 @@ function addChat(who, text, meta, audioUrl, choices) {
   li.appendChild(line);
   $("chat").appendChild(li);
   li.scrollIntoView({ block: "nearest" });
+}
+
+// What STT was asked for this turn (server: stt_language), for the line under the user's bubble.
+function heardAs(st) {
+  if (!st || st.lang !== "hi") return "";
+  return st.translate ? "translated from Hindi" : "Hindi, as said";
+}
+
+function severityChoices() {
+  return speakLang === "hi" ? SEVERITY_CHOICES.map(c => `${c} · ${SEVERITY_HI[c]}`) : SEVERITY_CHOICES;
 }
 
 function clock() {
@@ -178,6 +195,13 @@ function renderForm(r, prev) {
       s.textContent = " *";
       s.setAttribute("aria-label", "mandatory");
       dt.appendChild(s);
+    }
+    if (speakLang === "hi" && f.hi) {
+      const h = document.createElement("span");
+      h.className = "hi-label";
+      h.lang = "hi";
+      h.textContent = f.hi;
+      dt.appendChild(h);
     }
     const dd = document.createElement("dd");
     if (isMissing(r, f)) dd.classList.add("missing");
@@ -305,7 +329,7 @@ function setBusy(on) {
   if (on) showTyping(); else hideTyping();
   $("ptt").classList.toggle("busy", on);
   $("ptt").setAttribute("aria-busy", on ? "true" : "false");
-  if (!Mic.isActive()) $("ptt-label").textContent = on ? "Thinking…" : "Hold to speak";
+  if (!Mic.isActive()) $("ptt-label").textContent = on ? "Thinking…" : idleLabel();
 }
 
 function play(url) {
@@ -339,6 +363,41 @@ function askReplyMode() {
   dlg.showModal();
   const pick = dlg.querySelector(`[data-mode="${saved === "text" ? "text" : "voice"}"]`);
   if (pick) pick.focus();
+}
+
+// ---------------------------------------------------------------- language
+// Changes what STT is asked for on spoken turns, and adds Hindi labels and hints to the page. Typed text is
+// sent as typed: English or Hinglish in Latin letters (the app understands Hinglish times and short answers).
+function idleLabel() {
+  return speakLang === "hi" ? "Hold to speak · बोलिए" : "Hold to speak";
+}
+
+function setLanguage(code) {
+  speakLang = code === "hi" && languages.includes("hi") ? "hi" : "en";
+  const hi = speakLang === "hi";
+  $("lang").textContent = hi ? "🌐 हिंदी / Hinglish" : "🌐 English";
+  $("lang-hint").hidden = !hi;
+  $("text-in").placeholder = hi ? "Type in English or Hinglish (Roman letters)…" : "Type your message…";
+  document.querySelectorAll("#lang-pick [data-lang]").forEach(b =>
+    b.setAttribute("aria-pressed", b.dataset.lang === speakLang ? "true" : "false"));
+  if (!Mic.isActive() && !busy) $("ptt-label").textContent = idleLabel();
+  renderForm(last || { form: {}, missing: [], state: "collecting" }, null);
+  try { localStorage.setItem(LANG_KEY, speakLang); } catch { /* storage blocked */ }
+}
+
+function savedLanguage() {
+  try { return localStorage.getItem(LANG_KEY); } catch { return null; }
+}
+
+async function loadConfig() {
+  try {
+    const c = await api("GET", "/api/config");
+    languages = (c && c.languages ? c.languages : []).map(l => l.code);
+  } catch { languages = ["en"]; }        // older server: English only
+  const multi = languages.includes("hi");
+  $("lang").hidden = !multi;
+  $("lang-pick").hidden = !multi;
+  setLanguage(multi ? savedLanguage() || "en" : "en");
 }
 
 // ---------------------------------------------------------------- proof + reports
@@ -439,12 +498,12 @@ async function stopRecording() {
   const clip = await Mic.stop();
   $("ptt").classList.remove("recording");
   $("level-bar").style.width = "0";
-  $("ptt-label").textContent = "Hold to speak";
+  $("ptt-label").textContent = idleLabel();
   if (tooShort || !clip) {
     showError("That was too short. Hold the button while you speak.");
     return;
   }
-  await send(clip.wav, "audio/wav");
+  await send(clip.wav, "audio/wav", languages.includes("hi") ? { "X-Language": speakLang } : undefined);
 }
 
 // ---------------------------------------------------------------- wiring
@@ -477,6 +536,9 @@ function wire() {
   $("proof-refresh").addEventListener("click", loadProof);
   $("reports-refresh").addEventListener("click", loadReports);
   $("reply-mode").addEventListener("click", askReplyMode);
+  $("lang").addEventListener("click", () => setLanguage(speakLang === "hi" ? "en" : "hi"));
+  document.querySelectorAll("#lang-pick [data-lang]").forEach(b =>
+    b.addEventListener("click", () => setLanguage(b.dataset.lang)));
   const dlg = $("mode-dialog");
   dlg.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => {
     setReplyMode(b.dataset.mode);
@@ -489,6 +551,7 @@ function wire() {
 async function init() {
   wire();
   setReplyMode(savedReplyMode() || "voice");
+  await loadConfig();                    // before the dialog: it shows the language choice when offered
   askReplyMode();
   renderForm({ form: {}, missing: [], state: "collecting" }, null);
   renderLatency({});

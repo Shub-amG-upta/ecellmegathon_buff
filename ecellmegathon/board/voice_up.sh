@@ -34,6 +34,19 @@ cd "$(dirname "$0")/.."
 REPO=$(pwd)
 ENGINES=${ENGINES:-$(cd "$REPO/../.." && pwd)/engines}
 MODEL=${STT_MODEL_FILE:-ggml-base.en.bin}
+# Hindi / Hinglish speech (HINGLISH=1, off by default): a multilingual Whisper model (not *.en), the language
+# detected per clip (-l auto) and the text translated into English (--translate), so the app, the form and the
+# spoken replies stay English. Off: "-l en", whisper-server's own default, so nothing changes.
+# STT_TRANSLATE=0 keeps the words as said (for comparing; eval/hinglish/README.md).
+HINGLISH=${HINGLISH:-0}
+if [ "$HINGLISH" = "1" ]; then
+    MODEL=${STT_MODEL_FILE:-ggml-base.bin}
+    case "$MODEL" in *.en.bin|*.en-*.bin) echo "HINGLISH=1 needs a multilingual Whisper model, not $MODEL" >&2; exit 1;; esac
+    STT_LANG_FLAGS="-l ${STT_LANGUAGE:-auto}"                 # STT_LANGUAGE=hi forces Hindi
+    [ "${STT_TRANSLATE:-1}" = "1" ] && STT_LANG_FLAGS="$STT_LANG_FLAGS --translate"   # STT_TRANSLATE=0: as said
+else
+    STT_LANG_FLAGS="-l ${STT_LANGUAGE:-en}"
+fi
 VOICE=${TTS_VOICE:-vits-piper-en_US-lessac-medium}
 STT_THREADS=${STT_THREADS:-4}
 SERIAL=${ANDROID_SERIAL:-}
@@ -100,7 +113,7 @@ push "$ENGINES/whisper/$MODEL" "$STT_DIR/$MODEL"
 adb_ shell "chmod 755 $STT_DIR/bin/whisper-server"
 adb_ shell "pkill whisper-server" || true
 adb_ shell -n "cd $STT_DIR; nohup sh -c 'LD_LIBRARY_PATH=$STT_DIR/lib ./bin/whisper-server -m $STT_DIR/$MODEL \
-    --host 127.0.0.1 --port 8082 -t $STT_THREADS' > $STT_DIR/stt.log 2>&1 < /dev/null &"
+    --host 127.0.0.1 --port 8082 -t $STT_THREADS $STT_LANG_FLAGS' > $STT_DIR/stt.log 2>&1 < /dev/null &"
 adb_ forward tcp:8082 tcp:8082 > /dev/null
 
 # ---- TTS: engine on the board, thin wrapper on the laptop ------------------
@@ -128,4 +141,5 @@ for port in 8082 8083; do
     fi
 done
 echo "export STT_URL=http://localhost:8082 STT_DEVICE=cpu STT_MODEL=$MODEL"
+echo "export HINGLISH=$HINGLISH"
 echo "export TTS_URL=http://localhost:8083"
