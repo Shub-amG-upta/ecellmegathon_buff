@@ -212,3 +212,13 @@ def test_no_stated_severity_leaves_it_blank_and_asks(make):
     d, _ = make({"tool": "update_report", "args": {"t": "caught_in", "l": "tyre line", "d": "around 1:45"}})
     r = d.turn("One of the mechanics got his finger caught in the conveyor at the tyre line around 1:45.")
     assert r["form"]["severity"] is None and r["asked"] == "s"
+
+
+def test_saved_report_names_the_model_even_when_submit_was_answered_by_code(make, tmp_path):
+    d, b = make({"tool": "update_report", "args": {"t": "water_leak", "l": "near Conference Room 2",
+                                                    "d": "around 10 AM", "s": "medium"}})
+    d.turn(EXAMPLE)
+    r = d.turn("submit")                                      # fast path: no model on this turn
+    saved = report.load(r["report_id"], tmp_path)
+    assert saved["models"] == {"llm": "m.gguf", "llm_device": "npu", "type_model": None,
+                               "llm_calls": 1, "fast_path_turns": 1}

@@ -55,6 +55,7 @@
     <div class="card-head">
       <h2>Report</h2>
       <span id="report-id" class="muted"></span>
+      <button id="view-report" class="ghost small" type="button" hidden>View report</button>
     </div>
     <p class="hint" id="form-hint">Fields fill in as you talk. <span class="req">*</span> = mandatory.</p>
     <dl id="form" class="form"></dl>
@@ -92,7 +93,6 @@
       <button id="reports-refresh" class="ghost small" type="button">Refresh</button>
     </div>
     <ul id="reports" class="reports"></ul>
-    <pre id="report-view" class="json" hidden></pre>
   </section>
 </main>
 
@@ -114,6 +114,20 @@
       <strong>Speak and show text</strong><span>Replies are read aloud (text-to-speech).</span></button>
     <button type="button" data-mode="text"><span class="mode-icon" aria-hidden="true">💬</span>
       <strong>Text only</strong><span>Replies appear on screen, no sound.</span></button>
+  </div>
+</dialog>
+
+<!-- A submitted report, readable and printable (opens on submit, or from "Submitted reports"). -->
+<dialog id="report-dialog" class="report-dialog" aria-labelledby="rv-title">
+  <article id="report-card" class="report-card" tabindex="-1"></article>
+  <details class="rv-json no-print">
+    <summary>Raw JSON (as saved on the device)</summary>
+    <pre id="report-json" class="json"></pre>
+  </details>
+  <div class="rv-actions no-print">
+    <button id="rv-print" type="button">Print / Save as PDF</button>
+    <button id="rv-download" class="ghost" type="button">Download JSON</button>
+    <button id="rv-close" class="ghost" type="button">Close</button>
   </div>
 </dialog>
 

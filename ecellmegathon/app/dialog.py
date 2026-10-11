@@ -81,6 +81,8 @@ class Dialog:
         self.heard: list[str] = []            # everything said in this report (for the gate)
         self.turns: list[dict] = []           # saved with the report
         self.report_id: str | None = None
+        # what answered this report's turns, saved with it (the submit turn itself is usually code)
+        self.used = {"llm": None, "llm_device": None, "type_model": None, "llm_calls": 0, "fast_path_turns": 0}
         return self._result(transcript="", say=GREETING)
 
     def turn(self, text: str) -> dict:
@@ -97,6 +99,7 @@ class Dialog:
                 if self.use_fast_path else None)
         if fast is not None:                   # answered by code: no LLM call, no LLM timings
             call, err, llm = dict(fast), "", {"fast_path": True}
+            self.used["fast_path_turns"] += 1
         else:
             reply = self.call_llm(user_message(self.form.compact(), self.asked, text), text)
             llm = {"llm_prefill": reply.prefill_ms, "llm_decode": reply.decode_ms,
@@ -107,6 +110,9 @@ class Dialog:
                 return self._result(transcript=text, llm=llm, t0=t0, error=reply.error or reply.status,
                                     say="Sorry, I had trouble with that. Could you say it again?")
             call, err = self._parse(reply.text)
+            self.used.update(llm=reply.model, llm_device=reply.backend, llm_calls=self.used["llm_calls"] + 1)
+            for part in reply.parts or []:            # the v7 type router's model
+                self.used["type_model"] = part.get("model") or self.used["type_model"]
         tool, args = call["tool"], call.get("args") or {}
 
         if tool == "cancel_report":
@@ -230,7 +236,7 @@ class Dialog:
         self.turns.append({"transcript": text, "tool_call": call, "dropped": []})
         rec = {"submitted_at": self.clock().isoformat(), "form": self.form.public(),
                "turns": self.turns,
-               "models": {"llm": llm.get("model"), "llm_device": llm.get("device")}}
+               "models": dict(self.used)}
         self.report_id = report.save(rec, self.report_dir)
         self.state = "submitted"
         return self._result(transcript=text, say=f"Report {self.report_id} submitted.",

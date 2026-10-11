@@ -91,7 +91,11 @@ function render(r) {
   renderForm(r, prev);
   renderLatency(r);
   if (r.tool_call || (r.dropped && r.dropped.length)) addTool(r);
-  if (r.state === "submitted") loadReports();
+  $("view-report").hidden = !(r.state === "submitted" && r.report_id);
+  if (r.state === "submitted") {
+    loadReports();
+    if (r.report_id && r.report_id !== shownReport) showReport(r.report_id);   // open it once, on submit
+  }
   if (r.audio_url && replyMode === "voice") play(r.audio_url);
 }
 
@@ -461,16 +465,158 @@ async function loadReports() {
     const b = document.createElement("button");
     b.type = "button";
     b.textContent = `${r.id} · ${(r.incident_type || "").replace(/_/g, " ")} · ${r.location || ""} · ${r.submitted_at || ""}`;
-    b.onclick = async () => {
-      try {
-        const full = await api("GET", `/api/reports/${encodeURIComponent(r.id)}`);
-        $("report-view").hidden = false;
-        $("report-view").textContent = JSON.stringify(full, null, 2);
-      } catch (e) { showError(e.message); }
-    };
+    b.onclick = () => showReport(r.id);
     li.appendChild(b);
     ul.appendChild(li);
   }
+}
+
+// ---------------------------------------------------------------- report view
+// The saved report (GET /api/reports/<id>) as a readable page: printable (Save as PDF) and downloadable.
+let shownReport = null;   // id of the report opened last
+let reportData = null;    // its JSON, for the download
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function when(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return isNaN(d) ? iso : d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+}
+
+async function showReport(id) {
+  shownReport = id;
+  let rep;
+  try { rep = await api("GET", `/api/reports/${encodeURIComponent(id)}`); } catch (e) {
+    showError(`Could not open ${id}: ${e.message}`);
+    return;
+  }
+  reportData = rep;
+  renderReportCard(rep);
+  $("report-json").textContent = JSON.stringify(rep, null, 2);
+  const dlg = $("report-dialog");
+  if (typeof dlg.showModal !== "function") { dlg.setAttribute("open", ""); return; }
+  if (!dlg.open) dlg.showModal();
+  $("report-card").focus();             // not the first link inside: no focus ring on open
+  $("report-card").scrollIntoView({ block: "start" });
+}
+
+function fieldLabel(name) {
+  const f = FIELDS.find(x => x.name === name);
+  const box = el("dt", null, f ? f.label : name);
+  if (f && speakLang === "hi" && f.hi) {
+    const h = el("span", "hi-label", f.hi);
+    h.lang = "hi";
+    box.appendChild(h);
+  }
+  return box;
+}
+
+function valueOrEmpty(node, text) {
+  if (text == null || text === "") { node.appendChild(el("span", "rv-empty", "Not provided")); return node; }
+  node.append(text);
+  return node;
+}
+
+function renderReportCard(rep) {
+  const f = rep.form || {};
+  const card = $("report-card");
+  card.replaceChildren();
+
+  // header: id, when, type and severity badges
+  const head = el("header", "rv-head");
+  const title = el("div");
+  const h = el("h2", "rv-title", `Incident report ${rep.id}`);
+  h.id = "rv-title";
+  title.append(h, el("div", "muted", rep.submitted_at ? `Submitted ${when(rep.submitted_at)}` : ""));
+  const badges = el("div", "rv-badges");
+  if (f.incident_type) badges.appendChild(el("span", "rv-type", String(f.incident_type).replace(/_/g, " ")));
+  if (f.severity) badges.appendChild(el("span", `rv-sev sev-${f.severity}`, `${f.severity} severity`));
+  head.append(title, badges);
+  card.appendChild(head);
+
+  // the fields
+  const dl = el("dl", "rv-fields");
+  const row = (name, dd) => dl.append(fieldLabel(name), dd);
+  row("incident_type", valueOrEmpty(el("dd"), f.incident_type ? String(f.incident_type).replace(/_/g, " ") : null));
+  row("severity", valueOrEmpty(el("dd"), f.severity));
+  row("location", valueOrEmpty(el("dd"), f.location));
+  const t = f.date_time;
+  const dd = el("dd");
+  if (t && typeof t === "object" && (t.phrase || t.iso)) {
+    dd.append(t.resolved && t.iso ? when(t.iso) + (t.approx ? " (approx.)" : "") : (t.phrase || ""));
+    if (t.phrase) dd.appendChild(el("span", "rv-said", `said: “${t.phrase}”`));
+    if (!t.resolved) dd.appendChild(el("span", "tag warn", "not resolved"));
+  } else valueOrEmpty(dd, typeof t === "string" ? t : null);
+  row("date_time", dd);
+  for (const name of ["persons_involved", "equipment_involved", "witnesses"]) {
+    const v = f[name] || [];
+    const box = el("dd");
+    if (!v.length) valueOrEmpty(box, null);
+    else { const chips = el("span", "chips"); v.forEach(x => chips.appendChild(el("span", "chip", x))); box.appendChild(chips); }
+    row(name, box);
+  }
+  card.appendChild(dl);
+
+  // description: the worker's own words
+  const desc = el("section", "rv-section");
+  desc.appendChild(el("h3", null, "Description"));
+  desc.appendChild(f.description ? el("blockquote", "rv-quote", f.description) : el("p", "rv-empty", "Not provided"));
+  card.appendChild(desc);
+
+  const list = (heading, items, ordered, note) => {
+    const sec = el("section", "rv-section");
+    sec.appendChild(el("h3", null, heading));
+    if (!items || !items.length) { sec.appendChild(el("p", "rv-empty", "None recorded")); return sec; }
+    const ul = el(ordered ? "ol" : "ul", "rv-list");
+    items.forEach(x => ul.appendChild(el("li", null, x)));
+    sec.appendChild(ul);
+    if (note) sec.appendChild(el("p", "hint", note));
+    return sec;
+  };
+  card.appendChild(list("Immediate actions taken", f.immediate_actions, false));
+  card.appendChild(list("Recommended follow-up", f.follow_up, true,
+    "From the follow-up catalogue for this incident type (not written by the model)."));
+
+  // the conversation it came from
+  const said = (rep.turns || []).map(x => x.transcript).filter(Boolean);
+  if (said.length) {
+    const det = el("details", "rv-section rv-convo");
+    det.appendChild(el("summary", null, `What the worker said (${said.length} turns)`));
+    const ol = el("ol", "rv-list");
+    said.forEach(x => ol.appendChild(el("li", null, x)));
+    det.appendChild(ol);
+    card.appendChild(det);
+  }
+
+  // where it was made
+  const m = rep.models || {};
+  const bits = ["Made on-device: Qualcomm QIDK, no cloud"];
+  if (m.llm) bits.push(`${m.llm.split("/").pop()} on ${(m.llm_device || "?").toUpperCase()}`);
+  if (m.type_model) bits.push(`type check: ${m.type_model.split("/").pop()}`);
+  if (m.llm_calls != null) bits.push(`${m.llm_calls} model call${m.llm_calls === 1 ? "" : "s"}, ${m.fast_path_turns} turn${m.fast_path_turns === 1 ? "" : "s"} answered by code`);
+  card.appendChild(el("footer", "rv-foot", bits.join(" · ")));
+}
+
+function printReport() {
+  document.body.classList.add("print-report");
+  window.print();
+}
+
+function downloadReport() {
+  if (!reportData) return;
+  const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${reportData.id}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
 
 // ---------------------------------------------------------------- microphone
@@ -535,6 +681,11 @@ function wire() {
   });
   $("proof-refresh").addEventListener("click", loadProof);
   $("reports-refresh").addEventListener("click", loadReports);
+  $("view-report").addEventListener("click", () => last && last.report_id && showReport(last.report_id));
+  $("rv-print").addEventListener("click", printReport);
+  $("rv-download").addEventListener("click", downloadReport);
+  $("rv-close").addEventListener("click", () => $("report-dialog").close());
+  window.addEventListener("afterprint", () => document.body.classList.remove("print-report"));
   $("reply-mode").addEventListener("click", askReplyMode);
   $("lang").addEventListener("click", () => setLanguage(speakLang === "hi" ? "en" : "hi"));
   document.querySelectorAll("#lang-pick [data-lang]").forEach(b =>
@@ -557,6 +708,7 @@ async function init() {
   renderLatency({});
   try {
     const s = await api("GET", "/api/state");
+    if (s && s.state === "submitted") shownReport = s.report_id;   // a reload doesn't pop the report up again
     if (s) render(s);
   } catch (e) {
     showError(`Assistant server not reachable: ${e.message}`);
