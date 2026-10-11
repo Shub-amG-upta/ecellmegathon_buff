@@ -361,9 +361,9 @@ function renderLastTurn(r) {
   const dl = $("last-turn");
   dl.replaceChildren();
   $("lt-turn").textContent = r.turn_id != null ? `turn ${r.turn_id}` : "";
+  const greeting = !r.transcript && !r.tool_call;          // a new report: only the assistant's opening line
   const by = answeredBy(r);
-  const who = el("span", `who ${by.cls}`, by.text);
-  kvRow(dl, "Answered by", who);
+  kvRow(dl, "Answered by", greeting ? "— (no turn yet)" : el("span", `who ${by.cls}`, by.text));
   const t = r.timings_ms || {};
   if (!r.fast_path && (t.llm_wall != null || (r.llm && r.llm.decode_tokens != null))) {
     const tok = r.llm && r.llm.prefill_tokens != null
@@ -372,7 +372,9 @@ function renderLastTurn(r) {
   }
   kvRow(dl, "Total", t.total != null ? `${fmt(t.total)} ms` : "—");
   const asked = r.asked && BY_KEY[r.asked] ? BY_KEY[r.asked].label : null;
-  kvRow(dl, "Next question", asked || (r.state === "review" ? "read-back, waiting for submit" : r.state || "—"));
+  const next = asked || (r.state === "review" ? "read-back, waiting for submit"
+    : r.state === "collecting" ? "what happened (first description)" : r.state || "—");
+  kvRow(dl, "Next question", next);
   const missing = (r.missing || []).map(n => (FIELDS.find(f => f.name === n) || { label: n }).label);
   kvRow(dl, "Still missing", missing.length ? chipList(missing, "warn") : el("span", "ok-text", "nothing: ready"));
   if (r.dropped && r.dropped.length) kvRow(dl, "Dropped", `${r.dropped.length} value(s), see Tool calls`);
