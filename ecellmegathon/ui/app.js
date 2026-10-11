@@ -793,6 +793,7 @@ function wire() {
     $("chat").replaceChildren();
     $("tools").replaceChildren();
     try { render(await api("POST", "/api/reset")); } catch (e) { showError(e.message); }
+    HandsFree.reset();                     // back to waiting for "Hey Qualcomm"
   });
   $("proof-refresh").addEventListener("click", loadProof);
   $("reports-refresh").addEventListener("click", loadReports);

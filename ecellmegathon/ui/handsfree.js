@@ -27,6 +27,7 @@ const HandsFree = (() => {
     pre: [], seg: [], segMs: 0, segLoud: 0, quiet: 0,   // the wake burst
     after: [], afterSpoke: false,               // audio that came in while the burst was being checked
     buf: [], spoke: false, waited: 0, follow: false, holdUntil: 0,
+    gen: 0,                                      // bumped by reset(): a check from before it is ignored
   };
 
   // ------------------------------------------------------------------ status line
@@ -112,6 +113,7 @@ const HandsFree = (() => {
 
   // ------------------------------------------------------------------ wake check and turn
   async function check(kept) {
+    const gen = W.gen;
     const seg = W.seg;
     W.seg = []; W.after = []; W.afterSpoke = false;
     to("checking");
@@ -121,7 +123,7 @@ const HandsFree = (() => {
       const r = await fetch("/api/wake", { method: "POST", headers: { "Content-Type": "audio/wav" }, body: wav });
       res = await r.json();
     } catch (e) { res = { wake: false, error: e.message }; }
-    if (!W.on) return;
+    if (!W.on || gen !== W.gen) return;          // turned off, or New report meanwhile
     if (!res || !res.wake) {
       // Not the wake word. If the user spoke while this burst was being checked (often "Hey Qualcomm" right
       // after a noise), check that speech next instead of throwing it away.
@@ -173,6 +175,17 @@ const HandsFree = (() => {
     if (willPlay) to("await-audio"); else follow();
   }
 
+  // New report: forget anything half-heard and wait for the wake phrase again (the new greeting needs no answer
+  // without it). The greeting's own audio is ignored as usual while it plays.
+  function reset() {
+    if (!W.on) return;
+    W.gen++;
+    W.pre = []; W.seg = []; W.buf = []; W.after = []; W.afterSpoke = false;
+    W.loud = 0; W.spoke = false; W.follow = false; W.quiet = 0; W.waited = 0;
+    W.holdUntil = performance.now() + ECHO_MS;
+    to("idle");
+  }
+
   function onAudioEnd() {
     if (W.on && W.state === "await-audio") follow();
   }
@@ -220,6 +233,6 @@ const HandsFree = (() => {
     status();
   }
 
-  return { configure, set, toggle: () => set(!W.on), onReply, onAudioEnd, isOn: () => W.on,
+  return { configure, set, toggle: () => set(!W.on), onReply, onAudioEnd, reset, isOn: () => W.on,
            state: () => W.state };
 })();
