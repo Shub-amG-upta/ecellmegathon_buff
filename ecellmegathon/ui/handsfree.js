@@ -9,6 +9,8 @@
 const HandsFree = (() => {
   const WIN_MS = 20;            // loudness is measured per 20 ms
   const START_MS = 60;          // this much loud audio starts a burst
+  const MIN_LOUD_MS = 200;      // a burst with less loud audio than this (a click, a knock) is not checked:
+                                // each check is a whole Whisper call (~1 s on the board) and blocks the next
   const PREROLL_MS = 400;       // kept from before the burst starts (the "Hey" is often soft)
   const WAKE_GAP_MS = 500;      // a pause this long ends a wake burst
   const WAKE_MAX_MS = 2500;     // a wake burst is checked after at most this long, even if speech goes on
@@ -22,7 +24,7 @@ const HandsFree = (() => {
   const W = {
     available: false, on: false, phrase: "Hey Qualcomm", state: "off",
     acc: [], accN: 0, floor: 0.01, loud: 0,
-    pre: [], seg: [], segMs: 0, quiet: 0,       // the wake burst
+    pre: [], seg: [], segMs: 0, segLoud: 0, quiet: 0,   // the wake burst
     after: [], afterSpoke: false,               // audio that came in while the burst was being checked
     buf: [], spoke: false, waited: 0, follow: false, holdUntil: 0,
   };
@@ -84,13 +86,17 @@ const HandsFree = (() => {
       if (W.pre.length > PREROLL_MS / WIN_MS) W.pre.shift();
       W.loud = loud ? W.loud + WIN_MS : 0;
       if (W.loud >= START_MS) {
-        W.seg = W.pre.flat(); W.pre = []; W.segMs = W.loud; W.quiet = 0;
+        W.seg = W.pre.flat(); W.pre = []; W.segMs = W.loud; W.segLoud = W.loud; W.quiet = 0;
         to("burst");
       }
     } else if (W.state === "burst") {
       W.seg.push(...win); W.segMs += WIN_MS;
+      if (loud) W.segLoud += WIN_MS;
       W.quiet = loud ? 0 : W.quiet + WIN_MS;
-      if (W.quiet >= WAKE_GAP_MS) check(false);
+      if (W.quiet >= WAKE_GAP_MS) {
+        if (W.segLoud < MIN_LOUD_MS) { W.seg = []; to("idle"); return; }   // too short to be the phrase
+        check(false);
+      }
       else if (W.segMs >= WAKE_MAX_MS) check(true);
     } else if (W.state === "checking") {
       W.after.push(...win);
@@ -116,7 +122,19 @@ const HandsFree = (() => {
       res = await r.json();
     } catch (e) { res = { wake: false, error: e.message }; }
     if (!W.on) return;
-    if (!res || !res.wake) { W.after = []; to("idle"); return; }
+    if (!res || !res.wake) {
+      // Not the wake word. If the user spoke while this burst was being checked (often "Hey Qualcomm" right
+      // after a noise), check that speech next instead of throwing it away.
+      if (W.afterSpoke && W.after.length) {
+        W.seg = W.after;
+        W.segMs = W.after.reduce((n, c) => n + c.length, 0) / Mic.rate() * 1000;
+        W.segLoud = MIN_LOUD_MS;              // it was loud enough to count as speech while it was buffered
+        W.quiet = 0; W.after = []; W.afterSpoke = false;
+        to("burst");
+        return;
+      }
+      W.after = []; to("idle"); return;
+    }
     chime();
     // said in one breath ("Hey Qualcomm, there's a fire in the lab"): the burst is part of the turn
     const more = (res.rest && res.rest.trim()) || kept;
