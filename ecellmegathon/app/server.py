@@ -25,6 +25,8 @@ Environment:
              language=hi + translate (Whisper must be multilingual: board/voice_up.sh HINGLISH=1), and the
              prompt gets the Hinglish rules (app/prompt.py). Replies stay English. eval/hinglish/README.md
   STT_LANGUAGE, STT_TRANSLATE   the Hindi turns' Whisper language (default hi) and translate (default 1)
+  WAKE       auto | kws | stt | off   "Hey Qualcomm" detector for POST /api/wake (app/wake.py); auto = kws when
+             KWS_URL is set (voice/kws_server.py on the board), else stt (the Whisper already running)
 
 Speech is Track B's `app/voice.py` (§4.1). Until it exists, the server runs
 text-only: WAV turns return an error and no audio is produced.
@@ -48,6 +50,7 @@ from app.audio import trim_silence
 from app.backends import LlamaServerBackend, MockBackend
 from app.dialog import Dialog
 from app.form import ROOT
+from app import wake
 from app.prompt import hinglish
 
 try:                                    # Track B's module; VOICE=off runs text-only
@@ -242,7 +245,10 @@ class App:
                 wav, trim = trim_silence(wav)
             asked = stt_settings(lang)
             stt = self.voice.transcribe(wav, prompt=self.vocab, **(asked or {}))
-            r = self.dialog.turn(stt.text)
+            woke, text = wake.find(stt.text)              # "Hey Qualcomm, there was a fire..." -> "there was a fire..."
+            r = self.dialog.turn(text)
+            if woke:
+                r["wake_phrase_removed"] = True
             if asked:                                  # the UI shows "translated from Hindi"
                 r["stt_language"] = {"lang": lang, **asked}
             elif lang == "hi":
@@ -266,10 +272,33 @@ class App:
             return self._speak(self.dialog.reset())
 
     def config(self) -> dict:
-        """What the UI may offer: languages (Hindi only with HINGLISH=1) and whether speech works."""
+        """What the UI may offer: languages (Hindi only with HINGLISH=1), whether speech works, and the
+        hands-free wake word (engine "off" = no hands-free)."""
         langs = ["en", "hi"] if hinglish() else ["en"]
         return {"languages": [{"code": c, "name": LANGUAGES[c]} for c in langs],
-                "voice": self.voice is not None, "replies": "en"}
+                "voice": self.voice is not None, "replies": "en",
+                "wake": {"engine": wake.engine(self.voice), "phrase": wake.PHRASE}}
+
+    def wake_check(self, wav: bytes) -> dict:
+        """Does this short clip start with "Hey Qualcomm"? Not under the dialog lock: it doesn't touch the
+        report. kws: the board's keyword spotter; stt: Whisper + app/wake.py on the text."""
+        eng = wake.engine(self.voice)
+        out = {"wake": False, "engine": eng, "error": ""}
+        if eng == "off":
+            out["error"] = "hands-free is off (no speech-to-text, or WAKE=off)"
+            return out
+        if os.environ.get("STT_TRIM", "on") != "off":
+            wav, _ = trim_silence(wav)
+        if eng == "kws":
+            k = self.voice.spot(wav)
+            out.update(wake=k.detected and not k.error, keyword=k.keyword, ms=k.wall_ms, device=k.device,
+                       error=k.error)
+            return out
+        stt = self.voice.transcribe(wav, prompt="", **(stt_settings("en") or {}))
+        hit, rest = wake.find(stt.text)
+        out.update(wake=hit and not stt.error, heard=stt.text, rest=rest, ms=stt.wall_ms, device=stt.device,
+                   error=stt.error)
+        return out
 
     def proof(self) -> dict:
         """NPU placement from llama-server's startup log, read over adb. Null
@@ -332,6 +361,10 @@ def make_handler(app: App):
                         lang = self.headers.get("X-Language") or _query(self.path).get("lang")
                         return self._json(app.turn_wav(body, lang))
                     return self._json(app.turn_text(json.loads(body or b"{}").get("text", "")))
+                if self.path == "/api/wake":
+                    if ctype not in ("audio/wav", "audio/x-wav", "audio/wave"):
+                        return self._json({"error": "POST /api/wake takes audio/wav"}, 400)
+                    return self._json(app.wake_check(body))
                 if self.path == "/api/edit":
                     req = json.loads(body)
                     return self._json(app.edit(req["field"], req["value"]))

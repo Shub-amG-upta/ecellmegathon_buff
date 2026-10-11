@@ -6,7 +6,8 @@
 
 const Mic = (() => {
   const TARGET_RATE = 16000;
-  const st = { ctx: null, stream: null, node: null, chunks: [], active: false, onLevel: null };
+  // onFrame: hands-free listening (handsfree.js) gets every frame, also while push-to-talk is not recording
+  const st = { ctx: null, stream: null, node: null, chunks: [], active: false, onLevel: null, onFrame: null };
 
   const WORKLET = `
 class Capture extends AudioWorkletProcessor {
@@ -33,6 +34,7 @@ registerProcessor("capture", Capture);`;
     const src = st.ctx.createMediaStreamSource(st.stream);
     st.node = new AudioWorkletNode(st.ctx, "capture");
     st.node.port.onmessage = e => {
+      if (st.onFrame) st.onFrame(e.data);
       if (!st.active) return;
       st.chunks.push(e.data);
       if (st.onLevel) {
@@ -97,5 +99,24 @@ registerProcessor("capture", Capture);`;
     return new Blob([buf], { type: "audio/wav" });
   }
 
-  return { start, stop, resample, encodeWav, TARGET_RATE, isActive: () => st.active };
+  // Hands-free: every captured frame (Float32Array at rate()) goes to onFrame until unlisten().
+  async function listen(onFrame) {
+    await ready();
+    st.onFrame = onFrame;
+  }
+
+  function unlisten() { st.onFrame = null; }
+
+  // Frames collected by a listener -> { wav, seconds } at 16 kHz, like stop().
+  async function toWav(chunks) {
+    const length = chunks.reduce((n, c) => n + c.length, 0);
+    const pcm = new Float32Array(length);
+    let o = 0;
+    for (const c of chunks) { pcm.set(c, o); o += c.length; }
+    const out = await resample(pcm, st.ctx.sampleRate, TARGET_RATE);
+    return { wav: encodeWav(out, TARGET_RATE), seconds: out.length / TARGET_RATE };
+  }
+
+  return { start, stop, resample, encodeWav, TARGET_RATE, isActive: () => st.active,
+           listen, unlisten, toWav, rate: () => (st.ctx ? st.ctx.sampleRate : 48000) };
 })();

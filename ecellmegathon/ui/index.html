@@ -14,6 +14,8 @@
   </div>
   <div class="top-right">
     <a class="ghost-link" href="record.html">Record mode</a>
+    <button id="handsfree" class="ghost small" type="button" aria-pressed="false" hidden
+            title="Say “Hey Qualcomm” instead of holding the button">🎙 Hands-free: off</button>
     <button id="lang" class="ghost small" type="button" aria-label="Change the language you speak" hidden>🌐 English</button>
     <button id="reply-mode" class="ghost small" type="button" aria-label="Change how replies are given">🔊 Voice</button>
     <span id="state" class="badge" data-state="collecting">collecting</span>
@@ -41,6 +43,9 @@
         <span id="ptt-label">Hold to speak</span>
       </button>
       <div class="level" aria-hidden="true"><div id="level-bar"></div></div>
+      <p id="hf-status" class="hf-status" role="status" aria-live="polite" hidden>
+        <span class="hf-dot" aria-hidden="true"></span><span id="hf-text"></span>
+      </p>
       <p id="lang-hint" class="lang-hint" hidden>
         <strong lang="hi">हिंदी या Hinglish में बोलिए.</strong>
         Your speech is translated to English on the device; the assistant replies in English.
@@ -132,6 +137,7 @@
 </dialog>
 
 <script src="audio.js"></script>
+<script src="handsfree.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

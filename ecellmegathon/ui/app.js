@@ -65,6 +65,12 @@ async function api(method, path, body, contentType, headers) {
   return data;
 }
 
+// A spoken turn (push-to-talk or hands-free), with the language the user speaks when the server offers a choice.
+function sendSpoken(wav, extra) {
+  const headers = { ...(languages.includes("hi") ? { "X-Language": speakLang } : {}), ...(extra || {}) };
+  return send(wav, "audio/wav", headers);
+}
+
 async function send(body, contentType, headers) {
   if (busy) return;
   setBusy(true);
@@ -102,7 +108,9 @@ function render(r) {
     loadReports();
     if (r.report_id && r.report_id !== shownReport) showReport(r.report_id);   // open it once, on submit
   }
-  if (r.audio_url && replyMode === "voice") play(r.audio_url);
+  const willPlay = Boolean(r.audio_url && replyMode === "voice");
+  if (willPlay) play(r.audio_url);
+  HandsFree.onReply(r, willPlay);              // hands-free: listen for the answer once the reply is done
 }
 
 // One chat message: the bubble, optional choices shown under it (not clickable: answer by voice or text),
@@ -346,7 +354,9 @@ function setBusy(on) {
 function play(url) {
   if (player) player.pause();
   player = new Audio(url);
-  player.play().catch(() => { /* autoplay blocked: the replay button still works */ });
+  player.onended = () => HandsFree.onAudioEnd();
+  player.onerror = () => HandsFree.onAudioEnd();
+  player.play().catch(() => HandsFree.onAudioEnd());   // autoplay blocked: the replay button still works
 }
 
 // ---------------------------------------------------------------- reply mode
@@ -401,10 +411,12 @@ function savedLanguage() {
 }
 
 async function loadConfig() {
+  let c = null;
   try {
-    const c = await api("GET", "/api/config");
+    c = await api("GET", "/api/config");
     languages = (c && c.languages ? c.languages : []).map(l => l.code);
   } catch { languages = ["en"]; }        // older server: English only
+  HandsFree.configure(c && c.wake);
   const multi = languages.includes("hi");
   $("lang").hidden = !multi;
   $("lang-pick").hidden = !multi;
@@ -656,7 +668,7 @@ async function stopRecording() {
     showError("That was too short. Hold the button while you speak.");
     return;
   }
-  await send(clip.wav, "audio/wav", languages.includes("hi") ? { "X-Language": speakLang } : undefined);
+  await sendSpoken(clip.wav);
 }
 
 // ---------------------------------------------------------------- wiring
@@ -695,6 +707,7 @@ function wire() {
   window.addEventListener("afterprint", () => document.body.classList.remove("print-report"));
   $("reply-mode").addEventListener("click", askReplyMode);
   $("lang").addEventListener("click", () => setLanguage(speakLang === "hi" ? "en" : "hi"));
+  $("handsfree").addEventListener("click", () => HandsFree.toggle());
   document.querySelectorAll("#lang-pick [data-lang]").forEach(b =>
     b.addEventListener("click", () => setLanguage(b.dataset.lang)));
   const dlg = $("mode-dialog");

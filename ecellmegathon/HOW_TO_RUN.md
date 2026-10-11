@@ -263,3 +263,20 @@ EVAL_HEAT_PAUSE=90:80 TYPE_MODEL=$T TYPE_PREFILL=on TYPE_PARALLEL=1 PY benchmark
 ```
 
 Commit the probe JSON and the runs as before. The probe stops if a lane is not fully on HTP0.
+
+## 16. "Hey Qualcomm" hands-free (rule: `eval/DECISION_wake.md`, written before any test)
+
+The page gets a **🎙 Hands-free** button (only when speech-to-text is up). When it's on, say **"Hey Qualcomm"**, wait
+for the beep and "Listening…", then speak; it sends when you pause for about a second. You can also say it in one
+breath ("Hey Qualcomm, there was a fire in the lab"). After each question the assistant asks, just answer: no wake
+word for the next ~7 s. Hold-to-speak keeps working.
+
+The wake word is detected **on the board**, two ways:
+- **Whisper (default, nothing new to install):** works as soon as `board/voice_up.sh` is up.
+- **Keyword spotter (better, needs one model):** put `sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/` (with
+  `keywords.txt` for HEY QUALCOMM; `voice/kws_server.py` says how) under `$ENGINES/kws/`, and check that
+  `$ENGINES/android/tts/bin/sherpa-onnx-keyword-spotter` exists. `board/voice_up.sh` then starts it and prints
+  `export KWS_URL=...`; export that before starting the app server.
+
+`WAKE=off` hides the button. Measure before the demo: record the clips in `eval/DECISION_wake.md`, then
+`PY eval/wake_eval.py --label BOARD --pos <wake clips> --neg <speech clips>`.

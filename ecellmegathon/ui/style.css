@@ -217,3 +217,15 @@ body.text-only .replay { display: none; }
   body.print-report .rv-convo { display: none; }
   .rv-sev, .rv-type { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* Hands-free ("Hey Qualcomm") status under the composer */
+#handsfree[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.hf-status[hidden] { display: none; }
+.hf-status { display: flex; align-items: center; gap: .5rem; margin: 0; font-size: .88rem; color: var(--muted); }
+.hf-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--line); flex: none; }
+.hf-status[data-state="idle"] .hf-dot { background: var(--accent); opacity: .5; }
+.hf-status[data-state="burst"] .hf-dot, .hf-status[data-state="checking"] .hf-dot { background: var(--warn); }
+.hf-status[data-state="listen"] { color: var(--ink); font-weight: 600; }
+.hf-status[data-state="listen"] .hf-dot { background: var(--bad); animation: hf-pulse 1s ease-in-out infinite; }
+@keyframes hf-pulse { 50% { transform: scale(1.5); opacity: .5; } }
+@media (prefers-reduced-motion: reduce) { .hf-status[data-state="listen"] .hf-dot { animation: none; } }
