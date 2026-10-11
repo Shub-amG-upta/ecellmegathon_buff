@@ -16,6 +16,7 @@ Environment:
   POSTFIX    on | off   the v4 post-model fixes (app/postfix.py; default on)
   PROMPT     1 | 2      system prompt version (2 from v5)
   ANSWER     full | compact   compact (v6): the model writes only the fields object or S/C/N
+  PREFILL    on | off   write the answer's fixed start into the prompt instead of decoding it (default off)
   TYPE_MODEL <gguf>     v7: a second model decides the incident type on the first description (app/router.py);
              TYPE_MODEL_URL default http://127.0.0.1:8084 (board.board lane "type")
   LLM_CONSTRAINT  schema | gbnf   how the answer is constrained (gbnf: no whitespace; compare on the board)

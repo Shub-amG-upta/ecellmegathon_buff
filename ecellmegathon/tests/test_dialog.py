@@ -22,7 +22,7 @@ class Scripted:
         self.replies = list(replies)
         self.calls = []
 
-    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None):
+    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None, prefix=None):
         self.calls.append({"prompt": prompt, "json_schema": json_schema, "grammar": grammar, "system": system})
         r = self.replies.pop(0)
         if isinstance(r, LLMReply):

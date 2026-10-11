@@ -19,7 +19,7 @@ class Scripted:
         self.replies = list(replies)
         self.lane, self.model_file = "laptop", "m.gguf"
 
-    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None):
+    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None, prefix=None):
         return LLMReply(text=json.dumps(self.replies.pop(0)), backend="laptop", model="m.gguf",
                         prefill_ms=100.0, decode_ms=200.0, latency_ms=320.0)
 

@@ -67,7 +67,7 @@ LANE_PORT = {"npu": 8080, "cpu": 8081, "type": 8084}      # "type": v7's type mo
 # HTP0 and with grammar-constrained sampling; start_lane checks the board's llama-server has the flags
 # (they were renamed in recent llama.cpp builds), then measure decode tok/s and field accuracy.
 SPEC_FLAGS = ("--spec-type ngram-simple --spec-ngram-simple-size-n {n} --spec-ngram-simple-size-m {m}")
-SPEC_N, SPEC_M = 3, 8
+SPEC_N, SPEC_M = int(os.environ.get("SPEC_N", 3)), int(os.environ.get("SPEC_M", 8))
 
 # Cooler CPU (COOL_CPU=1 or --cool-cpu), off by default until measured. On the NPU lane the CPU only samples
 # tokens and checks the grammar, but llama-server starts a thread per core and busy-polls them (--poll 50):
@@ -163,7 +163,7 @@ def server_has_flag(flag: str, serial: str = "") -> bool:
 
 
 def start_lane(lane: str, model_file: str, threads: int = 6, serial: str = "",
-               log_level: int | None = 4, ctx: int = CTX_SIZE, spec: bool = False,
+               log_level: int | None = 4, ctx: int = CTX_SIZE, spec: bool | None = None,
                cool_cpu: bool | None = None) -> dict:
     """Start llama-server in the background on the board and forward its port."""
     sha = check_model(model_file, serial)
@@ -172,6 +172,8 @@ def start_lane(lane: str, model_file: str, threads: int = 6, serial: str = "",
     if spec and not server_has_flag("--spec-ngram-simple-size-n", serial):
         raise RuntimeError("the board's llama-server has no --spec-type ngram-simple flags "
                            "(older build); start without SPEC=1")
+    if spec is None or (spec is False and lane == "npu"):  # SPEC=1 reaches run_bench.py's start_lane too
+        spec = os.environ.get("SPEC", "0") == "1" and lane == "npu"
     if cool_cpu is None:                                  # COOL_CPU=1 reaches run_bench.py's start_lane too
         cool_cpu = os.environ.get("COOL_CPU", "0") == "1"
     if cool_cpu and not server_has_flag("--poll", serial):

@@ -13,7 +13,7 @@ class Fake:
     def __init__(self, *texts, status="ok", model="m"):
         self.texts, self.status, self.model_file, self.calls = list(texts), status, model, []
 
-    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None):
+    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None, prefix=None):
         self.calls.append({"prompt": prompt, "json_schema": json_schema, "max_tokens": max_tokens})
         return LLMReply(text=self.texts.pop(0) if self.texts else "", status=self.status, model=self.model_file,
                         latency_ms=1000.0, prefill_ms=100.0, decode_ms=800.0, prefill_tokens=40, decode_tokens=20)

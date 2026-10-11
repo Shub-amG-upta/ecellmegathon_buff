@@ -49,9 +49,9 @@ class TypeRouter:
         except ValueError:
             return False
 
-    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None):
+    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None, **kw):
         reply = self.main.generate(prompt, max_tokens=max_tokens, grammar=grammar, json_schema=json_schema,
-                                   system=system)
+                                   system=system, **kw)
         if reply.status != "ok" or self._form_has_type(prompt):
             return reply
         try:

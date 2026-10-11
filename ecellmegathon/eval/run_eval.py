@@ -146,11 +146,14 @@ class Oracle:
     def __init__(self, cases):
         self.by_text = {t["user"]: t["gold"] for c in cases for t in c["turns"]}
 
-    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None):
+    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None, prefix=None):
         user = prompt.rsplit("\nUser: ", 1)[1]
         g = self.by_text[user]
         call = {"tool": g["tool"], **({"args": g["args"]} if g["args"] else {})}
-        return LLMReply(text=json.dumps(call), backend="oracle", model="oracle")
+        text = json.dumps(call, separators=(",", ":"), ensure_ascii=False)
+        if prefix is not None and not text.startswith(prefix):
+            text = prefix + "}}"            # a pre-filled answer can only be an update; nothing = no_op
+        return LLMReply(text=text, backend="oracle", model="oracle")
 
 
 # ---- pacing and heat (thermal) ---------------------------------------------------
@@ -252,8 +255,7 @@ def teacher_forced(cases, backend, said: dict | None = None, only: set | None = 
                     reply = LLMReply(text=json.dumps(quick), backend="code", model="fastpath",
                                      prefill_tokens=None, decode_tokens=None)
                 else:
-                    reply = backend.generate(user_message(d.form.compact(), t["asked"], text),
-                                             system=d.system, max_tokens=d.max_tokens, **d.constrain())
+                    reply = d.call_llm(user_message(d.form.compact(), t["asked"], text), text)
                 call, err = d._parse(reply.text) if reply.status == "ok" else ({"tool": None}, reply.error)
                 kept, dropped = gated(call, " ".join(heard), text, bool(t["form_before"].get("s")),
                                       t["form_before"])
@@ -509,6 +511,7 @@ def main() -> int:
     from app.prompt import prompt_version
     res["prompt"] = prompt_version()
     res["answer"] = Dialog(backend).answer
+    res["prefill"] = Dialog(backend).prefill
     b = backend                                           # the v7 type router, possibly inside Throttled
     while b is not None:
         if hasattr(b, "overrides") and hasattr(b, "type_backend"):

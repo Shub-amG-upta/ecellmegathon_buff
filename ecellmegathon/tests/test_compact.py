@@ -78,7 +78,7 @@ class Scripted:
     def __init__(self, *replies):
         self.replies, self.calls = list(replies), []
 
-    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None):
+    def generate(self, prompt, max_tokens=128, grammar=None, json_schema=None, system=None, prefix=None):
         self.calls.append({"json_schema": json_schema, "grammar": grammar, "system": system})
         return LLMReply(text=self.replies.pop(0), backend="npu", model="m.gguf", decode_tokens=10,
                         decode_ms=480.0, prefill_ms=50.0, latency_ms=560.0)

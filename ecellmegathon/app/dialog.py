@@ -14,12 +14,13 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 from datetime import datetime
 
 from app import fastpath, gate, postfix, report
 from app.form import FormState, answer_mode, llm_json_schema, load_catalogue, load_schema, to_tool_call
-from app.grammar import incident_gbnf
+from app.grammar import UPDATE_PREFIX, incident_gbnf
 from app.prompt import system_prompt, user_message
 from app.timeparse import resolve
 
@@ -62,6 +63,10 @@ class Dialog:
         if self.constraint not in ("schema", "gbnf"):
             raise ValueError(f"LLM_CONSTRAINT must be schema or gbnf, not {self.constraint!r}")
         self.gbnf = incident_gbnf(self.schema, compact=self.answer == "compact")
+        # answer pre-fill (PREFILL=on): the fixed start {"tool":"update_report","args":{ goes into the prompt and
+        # the model writes only the fields; skipped for compact answers and for turns that mention submit/cancel
+        self.prefill = os.environ.get("PREFILL", "off") == "on" and self.answer == "full"
+        self.gbnf_after_prefix = incident_gbnf(self.schema, after_prefix=True)
         self.type_values = next(f for f in self.schema["fields"] if f.get("key") == "t")["values"]
         self.use_fast_path = use_fast_path
         self.turn_id = 0
@@ -93,9 +98,7 @@ class Dialog:
         if fast is not None:                   # answered by code: no LLM call, no LLM timings
             call, err, llm = dict(fast), "", {"fast_path": True}
         else:
-            reply = self.backend.generate(user_message(self.form.compact(), self.asked, text),
-                                          system=self.system, max_tokens=self.max_tokens,
-                                          **self.constrain())
+            reply = self.call_llm(user_message(self.form.compact(), self.asked, text), text)
             llm = {"llm_prefill": reply.prefill_ms, "llm_decode": reply.decode_ms,
                    "llm_wall": reply.latency_ms, "device": reply.backend, "model": reply.model,
                    "prefill_tokens": reply.prefill_tokens, "decode_tokens": reply.decode_tokens}
@@ -147,6 +150,16 @@ class Dialog:
             self.form.date_time = resolve(str(value), self.clock())
         return self._result(transcript="", say="Updated. " + self._next_line(), t0=t0)
 
+    _NOT_AN_UPDATE = re.compile(r"\b(submit|cancel|discard|scrap)\b", re.I)
+
+    def call_llm(self, message: str, text: str):
+        """The one LLM call of a turn (the app and the eval both use it). With the pre-fill on, the answer's
+        fixed start is written into the prompt, unless the turn may be a submit or a cancel."""
+        if self.prefill and not self._NOT_AN_UPDATE.search(text):
+            return self.backend.generate(message, system=self.system, max_tokens=self.max_tokens,
+                                         grammar=self.gbnf_after_prefix, prefix=UPDATE_PREFIX)
+        return self.backend.generate(message, system=self.system, max_tokens=self.max_tokens, **self.constrain())
+
     def constrain(self) -> dict:
         """The keyword argument that constrains the LLM's answer, for backend.generate."""
         return {"grammar": self.gbnf} if self.constraint == "gbnf" else {"json_schema": self.json_schema}
@@ -161,6 +174,8 @@ class Dialog:
             if call is not None:
                 if not isinstance(call.get("args", {}), dict):
                     call["args"] = {}
+                if call["tool"] == "update_report" and not call["args"]:
+                    return {"tool": "no_op"}, ""          # an update with nothing in it says nothing
                 return call, ""
         except ValueError:
             pass

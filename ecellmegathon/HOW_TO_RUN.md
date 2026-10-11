@@ -200,3 +200,23 @@ The eval prints `type router: … calls · type changed … · failures …` and
 Same cooling (fan) for both; write it down. Then, in the same session if time allows, the CPU heat test:
 `COOL_CPU=1 EVAL_HEAT_PAUSE=90:80 PY benchmarks/run_bench.py --tag v7-coolcpu --runs 1` (with or without
 `TYPE_MODEL`, whichever v7's rule keeps).
+
+## 13. Speed switches on the board: PREFILL and SPEC (rule: `eval/DECISION_speed.md`, written before these runs)
+
+`PREFILL=on`: the fixed start of the answer goes into the prompt instead of being decoded (~330 ms less per LLM call,
+projected). `SPEC=1`: llama-server guesses tokens copied from the prompt and checks them in one batch. One session,
+same cooling, on `v7`:
+
+```
+git fetch origin && git checkout v7
+EVAL_HEAT_PAUSE=90:80                                          PY benchmarks/run_bench.py --tag v7-baseline --runs 1
+EVAL_HEAT_PAUSE=90:80 PREFILL=on                               PY benchmarks/run_bench.py --tag v7-prefill --runs 1
+EVAL_HEAT_PAUSE=90:80 SPEC=1                                   PY benchmarks/run_bench.py --tag v7-spec --runs 1
+EVAL_HEAT_PAUSE=90:80 PREFILL=on SPEC=1                        PY benchmarks/run_bench.py --tag v7-prefill-spec --runs 1
+EVAL_HEAT_PAUSE=90:80 TYPE_MODEL=gemma-3-4b-it-Q4_0-pure-embq8.gguf PY benchmarks/run_bench.py --tag v7 --runs 2
+PY benchmarks/compare.py
+```
+
+(`v7-baseline` is shared with section 12.) If `SPEC=1` stops with "no --spec-type ngram-simple flags", the board's
+llama.cpp is too old for it: skip that run and note it. The eval output records `prefill`; the server command saved by
+run_bench shows the `--spec-…` flags.

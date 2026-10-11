@@ -101,7 +101,11 @@ def sample(rules: dict, rng, start: str = "root") -> str:
 _CHR = r'[^"\\\x7F\x00-\x1F]'
 
 
-def incident_gbnf(schema: dict, compact: bool = False) -> str:
+# The fixed start of a full update answer, written into the prompt instead of decoded (PREFILL=on).
+UPDATE_PREFIX = '{"tool":"update_report","args":{'
+
+
+def incident_gbnf(schema: dict, compact: bool = False, after_prefix: bool = False) -> str:
     q = _quote                                   # a GBNF string literal
     rules = {"chr": _CHR}
     members = []
@@ -120,7 +124,9 @@ def incident_gbnf(schema: dict, compact: bool = False) -> str:
             rules[f"s-{k}"] = f'{q('"')} chr{{1,{f["max_chars"]}}} {q('"')}'
             rules[f"m-{k}"] = f'{q(f'"{k}":[')} s-{k} ({q(",")} s-{k}){{0,{f["max_items"] - 1}}} {q("]")}'
     rules["member"] = " | ".join(members)
-    if compact:                       # v6: the fields object, or "S" / "C" / "N" (form.COMPACT_CODES)
+    if after_prefix:                  # only what follows UPDATE_PREFIX: the fields, then "}}"; none = nothing
+        rules["root"] = f'( member ({q(",")} member)* )? {q("}}")}'
+    elif compact:                     # v6: the fields object, or "S" / "C" / "N" (form.COMPACT_CODES)
         rules["root"] = f'{q("{")} member ({q(",")} member)* {q("}")} | ' + " | ".join(
             q(f'"{c}"') for c in ("S", "C", "N"))
     else:
