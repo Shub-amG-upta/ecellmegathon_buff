@@ -6,6 +6,8 @@
 #   CTX=4096 board/up.sh           context size (default 2048, human decision 2026-10-10)
 #   SPEC=1 board/up.sh             copy-ahead speculative decoding (off by default; compare on the board)
 #   COOL_CPU=1 board/up.sh         2 CPU threads, no busy-polling (cooler CPU; off by default until measured)
+#   TYPE_MODEL=gemma-3-4b-it-Q4_0-pure-embq8.gguf board/up.sh
+#                                  also start the type model on the NPU (lane "type", port 8084; v7 router)
 #
 # Exit 1 if the board isn't there or placement isn't confirmed: nothing measured
 # after a failed check counts as NPU.
@@ -27,6 +29,12 @@ $PY -m board.board start npu "$MODEL" ${CTX:+--ctx "$CTX"} ${SPEC:+--spec} | gre
 $PY -m board.board check npu || { echo "STOP: LLM placement not confirmed"; exit 1; }
 $PY -m board.board log npu | grep -E 'offloaded [0-9]+/[0-9]+ layers|HTP0 .*buffer size' || true
 
+if [[ -n "${TYPE_MODEL:-}" ]]; then
+    echo "== type model on the NPU: $TYPE_MODEL"
+    $PY -m board.board start type "$TYPE_MODEL" ${CTX:+--ctx "$CTX"} | grep -E '"(url|model_sha256|ready_after_s|ctx)"'
+    $PY -m board.board check type || { echo "STOP: type model placement not confirmed"; exit 1; }
+fi
+
 if [[ -x board/voice_up.sh ]]; then
     echo "== STT + TTS (Track B)"
     board/voice_up.sh
@@ -39,7 +47,7 @@ THINK=""
 cat <<EOF
 
 Ready. Start the app$THINK:
-  LLM=llamaserver LLM_LANE=npu LLM_MODEL=$MODEL $PY -m app.server
+  ${TYPE_MODEL:+TYPE_MODEL=$TYPE_MODEL }LLM=llamaserver LLM_LANE=npu LLM_MODEL=$MODEL $PY -m app.server
   open http://localhost:8000
 Eval (run twice):
   LLM=llamaserver LLM_LANE=npu LLM_MODEL=$MODEL $PY eval/run_eval.py --label BOARD
