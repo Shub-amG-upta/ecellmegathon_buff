@@ -250,8 +250,8 @@ def test_config_offers_hindi_only_with_hinglish(run, monkeypatch):
     monkeypatch.setenv("HINGLISH", "1")
     cfg = call(url, "/api/config")[1]
     assert [x["code"] for x in cfg["languages"]] == ["en", "hi"] and cfg["replies"] == "en"
-    monkeypatch.delenv("HINGLISH", raising=False)          # the default (2026-10-11): on
-    assert [x["code"] for x in call(url, "/api/config")[1]["languages"]] == ["en", "hi"]
+    monkeypatch.delenv("HINGLISH", raising=False)          # the default: off
+    assert [x["code"] for x in call(url, "/api/config")[1]["languages"]] == ["en"]
 
 
 def test_hindi_turn_asks_whisper_for_hindi_translated_and_english_for_english(run, monkeypatch):

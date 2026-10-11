@@ -17,11 +17,11 @@ cd "$(dirname "$0")/.."
 REPO=$(pwd)
 ENGINES=${ENGINES:-$(cd "$REPO/../.." && pwd)/engines}
 MODEL=${STT_MODEL_FILE:-ggml-base.en.bin}
-# Hindi / Hinglish speech (HINGLISH=1, on by default; HINGLISH=0 = English-only): a multilingual Whisper model (not *.en), the language
+# Hindi / Hinglish speech (HINGLISH=1, off by default): a multilingual Whisper model (not *.en), the language
 # detected per clip (-l auto) and the text translated into English (--translate), so the app, the form and the
 # spoken replies stay English. Off: "-l en", whisper-server's own default, so nothing changes.
 # STT_TRANSLATE=0 keeps the words as said (for comparing; eval/hinglish/README.md).
-HINGLISH=${HINGLISH:-1}
+HINGLISH=${HINGLISH:-0}
 if [ "$HINGLISH" = "1" ]; then
     MODEL=${STT_MODEL_FILE:-ggml-base.bin}
     case "$MODEL" in *.en.bin|*.en-*.bin) echo "HINGLISH=1 needs a multilingual Whisper model, not $MODEL" >&2; exit 1;; esac

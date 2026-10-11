@@ -89,7 +89,7 @@ def system_prompt(schema: dict, answer: str | None = None) -> str:
     return compact_prompt(text) if (answer or answer_mode()) == "compact" else text
 
 
-# ---- Hinglish input (HINGLISH=1, on by default; HINGLISH=0 = English-only prompt) ---------------------------------------------------------
+# ---- Hinglish input (HINGLISH=1, off by default: the multilingual Whisper it needs garbled English on the board) ---------------------------------------------------------
 # The app stays in English. STT runs in translate mode (board/voice_up.sh, HINGLISH=1), so Hindi speech
 # mostly arrives as English text; a Hinglish clip Whisper takes for English arrives in Latin-letter Hindi.
 # These lines tell the model so. Text fields are still copied as said (the gate keeps only the user's own
@@ -112,7 +112,7 @@ Answer: {"tool":"update_report","args":{"t":"struck_by","l":"godown number 2","d
 
 
 def hinglish() -> bool:
-    v = os.environ.get("HINGLISH", "1")
+    v = os.environ.get("HINGLISH", "0")
     if v not in ("0", "1"):
         raise ValueError(f"HINGLISH must be 0 or 1, not {v!r}")
     return v == "1"
