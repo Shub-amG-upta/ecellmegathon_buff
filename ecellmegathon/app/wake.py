@@ -30,8 +30,17 @@ _NAME = r"(?:qual[\s-]*com+|qualm?com+|kwal[\s-]*com+|qual[\s-]*cam+|call[\s-]*c
 _WAKE = re.compile(r"^\W*(?:(?:uh|um|so|okay|ok)\W+)?" + _GREETING + r"\W+" + _NAME + r"\b\W*", re.I)
 
 
+# Whisper base.en on the QIDK most often writes a short "Hey Qualcomm" as "Welcome." (BOARD 2026-10-11: two of
+# three tries). Taken as the phrase only when it is the WHOLE clip ("Welcome", "Oh, welcome!"), so "welcome to the
+# lab" or a TV saying "Welcome back" in a longer burst never wakes it. The wake check still sends Whisper no prompt
+# (a hint can make it "hear" the phrase in noise).
+_WELCOME = re.compile(r"^\W*(?:(?:oh|hey|hi)\W+)?welcome\W*$", re.I)
+
+
 def find(text: str) -> tuple[bool, str]:
     """(the text starts with the wake phrase, the words after it)."""
+    if _WELCOME.match(text or ""):
+        return True, ""
     m = _WAKE.match(text or "")
     if not m:
         return False, (text or "").strip()

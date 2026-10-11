@@ -31,8 +31,15 @@ def test_the_phrase_and_what_follows(text, rest):
     assert wake.find(text) == (True, rest)
 
 
+@pytest.mark.parametrize("text", ["Welcome", "Welcome.", "Oh, welcome!", "Hey welcome"])
+def test_whispers_welcome_is_the_phrase(text):
+    """BOARD 2026-10-11: whisper base.en heard "Hey Qualcomm" as "Welcome." in 2 of 3 tries."""
+    assert wake.find(text) == (True, "")
+
+
 @pytest.mark.parametrize("text", ["We called Qualcomm support", "there was a fire", "hey", "Hey Quan", "",
-                                  "the fire started near the Qualcomm board"])
+                                  "the fire started near the Qualcomm board",
+                                  "Welcome to the lab", "Welcome back everyone", "you are welcome here"])
 def test_not_a_wake(text):
     assert wake.find(text)[0] is False and wake.strip(text) == text.strip()
 
