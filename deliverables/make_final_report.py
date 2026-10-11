@@ -40,6 +40,9 @@ def page1(pdf):
            "or click, and saves it. **Every AI model runs on the Qualcomm QIDK (Snapdragon 8 Elite, SM8750P): the "
            "language models on the Hexagon NPU, speech on the board's CPU. No cloud, no internet, the data never "
            "leaves the device.**")
+    # source: eval_BOARD_dev_v7fix-router_run1 (44 dialogs) and eval_BOARD_dev_v9-form10-nlu15_run1 (54 dialogs)
+    p.rich("**On the board: 95.5% of conversations reach the right outcome (42/44), the action is right on 100% "
+           "of turns (157/157), and the 4 mandatory fields are right 93.0% of the time (159/171).**", gap=0.02)
     p.rich("**The core idea: the model extracts, code decides.** One grammar-constrained LLM call per turn turns "
            "the utterance into a tool call; plain code checks every value against what the user actually said, "
            "decides which mandatory field is missing, resolves times, picks follow-up actions from a catalogue and "
@@ -149,8 +152,35 @@ def page2(pdf):
 
     p.h2("6. Results (BOARD: QIDK SM8750P)")
     p.rich("**Eval set:** 65 hand-written dialogs from the problem's example and real incident shapes; dev split = 44 "
-           "dialogs, 157 turns, 242 field values; teacher-forced (each turn from the correct form) and free-running "
-           "(whole conversations); plus 10 later dialogs written after the rules (54 dialogs, 309 values).", size=8.2)
+           "dialogs, 157 turns, 242 field values. Each turn is scored from the correct form (teacher-forced) and "
+           "each conversation is also played end to end (free-running). 10 more dialogs were written later "
+           "(54 in all, 309 values). Configuration: v9, Llama 3.2 3B + Gemma 3 4B for the type, one board run each.",
+           size=8.2)
+    # sources: eval_BOARD_dev_v7fix-router_run1_20261011_063854 (v9 code: fix-tool + list fixes + router) and
+    # eval_BOARD_dev_v9-form10-nlu15_run1_20261011_073923; mandatory = t, s, l, d from their "by field"
+    p.table([["metric", "44 dev dialogs", "all 54 dialogs"],
+             ["**Conversations that reach the right outcome** (report submitted, or cancelled when the user cancels)",
+              "**42 / 44 = 95.5%**", "**51 / 54 = 94.4%**"],
+             ["**Right action on every turn** (update / submit / cancel / nothing)", "**157 / 157 = 100%**",
+              "**206 / 206 = 100%**"],
+             ["**Mandatory fields right** (incident type, severity, location, date & time)", "**159 / 171 = 93.0%**",
+              "**196 / 211 = 92.9%**"],
+             ["severity · location · date & time · incident type", "100% · 93.2% · 92.9% · 86.0%",
+              "100% · 90.7% · 94.2% · 86.8%"],
+             ["All 10 fields, including the optional lists (persons, equipment, actions, witnesses)",
+              "202 / 242 = 83.5%", "250 / 309 = 80.9%"],
+             ["Reports with every field exactly right (end to end)", "10 / 44", "10 / 54"]],
+            [3.85, 1.6, 1.6], size=7.8)
+    p.note("Model time per call: ~1.7 s on later turns, +1.35 s once per report for the type model; ~60% of turns are "
+           "answered by code with no model call. Speech-to-text and text-to-speech timing on the board: not measured "
+           "yet (section 10).")
+    p.footer(2)
+    p.save()
+
+
+def page3(pdf):
+    p = Page(pdf)
+    p.h2("7. Accuracy over the versions (BOARD, 44 dev dialogs)")
     # sources: eval/DECISION_v4_v5.md, DECISION_v6.md, DECISION_v7.md, eval_BOARD_dev_v7fix-router_run1, _v9-form10-nlu15
     p.table([["version (what changed)", "fields right", "tool right", "conversations ended right", "model time / call"],
              ["v3: one model + fast path + severity fallback", "165 / 242", "153 / 157", "34 / 44", "1.65 s"],
@@ -166,13 +196,7 @@ def page2(pdf):
            "router; severity 42/42; location 41/44; time 39/42. On the 10 later dialogs: 9/10 conversations ended "
            "right, 49/49 tool calls, 48/67 fields before the v10 rules.")
 
-    p.footer(2)
-    p.save()
-
-
-def page3(pdf):
-    p = Page(pdf)
-    p.h2("7. Models compared (same code, same day, BOARD)")
+    p.h2("8. Models compared (same code, same day, BOARD)")
     # source: DECISION_v6.md / ANALYSIS_v6-gemma4b_run1.md vs v6-baseline
     p.table([["", "Llama 3.2 3B", "Gemma 3 4B", "Llama + Gemma (type)"],
              ["fields right / 242", "190", "192", "193 (202 with v9 fixes)"],
@@ -183,7 +207,7 @@ def page3(pdf):
             [2.3, 1.45, 1.45, 1.85], size=7.6)
     p.note("Qwen3 1.7B, Gemma 3 1B and Qwen2.5 0.5B are built and allowed on the board but were not run on the eval.")
 
-    p.h2("8. What did not work (dropped by its pre-written rule)")
+    p.h2("9. What did not work (dropped by its pre-written rule)")
     p.table([["experiment", "result (BOARD)"],
              ["Longer prompt with field definitions (v5)", "180/242 vs 190: the model copied a place from an example "
               "and mixed lift with equipment failure"],
@@ -193,7 +217,7 @@ def page3(pdf):
               "fixed by ending on a token boundary, re-run pending"]],
             [2.6, 4.45], size=7.6)
 
-    p.h2("9. Limitations and next steps")
+    p.h2("10. Limitations and next steps")
     p.bullet("**Speech timing on the board** (speech-to-text, text-to-speech, whole spoken turn) is not measured yet; "
              "the tools are built (eval/wer.py, eval/turn_time.py). The first turn is the slow one (~3.3 s of model "
              "time with the router); the speed switches above target ~2 s.", size=8.2)
