@@ -88,6 +88,10 @@ input {
 .choice { display: inline-flex; align-items: center; justify-content: center; height: 46px; min-width: 70px; padding: 0 14px;
           background: var(--card); border: 1px solid #e3e9f0; border-radius: 14px; color: var(--muted); font-weight: 600;
           box-shadow: 0 2px 10px rgba(31, 42, 55, .05); }
+button.choice { cursor: pointer; font: inherit; font-weight: 600; }
+button.choice:hover:not(:disabled), button.choice:focus-visible { border-color: var(--accent); color: var(--accent-dark);
+  background: var(--accent-soft); }
+button.choice:disabled { cursor: default; opacity: .55; }
 .typing .bubble { display: flex; align-items: center; gap: 6px; padding: 16px 18px; }
 .typing .dot { width: 7px; height: 7px; border-radius: 50%; background: #8a97a8; animation: blink 1.2s infinite ease-in-out; }
 .typing .dot:nth-child(2) { animation-delay: .15s; }

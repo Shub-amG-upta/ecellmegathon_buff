@@ -25,6 +25,7 @@ Environment:
              language=hi + translate (Whisper must be multilingual: board/voice_up.sh HINGLISH=1), and the
              prompt gets the Hinglish rules (app/prompt.py). Replies stay English. eval/hinglish/README.md
   STT_LANGUAGE, STT_TRANSLATE   the Hindi turns' Whisper language (default hi) and translate (default 1)
+  ACK        on | off   a short spoken "Got it." while the model works on a spoken turn (GET /api/ack/<k>.wav)
   WAKE       auto | kws | stt | off   "Hey Qualcomm" detector for POST /api/wake (app/wake.py); auto = kws when
              KWS_URL is set (voice/kws_server.py on the board), else stt (the Whisper already running)
 
@@ -115,6 +116,9 @@ def _main_backend():
 
 TTS_WAIT_S = 30.0
 LANGUAGES = {"en": "English", "hi": "Hindi / Hinglish"}
+# Played by the page while the model works on a spoken turn (GET /api/ack/<k>.wav), so the user hears a reply at
+# once. Made once with the board's TTS and kept; ACK=off: none.
+ACKS = ["Got it.", "Okay, noting that.", "Got it, one moment."]
 
 
 def stt_settings(lang: str | None) -> dict | None:
@@ -174,6 +178,15 @@ class App:
         self.audio: dict = {}                          # turn id, or "<turn id>-<k>" for a sentence
         self.lock = threading.Lock()
         self.vocab = VOCAB.read_text() if VOCAB.exists() else ""
+        self.acks: dict[int, bytes] = {}
+        if self.voice is not None and os.environ.get("ACK", "on") != "off":
+            threading.Thread(target=self._make_acks, daemon=True).start()
+
+    def _make_acks(self) -> None:
+        for k, text in enumerate(ACKS):
+            t = self.voice.speak(text)
+            if t.wav:
+                self.acks[k] = t.wav
 
     def _speak(self, result: dict) -> dict:
         """Start speech for this turn in the background and return at once: the UI shows the form
@@ -277,7 +290,8 @@ class App:
         langs = ["en", "hi"] if hinglish() else ["en"]
         return {"languages": [{"code": c, "name": LANGUAGES[c]} for c in langs],
                 "voice": self.voice is not None, "replies": "en",
-                "wake": {"engine": wake.engine(self.voice), "phrase": wake.PHRASE}}
+                "wake": {"engine": wake.engine(self.voice), "phrase": wake.PHRASE},
+                "acks": sorted(self.acks)}
 
     def wake_check(self, wav: bytes) -> dict:
         """Does this short clip start with "Hey Qualcomm"? Not under the dialog lock: it doesn't touch the
@@ -389,6 +403,9 @@ def make_handler(app: App):
                     return self._json({"error": (job.error if job else "") or "no audio"}, 404)
                 return self._send(200, job.wav, "audio/wav",
                                   {"X-TTS-Ms": f"{job.ms:.1f}"} if job.ms is not None else None)
+            if (m := re.fullmatch(r"/api/ack/(\d+)\.wav", path)):
+                wav = app.acks.get(int(m.group(1)))
+                return self._send(200, wav, "audio/wav") if wav else self._json({"error": "no such ack"}, 404)
             if path == "/api/config":
                 return self._json(app.config())
             if path == "/api/proof":

@@ -67,7 +67,10 @@ const HandsFree = (() => {
     window_(win, Math.sqrt(sum / Math.max(1, n)));
   }
 
-  function speaking() { return player && !player.paused && !player.ended; }
+  function speaking() {
+    const on = a => a && !a.paused && !a.ended;
+    return on(player) || on(ackPlayer);
+  }
 
   function window_(win, rms) {
     // the assistant is speaking, the user holds the button, or a turn is in flight: don't listen

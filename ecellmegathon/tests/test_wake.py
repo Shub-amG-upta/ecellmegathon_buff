@@ -80,6 +80,13 @@ def _fake_voice(heard, spot=None):
     return v, calls
 
 
+
+@pytest.fixture(autouse=True)
+def _no_acks(monkeypatch):
+    """The "Got it." clips are made by a background speak() at startup; these tests count speak() calls."""
+    monkeypatch.setenv("ACK", "off")
+
+
 @pytest.fixture
 def run(tmp_path):
     servers = []

@@ -280,3 +280,22 @@ The wake word is detected **on the board**, two ways:
 
 `WAKE=off` hides the button. Measure before the demo: record the clips in `eval/DECISION_wake.md`, then
 `PY eval/wake_eval.py --label BOARD --pos <wake clips> --neg <speech clips>`.
+
+## 17. Persons/actions rules, severity, "Got it", and timing the whole turn (2026-10-11)
+
+New on v9, nothing to switch on:
+- **Persons and actions rules** (`PEOPLEFIX`, on): projected 202 → 210/242 fields from the saved board answers
+  (`eval/DECISION_peoplefix.md`). Board check: one run, `env $R PY benchmarks/run_bench.py --tag v9-peoplefix --runs 1`.
+- **Severity:** the Low / Medium / High / Critical chips under the question are buttons now (one tap answers), and
+  everyday answers are understood: "not too bad", "pretty serious", "very serious", "life threatening",
+  "nothing major", "bahut zyada", ... (same scale as `eval/nlu/LABELING.md`).
+- **"Got it."** If the reply to a spoken turn takes more than 0.6 s, a short "Got it." / "Okay, noting that." plays
+  (made once by the board's TTS at startup). `ACK=off` turns it off.
+
+Timing, never measured on the board yet (Sarthak, with the board's STT/TTS up and the app server running):
+```
+PY eval/wer.py --label BOARD --subset                       # STT alone: median, p90, ms per 8 s clip (STT_DECISION.md)
+PY eval/turn_time.py --label BOARD --audio <speech eval recordings> --speaker <one speaker>
+```
+`turn_time.py` plays the recorded conversations through the app in order and reports, for first descriptions,
+later model turns and fast-path turns: STT, model, reply, TTS and **time to sound** (clip sent → reply audio ready).

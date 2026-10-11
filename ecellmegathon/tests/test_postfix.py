@@ -98,3 +98,49 @@ def test_every_hinglish_gold_action_is_a_response():
         for t in c["turns"]:
             for a in t["gold"]["args"].get("a", []):
                 assert postfix._RESPONSE.search(a), (c["id"], t["i"], a)
+
+
+# ---- PEOPLEFIX ----------------------------------------------------------------------------------------------
+
+def _all_gold(paths):
+    for path in paths:
+        for ln in (ROOT / path).read_text(encoding="utf-8").splitlines():
+            c = json.loads(ln)
+            for t in c["turns"]:
+                yield c["id"], t
+
+
+def test_every_gold_person_and_witness_is_kept_as_it_is():
+    for cid, t in _all_gold(["eval/nlu/cases.jsonl", "eval/nlu15/cases.jsonl", "eval/hinglish/cases.jsonl"]):
+        for k in ("p", "w"):
+            for v in t["gold"]["args"].get(k, []):
+                assert postfix.person_value(v) == v, (cid, t["i"], k, v)
+
+
+def test_people_and_action_rules():
+    assert postfix.people_only({"p": ["the manager", "he wasn't wearing goggles"], "w": ["Anil"]}) == \
+        {"p": ["the manager"], "w": ["Anil"]}
+    assert postfix.people_only({"p": ["Three workers are badly injured"]}) == {"p": ["Three workers"]}
+    assert postfix.people_only({"p": ["we gave him water", "nearly slipped", "fitter's legs"]}) == {}
+    assert postfix.fill_person({}, "Our lineman was fixing the old cables when he got a shock", {}) == \
+        {"p": ["Our lineman"]}
+    assert postfix.fill_person({}, "Solvent got into the operator's eyes", {}) == {"p": ["the operator"]}
+    assert postfix.fill_person({}, "Seven people were inside, a guy was reversing", {}) == {}     # not labelled
+    assert postfix.fill_person({}, "Our lineman fell", {"t": "fall_height"}) == {}               # first turn only
+    assert postfix.complete_actions({"a": ["informed the police"]},
+                                    "we have informed the police and our security team") == \
+        {"a": ["informed the police and our security team"]}
+    assert postfix.complete_actions({"a": ["flushed his eyes"]},
+                                    "we have flushed his eyes for fifteen minutes and EHS has been informed") == \
+        {"a": ["flushed his eyes for fifteen minutes"]}
+    assert postfix.complete_actions({"a": ["fanned him"]}, "fanned him till the ambulance came") == {"a": ["fanned him"]}
+    assert postfix.fill_more_actions({}, "we hit the emergency stop and reversed the rollers to free her", {}) == \
+        {"a": ["hit the emergency stop", "reversed the rollers to free her"]}
+    assert postfix.fill_more_actions({}, "He hit his right arm on a metal cabinet", {}) == {}
+    assert postfix.fill_more_actions({}, "the forklift reversed into one of our packers", {}) == {}
+
+
+def test_peoplefix_switch_off(monkeypatch):
+    monkeypatch.setenv("PEOPLEFIX", "off")
+    assert postfix.apply({"p": ["he wasn't wearing goggles"]}, "he wasn't wearing goggles", {"t": "chemical"}) == \
+        {"p": ["he wasn't wearing goggles"]}

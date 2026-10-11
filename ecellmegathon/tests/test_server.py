@@ -48,6 +48,13 @@ FAKE_VOICE = SimpleNamespace(
     speak=lambda text: Tts(b"RIFF....WAVEfake", 300.0, "cpu", "piper"))
 
 
+
+@pytest.fixture(autouse=True)
+def _no_acks(monkeypatch):
+    """The "Got it." clips are made by a background speak() at startup; these tests count speak() calls."""
+    monkeypatch.setenv("ACK", "off")
+
+
 @pytest.fixture
 def run(tmp_path):
     servers = []
@@ -281,3 +288,23 @@ def test_a_turn_naming_no_language_sends_nothing_extra_even_with_hinglish(run, m
     url = run([{"tool": "no_op"}], voice_mod=_voice_seeing(seen))
     r = call(url, "/api/turn", b"RIFF....", ctype="audio/wav")[1]
     assert seen == [{}] and "stt_language" not in r and not r["error"]
+
+
+
+def test_ack_clips_are_made_once_and_served(run, monkeypatch):
+    import time as _t
+    monkeypatch.setenv("ACK", "on")
+    said = []
+
+    def speak(text):
+        said.append(text)
+        return Tts(b"RIFF....WAVE" + text.encode(), 100.0, "cpu", "piper")
+    url = run([], voice_mod=SimpleNamespace(transcribe=FAKE_VOICE.transcribe, speak=speak))
+    for _ in range(50):
+        if len(call(url, "/api/config")[1]["acks"]) == 3:
+            break
+        _t.sleep(0.02)
+    from app.server import ACKS
+    assert call(url, "/api/config")[1]["acks"] == [0, 1, 2] and said == ACKS
+    assert call(url, "/api/ack/1.wav")[1] == b"RIFF....WAVE" + ACKS[1].encode()
+    assert call(url, "/api/ack/9.wav")[0] == 404

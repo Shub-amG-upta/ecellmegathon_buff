@@ -33,7 +33,7 @@ const LATENCY_ROWS = [
   ["total", "Total turn", null],
 ];
 const MIN_RECORD_MS = 300;
-// Shown under the severity question as a reminder; the user answers by voice or text.
+// Under the severity question: tap one (it is sent as the answer), or say / type it.
 const SEVERITY_CHOICES = ["Low", "Medium", "High", "Critical"];
 const SEVERITY_HI = { Low: "कम", Medium: "मध्यम", High: "गंभीर", Critical: "अति गंभीर" };
 
@@ -66,9 +66,38 @@ async function api(method, path, body, contentType, headers) {
 }
 
 // A spoken turn (push-to-talk or hands-free), with the language the user speaks when the server offers a choice.
-function sendSpoken(wav, extra) {
+// If the reply takes longer than ACK_AFTER_MS, a short "Got it." plays meanwhile (spoken replies only).
+async function sendSpoken(wav, extra) {
   const headers = { ...(languages.includes("hi") ? { "X-Language": speakLang } : {}), ...(extra || {}) };
-  return send(wav, "audio/wav", headers);
+  const timer = replyMode === "voice" && acks.length ? setTimeout(playAck, ACK_AFTER_MS) : null;
+  try { await send(wav, "audio/wav", headers); } finally { clearTimeout(timer); }
+}
+
+// ---- instant acknowledgment: short clips made once by the board's TTS (GET /api/ack/<k>.wav), kept in memory
+const ACK_AFTER_MS = 600;
+let acks = [];            // blob URLs
+let ackPlayer = null;
+let ackNext = 0;
+
+async function loadAcks(ids) {
+  acks = [];
+  for (const k of ids || []) {
+    try {
+      const r = await fetch(`/api/ack/${k}.wav`);
+      if (r.ok) acks.push(URL.createObjectURL(await r.blob()));
+    } catch { /* no ack: replies still play */ }
+  }
+}
+
+function playAck() {
+  if (!acks.length || replyMode !== "voice") return;
+  stopAck();
+  ackPlayer = new Audio(acks[ackNext++ % acks.length]);
+  ackPlayer.play().catch(() => {});
+}
+
+function stopAck() {
+  if (ackPlayer) { ackPlayer.pause(); ackPlayer = null; }
 }
 
 async function send(body, contentType, headers) {
@@ -94,9 +123,11 @@ function render(r) {
   $("report-id").textContent = r.report_id ? `Report ${r.report_id}` : "";
 
   hideTyping();
+  stopAck();                                   // the real reply is here
   if (r.transcript) addChat("user", r.transcript, [
     r.timings_ms && r.timings_ms.stt != null ? `heard in ${fmt(r.timings_ms.stt)} ms` : "",
     heardAs(r.stt_language)].filter(Boolean).join(" · "));
+  document.querySelectorAll(".choices button").forEach(b => { b.disabled = true; });   // only the newest row works
   if (r.say) addChat("bot", r.say, "", r.audio_url, r.asked === "s" ? severityChoices() : null);
   if (r.error) showError(r.error);
 
@@ -113,8 +144,8 @@ function render(r) {
   HandsFree.onReply(r, willPlay);              // hands-free: listen for the answer once the reply is done
 }
 
-// One chat message: the bubble, optional choices shown under it (not clickable: answer by voice or text),
-// then a line with the time and any meta.
+// One chat message: the bubble, optional choices under it ([label, text sent when tapped]), then a line with
+// the time and any meta.
 function addChat(who, text, meta, audioUrl, choices) {
   const li = document.createElement("li");
   li.className = who;
@@ -125,10 +156,13 @@ function addChat(who, text, meta, audioUrl, choices) {
   if (choices) {
     const row = document.createElement("div");
     row.className = "choices";
-    for (const c of choices) {
-      const chip = document.createElement("span");
+    for (const [label, value] of choices) {
+      const chip = document.createElement("button");
+      chip.type = "button";
       chip.className = "choice";
-      chip.textContent = c;
+      chip.textContent = label;
+      chip.setAttribute("aria-label", `Answer: ${value}`);
+      chip.onclick = () => { if (!busy) send(JSON.stringify({ text: value })); };
       row.appendChild(chip);
     }
     li.appendChild(row);
@@ -156,8 +190,9 @@ function heardAs(st) {
   return st.translate ? "translated from Hindi" : "Hindi, as said";
 }
 
+// [label, what is sent]
 function severityChoices() {
-  return speakLang === "hi" ? SEVERITY_CHOICES.map(c => `${c} · ${SEVERITY_HI[c]}`) : SEVERITY_CHOICES;
+  return SEVERITY_CHOICES.map(c => [speakLang === "hi" ? `${c} · ${SEVERITY_HI[c]}` : c, c.toLowerCase()]);
 }
 
 function clock() {
@@ -417,6 +452,7 @@ async function loadConfig() {
     languages = (c && c.languages ? c.languages : []).map(l => l.code);
   } catch { languages = ["en"]; }        // older server: English only
   HandsFree.configure(c && c.wake);
+  loadAcks(c && c.acks);
   const multi = languages.includes("hi");
   $("lang").hidden = !multi;
   $("lang-pick").hidden = !multi;

@@ -279,6 +279,152 @@ def fill_actions(args: dict, text: str, form: dict) -> dict:
     return {**args, "a": found[:4]} if found else args
 
 
+# ---- persons and actions (PEOPLEFIX, 2026-10-11) -------------------------------------------------------------
+# From the board runs' remaining errors: persons / witnesses holding injuries or clauses ("he wasn't wearing
+# goggles", "we gave him water", "one has both legs broken"), the injured worker missed ("Our lineman was ...",
+# "the operator's eyes"), actions cut short ("flushed his eyes" for "... for fifteen minutes") or missed
+# ("we hit the emergency stop"). PEOPLEFIX=off turns only these off.
+# DESIGN CHOICE: who counts as a person: a person word or a name. Checked against every gold person and witness
+# in the eval sets (tests/test_postfix.py).
+PERSON_NOUNS = (r"worker|staff|man|men|woman|women|boy|girl|guard|supervisor|operator|technician|mechanic|plumber|"
+                r"lineman|linemen|fitter|packer|loader|driver|carpenter|electrician|nurse|aide|doctor|patient|"
+                r"visitor|resident|colleague|coworker|co-worker|people|person|employee|contractor|foreman|helper|"
+                r"labou?rer|cook|chef|cleaner|housekeeper|housekeeping|attendant|assistant|manager|student|teacher|"
+                r"child|children|kid|member|crew|officer|engineer|painter|welder|mason|rigger|porter|customer|"
+                r"passenger|tenant|guest|trainee|intern|apprentice|janitor|watchman|firefighter|paramedic|pilot|"
+                r"lady|gentleman|employees|team|executive|clerk|receptionist|peon|sweeper|cashier|salesman|vendor|"
+                r"guy|fellow|chap|boss|bhaiya|didi|uncle|aunty")
+_PERSON = re.compile(r"\b(?:" + PERSON_NOUNS + r")(?:s|es)?\b", re.I)
+# a person value ends where a clause begins
+_CLAUSE = re.compile(r"\s+(?:is|was|were|are|has|have|had|can'?t|cannot|couldn'?t|wasn'?t|isn'?t|got|gets|gave|"
+                     r"give|slipped|fell|tripped|hurt|injured|broke|broken|nearly|almost|who|with|having|wearing|"
+                     r"suffered|hit|lost|felt)\b.*$", re.I)
+_BODY = re.compile(r"'s\s+(?:legs?|arms?|hands?|eyes?|head|back|fingers?|feet|foot|chest|neck|face)\b", re.I)
+_PRONOUN_ONLY = re.compile(r"^(?:he|she|they|we|i|it|one|the other|someone|somebody|him|her|them)$", re.I)
+_NAME = re.compile(r"\b[A-Z][a-z]{2,}\b")
+_NOT_NAME = {"The", "One", "Our", "Two", "Three", "Four", "Five", "Six", "Seven", "Some", "Both", "Several", "All",
+             "Mostly", "Their", "His", "Her", "My", "Its", "This", "That", "Sir", "Madam"}
+
+
+def peoplefix_enabled() -> bool:
+    return os.environ.get("PEOPLEFIX", "on") != "off"
+
+
+_INJURY = re.compile(r"\b(?:injur\w*|fractur\w*|burns?|bleeding|wounds?|bruis\w*|pain|unconscious|dizzy)\b", re.I)
+
+
+def person_value(x: str) -> str | None:
+    """The person in a persons / witnesses value, or None when it holds none. Only a clear sign removes a
+    value: a clause ("he can't move his leg" -> he), an injury ("mostly leg injuries"), a body part
+    ("fitter's legs"), or nothing but a pronoun. A value with none of these is kept as it is, person word or
+    not ("one of our developers", "do log")."""
+    s = str(x).strip()
+    if _BODY.search(s):
+        return None
+    cut = _CLAUSE.sub("", s).strip(" ,.")
+    if not cut or _PRONOUN_ONLY.match(cut):
+        return None
+    if cut == s and not _INJURY.search(s):
+        return s
+    names = [w for w in _NAME.findall(cut) if w not in _NOT_NAME]
+    return cut if (_PERSON.search(cut) or names) and not _INJURY.search(cut) else None
+
+
+def people_only(args: dict) -> dict:
+    out = dict(args)
+    for k in ("p", "w"):
+        if k in out:
+            keep = list(dict.fromkeys(v for v in (person_value(x) for x in out[k]) if v))
+            if keep:
+                out[k] = keep
+            else:
+                del out[k]
+    return out
+
+
+# only the reporter's own people ("Our lineman", "one of our packers"): "seven people", "a guy", "the staff"
+# are not labelled as persons in the eval sets
+_DET = r"(?:(?:one|two|three|four|some) of our |our )"
+_SUBJECT = re.compile(r"(?:^|[.;!?]\s+|,\s+|\bwhen\s+|\bwhile\s+|\band\s+)(" + _DET + r"(?:[\w-]+ ){0,2}?(?:"
+                      + PERSON_NOUNS + r")(?:s|es)?)(?='s\b|\s+(?:was|were|is|are|got|has|had|fell|slipped|tripped|"
+                      r"went|came|collapsed|fainted|cut|burnt|burned|touched|lost|caught|stuck|injured|hurt|broke|"
+                      r"received|suffered|fell)\b)", re.I)
+
+
+_OWNER = re.compile(r"\b((?:our|the) (?:[\w-]+ )?(?:" + PERSON_NOUNS + r"))'s\b", re.I)
+
+
+def fill_person(args: dict, text: str, form: dict) -> dict:
+    """First description only (empty form), no person from the model: the person a clause starts with
+    ("Our lineman was ...", "Two people are stuck", "the operator's eyes")."""
+    if "p" in args or form:
+        return args
+    found = [m.group(1).strip() for m in _SUBJECT.finditer(text)] + [m.group(1).strip() for m in _OWNER.finditer(text)]
+    found = list(dict.fromkeys(found))
+    return {**args, "p": found[:2]} if found else args
+
+
+# an action runs on to the end of its clause; "and" + a new subject or verb starts another clause
+_NEW_CLAUSE = re.compile(r"^(?:\s*(?:and|but|then|so)\s+(?:\S+\s+){0,2}?(?:he|she|they|we|i|it|has|have|had|is|was|"
+                         r"are|were|came|went|arrived|took|got|left|ran|\w+ed)\b)", re.I)
+
+
+def _extend_right(item: str, text: str) -> str:
+    m = re.search(re.escape(item), text, re.I)
+    if not m:
+        return item
+    rest = text[m.end():]
+    stop = re.search(r"[,.;!?]", rest)
+    tail = rest[:stop.start()] if stop else rest
+    sub = re.search(r"\s+(?:till|until|before|after|when|while|because|since|as soon as)\s+", tail, re.I)
+    if sub:                                     # "fanned him till the ambulance came": the action ends at "till"
+        tail = tail[:sub.start()]
+    aur = re.search(r"\s+aur\s+", tail)       # Hinglish "and": always a new clause
+    if aur:
+        tail = tail[:aur.start()]
+    for nc in re.finditer(r"\s+(?:and|but|then|so)\s+", tail):   # keep "and our security team",
+        if _NEW_CLAUSE.match(tail[nc.start():]):                  # stop at "and EHS has been informed"
+            tail = tail[:nc.start()]
+            break
+    words = tail.split()
+    if not words or len(words) > 6:
+        return item
+    return (text[m.start():m.end()] + " " + " ".join(words)).strip()
+
+
+def complete_actions(args: dict, text: str) -> dict:
+    if "a" not in args:
+        return args
+    return {**args, "a": list(dict.fromkeys(_extend_right(str(x), text) for x in args["a"]))}
+
+
+# done by a person ("we hit the emergency stop"), not by a machine ("the forklift reversed into ...")
+_DID = re.compile(r"\b(?:we|they|i|he|she|security|someone|everyone|(?:the |our |two |three )?(?:[\w-]+ )?(?:"
+                  + PERSON_NOUNS + r")(?:s|es)?)\s+(?:have\s+|has\s+|"
+                  r"had\s+|then\s+|also\s+|immediately\s+|quickly\s+)?((?:called|informed|hit the (?:emergency )?"
+                  r"(?:stop|switch|button|alarm)|pressed|reversed the|"
+                  r"kept|gave|stopped|evacuated|isolated|closed|rushed|sent|cordoned off|flushed|cleaned|removed|"
+                  r"covered|applied|shut down|switched off|turned off|put it out|put out|took him|took her|"
+                  r"carried)\b[^,.;!?]*)", re.I)
+_DOING = re.compile(r"\b(?:is|are)\s+(?:now\s+|already\s+)?((?:shutting down|switching off|turning off|evacuating|"
+                    r"isolating|cordoning off|flushing|cleaning|mopping|drying)\b[^,.;!?]*)", re.I)
+
+
+def fill_more_actions(args: dict, text: str, form: dict) -> dict:
+    """No action from the model this turn: what the user says was done ("we hit the emergency stop", "IT is
+    shutting down the rack"), each to the end of its clause."""
+    if "a" in args:
+        return args
+    found = []
+    for rx in (_DID, _DOING):
+        for m in rx.finditer(text):
+            clause = m.group(1).strip()
+            parts = re.split(r"\s+and\s+(?=(?:called|informed|kept|gave|hit|reversed|stopped|took|sent)\b)", clause)
+            found += [x.strip() for x in parts if x.strip()]
+    found = [x for x in dict.fromkeys(found) if x.lower() not in {str(v).lower() for v in form.get("a") or []}]
+    return {**args, "a": found[:4]} if found else args
+
+
 # ---- all together ------------------------------------------------------------------------------------------
 def apply(args: dict, text: str, form: dict) -> dict:
     """The v4 fixes on one turn's gated args. `form` = the form before the turn (one-letter keys)."""
@@ -295,4 +441,9 @@ def apply(args: dict, text: str, form: dict) -> dict:
         out = snap_lists(out, text)
         out = keep_responses(out)
         out = fill_actions(out, text, form)
+    if peoplefix_enabled():
+        out = people_only(out)
+        out = fill_person(out, text, form)
+        out = complete_actions(out, text)
+        out = fill_more_actions(out, text, form)
     return out

@@ -41,7 +41,22 @@ FILLERS = {"uh", "um", "umm", "hmm", "ok", "okay", "so", "well", "i", "think", "
            "hai", "tha", "thi", "ji", "toh", "yeh", "ye", "woh", "bhai", "bas", "mujhe", "lagta", "lagti",
            "main", "keh", "sakte", "hain"}
 SEVERITY_WORDS = {"low": "low", "minor": "low", "medium": "medium", "moderate": "medium",
-                  "high": "high", "serious": "high", "critical": "critical"}
+                  "high": "high", "serious": "high", "critical": "critical",
+                  "bad": "high", "major": "high", "emergency": "critical"}
+# Everyday answers to the severity question, on the scale of eval/nlu/LABELING.md (not serious -> low,
+# serious / bad -> high, very serious / emergency -> critical). The whole answer must be one of these (fillers
+# aside); anything else still goes to the LLM.
+SEVERITY_PHRASES = {
+    "low": ["not serious", "nothing serious", "not that serious", "not very serious", "not too serious",
+            "nothing major", "not major", "not too bad", "not that bad", "not bad", "nothing much", "very minor",
+            "quite minor", "just minor", "small", "very small", "a small one", "kam", "thoda sa", "zyada nahi",
+            "kuch khaas nahi", "halka"],
+    "medium": ["in between", "somewhere in between", "average", "kind of moderate", "beech ka", "theek thaak"],
+    "high": ["quite serious", "fairly serious", "quite bad", "really bad", "a major one", "zyada", "serious hai"],
+    "critical": ["very serious", "extremely serious", "very very serious", "life threatening", "life-threatening",
+                 "very bad", "extremely bad", "an emergency", "bahut serious", "bahut zyada", "bahut kharab"],
+}
+_SEVERITY_PHRASE = {ph: lv for lv, phs in SEVERITY_PHRASES.items() for ph in phs}
 SUBMIT = {"submit", "submit it", "yes submit", "yes submit it", "submit the report", "please submit",
           "yes please submit", "go ahead", "yes go ahead", "go ahead and submit", "ok submit", "okay submit",
           "now submit", "yes", "yes please", "confirm", "correct submit", "that's correct submit",
@@ -117,6 +132,9 @@ def answer(text: str, asked: str | None, state: str, type_values: list[str]) -> 
     if state != "collecting":
         return None
     if asked == "s":
+        said = " ".join(w for w in words if w not in FILLERS)
+        if said in _SEVERITY_PHRASE:
+            return {"tool": "update_report", "args": {"s": _SEVERITY_PHRASE[said]}}
         sev = [SEVERITY_WORDS[w] for w in words if w in SEVERITY_WORDS]
         rest = [w for w in words if w not in SEVERITY_WORDS and w not in FILLERS]
         if len(sev) == 1 and not rest:
