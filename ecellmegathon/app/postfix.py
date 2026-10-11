@@ -9,6 +9,11 @@ the severity fallback. Each one targets an error pattern measured on the board
   witnesses         "X saw it", "X and I both saw it" -> witnesses      (the model put them in persons)
   expand_location   "ground floor" -> "meter room on the ground floor" (the full place the user said)
   fill_time         a time the user said, left out by the model         ("Last night around 8 PM")
+  drop_parts        a damaged part of equipment already in the form    ("the forklift mast is bent")
+list fixes (LISTFIX=off turns only these off):
+  snap_lists        the user's whole phrase on the left                ("staff" -> "one of our staff")
+  keep_responses    an action must say what someone did in response    (drops "One cook has bad burns")
+  fill_actions      "has (already) <done> ..." the model left out       ("has already isolated the area")
 
 apply() runs them in that order. POSTFIX=off (env) turns all of them off, for comparison.
 Every fix only uses the user's own words; none invents a value. Stdlib only.
@@ -188,6 +193,88 @@ def fill_time(args: dict, text: str, form_has_time: bool) -> dict:
     return {**args, "d": s} if s else args
 
 
+# ---- list fixes (LISTFIX) ------------------------------------------------------------------------------------
+# DESIGN CHOICE: verbs that make an action a response (what someone did about it), not the event or an injury.
+# Checked against every gold action in the eval set: each one contains one (tests/test_postfix.py).
+RESPONSE_VERBS = (r"shutting(?:\s+down)?|shut\s+down|call(?:ed|ing)?|inform(?:ed)?|notif(?:y|ied)|told|tell|stop(?:ped)?|"
+                  r"shut|switch(?:ed)?\s+off|turn(?:ed)?\s+off|isolat(?:e|ed|ing)|evacuat(?:e|ed|ing)|flush(?:ed)?|"
+                  r"cordon(?:ed)?(?:\s+off)?|block(?:ed)?(?:\s+off)?|barricad(?:e|ed)|dri(?:ed)|dry|mop(?:ped)?|"
+                  r"wip(?:ed|ing)|clean(?:ed)?|put\s+(?:it\s+|the\s+fire\s+)?out|extinguish(?:ed)?|gave|give|giving|"
+                  r"sent|send|shift(?:ed)?|rush(?:ed)?|took|taken|escort(?:ed)?|remov(?:e|ed)|clos(?:e|ed)|"
+                  r"open(?:ed)?|press(?:ed)?|hit|revers(?:e|ed)|kept|fann(?:ed)|pull(?:ed)|brok(?:e)|"
+                  r"got\s+(?:everyone|them|him|her)\s+out|put|cover(?:ed)?|appl(?:y|ied)|doing|did|start(?:ed)?|"
+                  r"check(?:ing|ed)|trying|calling|moved|placed|keeping")
+_RESPONSE = re.compile(r"\b(?:" + RESPONSE_VERBS + r")\b", re.I)
+# DESIGN CHOICE: completed responses said with has/have ("Maintenance has already isolated the area"). Narrower
+# than RESPONSE_VERBS on purpose: "has hit", "have started" are not responses.
+_DONE = (r"isolated|dried|mopped|cordoned\s+off|blocked\s+off|barricaded|evacuated|informed|called|stopped|"
+         r"switched\s+off|shut\s+off|turned\s+off|closed|flushed|cleaned|wiped|removed|covered|put\s+out|"
+         r"extinguished|sent|shifted|escorted")
+_DONE_CLAUSE = re.compile(r"\b(?:has|have|had)\s+(?:already\s+|just\s+)?((?:" + _DONE +
+                          r")\b[^,.;!?]*?)(?=\s*(?:[,.;!?]|\band\b|\bbut\b|$))", re.I)
+# Words that belong to a phrase on its left: "one of our staff", "a nursing aide", "two workers".
+_LEFT_WORDS = {"a", "an", "the", "one", "of", "our", "their", "his", "her", "my", "two", "three", "four", "five",
+               "six", "seven", "eight", "nine", "ten", "some", "both", "several", "all"}
+
+
+def listfix_enabled() -> bool:
+    return os.environ.get("LISTFIX", "on") != "off"
+
+
+def _snap_one(item: str, text: str, key: str) -> str:
+    m = re.search(r"\b" + re.escape(item) + r"(s|es)?\b", text, re.I)
+    if not m:
+        return item
+    words = re.findall(r"\S+", text[:m.start()])
+    take = []
+    for w in reversed(words):
+        lw = w.lower()
+        if w.endswith((",", ".")):
+            break
+        if lw in _LEFT_WORDS or (key == "a" and not take and _RESPONSE.fullmatch(lw)):
+            take.insert(0, w)
+            continue
+        break
+    while take and take[0].lower() in {"of", "and"}:
+        take = take[1:]
+    if not take and m.end() - m.start() == len(item):
+        return item
+    return " ".join(take + [text[m.start():m.end()]])
+
+
+def snap_lists(args: dict, text: str) -> dict:
+    """Extend persons / equipment / actions to the user's whole phrase on the left, in the user's words:
+    "staff" -> "one of our staff", "CPR" -> "gave CPR". Unchanged if the value isn't in this turn."""
+    out = dict(args)
+    for k in ("p", "e", "a"):
+        if k in out:
+            out[k] = list(dict.fromkeys(_snap_one(str(x), text, k) for x in out[k]))
+    return out
+
+
+def keep_responses(args: dict) -> dict:
+    """An action must say what someone did about it; the model also files the event, the cause and injuries
+    there ("someone moved the base", "One cook has bad burns")."""
+    if "a" not in args:
+        return args
+    keep = [x for x in args["a"] if _RESPONSE.search(str(x))]
+    out = dict(args)
+    if keep:
+        out["a"] = keep
+    else:
+        del out["a"]
+    return out
+
+
+def fill_actions(args: dict, text: str, form: dict) -> dict:
+    """The model gave no action and the form has none, but the user said "has (already) <done> ...":
+    copy that clause ("security has cordoned off the driveway" -> "cordoned off the driveway")."""
+    if "a" in args or form.get("a"):
+        return args
+    found = [m.group(1).strip() for m in _DONE_CLAUSE.finditer(text)]
+    return {**args, "a": found[:4]} if found else args
+
+
 # ---- all together ------------------------------------------------------------------------------------------
 def apply(args: dict, text: str, form: dict) -> dict:
     """The v4 fixes on one turn's gated args. `form` = the form before the turn (one-letter keys)."""
@@ -200,4 +287,8 @@ def apply(args: dict, text: str, form: dict) -> dict:
     if "l" in out:
         out["l"] = expand_location(out["l"], text)
     out = fill_time(out, text, bool(form.get("d")))
+    if listfix_enabled():
+        out = snap_lists(out, text)
+        out = keep_responses(out)
+        out = fill_actions(out, text, form)
     return out

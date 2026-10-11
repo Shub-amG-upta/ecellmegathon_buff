@@ -47,6 +47,35 @@ def test_each_fix():
     assert postfix.fill_time({}, "at 3 PM", True) == {}                            # nor the form's
 
 
+def test_list_fixes():
+    assert postfix.snap_lists({"p": ["staff"]}, "one of our staff slipped") == {"p": ["one of our staff"]}
+    assert postfix.snap_lists({"p": ["mechanic"]}, "One of the mechanics got his finger caught") == \
+        {"p": ["One of the mechanics"]}
+    assert postfix.snap_lists({"a": ["CPR"]}, "Two colleagues gave CPR") == {"a": ["gave CPR"]}
+    assert postfix.snap_lists({"e": ["forklift"]}, "the forklift hit it") == {"e": ["the forklift"]}
+    assert postfix.snap_lists({"p": ["Ravi"]}, "someone else") == {"p": ["Ravi"]}          # not in the turn
+    assert postfix.keep_responses({"a": ["stopped the conveyor", "on the way to hospital"]}) == \
+        {"a": ["stopped the conveyor"]}
+    assert postfix.keep_responses({"a": ["One cook has bad burns"], "t": "fire"}) == {"t": "fire"}
+    assert postfix.fill_actions({}, "Maintenance has already isolated the area.", {}) == {"a": ["isolated the area"]}
+    assert postfix.fill_actions({}, "he hit the door and has started bleeding", {}) == {}  # not a response
+    assert postfix.fill_actions({"a": ["x"]}, "has isolated it", {}) == {"a": ["x"]}         # never replaces
+    assert postfix.fill_actions({}, "has isolated it", {"a": ["called 108"]}) == {}          # nor adds to the form's
+
+
+def test_every_gold_action_is_a_response():
+    for c in CASES:
+        for t in c["turns"]:
+            for a in t["gold"]["args"].get("a", []):
+                assert postfix._RESPONSE.search(a), (c["id"], t["i"], a)
+
+
+def test_listfix_switch_off(monkeypatch):
+    monkeypatch.setenv("LISTFIX", "off")
+    assert postfix.apply({"a": ["One cook has bad burns"]}, "One cook has bad burns", {}) == \
+        {"a": ["One cook has bad burns"]}
+
+
 def test_eval_scores_the_action_the_app_takes():
     from run_eval import effective_tool
     assert effective_tool({"tool": "update_report", "args": {"e": ["x"]}}, {}) == "no_op"   # nothing survived
