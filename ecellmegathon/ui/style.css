@@ -300,8 +300,32 @@ body.view-user .convo { grid-row: auto; height: calc(100dvh - 62px); min-height:
   body.view-dev #menu-btn { display: flex !important; width: 38px; height: 38px; }
   body.view-dev .view-switch button { padding: .2rem .6rem; font-size: .8rem; }
   body.view-dev .badge { font-size: .7rem; padding: .1rem .45rem; }
-  body.view-dev .grid { padding: 10px 10px 24px; gap: 10px; }
-  body.view-dev .convo { height: min(56dvh, 520px); min-height: 340px; }
+  /* app-style layout: header, tabs, then one panel that fills the rest of the screen */
+  body.view-dev { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+  body.view-dev .top, body.view-dev .dev-tabs { flex: none; }
+  body.view-dev .grid { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: block; padding: 10px 10px 24px; }
+  body.view-dev .grid > [data-panel] { display: none; }
+  body.view-dev[data-tab="chat"] .grid > [data-panel="chat"] { display: flex; }
+  body.view-dev[data-tab="report"] .grid > [data-panel="report"],
+  body.view-dev[data-tab="turn"] .grid > [data-panel="turn"],
+  body.view-dev[data-tab="tools"] .grid > [data-panel="tools"],
+  body.view-dev[data-tab="system"] .grid > [data-panel="system"] { display: block; margin-bottom: 10px; }
+  body.view-dev[data-tab="chat"] .grid { padding: 0; overflow: hidden; }
+  body.view-dev .convo { height: 100%; min-height: 0; border: 0; border-radius: 0; }
+  body.view-dev .tools { max-height: none; }
+  body.view-dev .dev-tabs { display: flex; }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 400px) { body.view-dev .badge { display: none !important; } }
+
+/* developer tabs (phone-sized screens only; hidden on wider screens and in the user view) */
+.dev-tabs { display: none; gap: 2px; overflow-x: auto; scrollbar-width: none; background: var(--card);
+            border-bottom: 1px solid var(--line); padding: 0 6px; }
+.dev-tabs::-webkit-scrollbar { display: none; }
+.dev-tabs button { flex: 1 0 auto; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent;
+                   color: var(--muted); padding: .6rem .7rem; font-size: .9rem; font-weight: 600; min-height: 44px;
+                   display: inline-flex; align-items: center; justify-content: center; gap: .3rem; }
+.dev-tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-badge { min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 999px; background: var(--warn);
+             color: #fff; font-size: .7rem; line-height: 1.2rem; text-align: center; }
+.tab-badge[hidden] { display: none; }

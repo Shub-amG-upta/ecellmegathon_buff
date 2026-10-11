@@ -34,9 +34,18 @@
   </div>
 </header>
 
+<!-- Developer view on phone-sized screens: one panel at a time (desktop shows them all as a grid). -->
+<nav class="dev-tabs dev-only" role="tablist" aria-label="Developer panels">
+  <button type="button" role="tab" data-tab="chat" aria-selected="true">Chat</button>
+  <button type="button" role="tab" data-tab="report" aria-selected="false">Report <span class="tab-badge" id="tb-report" hidden></span></button>
+  <button type="button" role="tab" data-tab="turn" aria-selected="false">Turn</button>
+  <button type="button" role="tab" data-tab="tools" aria-selected="false">Tools <span class="tab-badge" id="tb-tools" hidden></span></button>
+  <button type="button" role="tab" data-tab="system" aria-selected="false">System</button>
+</nav>
+
 <main class="grid">
   <!-- Conversation -->
-  <section class="card convo" aria-label="Conversation">
+  <section class="card convo" data-panel="chat" aria-label="Conversation">
     <h2 class="sr-only">Conversation</h2>
     <ol id="chat" class="chat" aria-live="polite"></ol>
     <p id="error" class="error" role="alert" hidden></p>
@@ -67,7 +76,7 @@
   </section>
 
   <!-- Last turn: who answered it, what is still missing, and this session's totals -->
-  <section class="card dev-only" aria-label="Last turn">
+  <section class="card dev-only" data-panel="turn" aria-label="Last turn">
     <div class="card-head">
       <h2>Last turn</h2>
       <span id="lt-turn" class="muted"></span>
@@ -77,7 +86,7 @@
   </section>
 
   <!-- Live form -->
-  <section class="card dev-only" aria-label="Incident report form">
+  <section class="card dev-only" data-panel="report" aria-label="Incident report form">
     <div class="card-head">
       <h2>Report</h2>
       <span id="report-id" class="muted"></span>
@@ -88,7 +97,7 @@
   </section>
 
   <!-- Latency -->
-  <section class="card dev-only" aria-label="Latency">
+  <section class="card dev-only" data-panel="turn" aria-label="Latency">
     <h2>Latency (last turn)</h2>
     <table class="latency">
       <thead><tr><th>stage</th><th>device</th><th class="num">ms</th></tr></thead>
@@ -98,13 +107,13 @@
   </section>
 
   <!-- Tool calls -->
-  <section class="card dev-only" aria-label="Tool calls">
+  <section class="card dev-only" data-panel="tools" aria-label="Tool calls">
     <h2>Tool calls</h2>
     <ol id="tools" class="tools"></ol>
   </section>
 
   <!-- NPU proof -->
-  <section class="card dev-only" aria-label="On-device proof">
+  <section class="card dev-only" data-panel="system" aria-label="On-device proof">
     <div class="card-head">
       <h2>On-device proof</h2>
       <button id="proof-refresh" class="ghost small" type="button">Refresh</button>
@@ -113,7 +122,7 @@
   </section>
 
   <!-- Reports -->
-  <section class="card dev-only" aria-label="Submitted reports">
+  <section class="card dev-only" data-panel="system" aria-label="Submitted reports">
     <div class="card-head">
       <h2>Submitted reports</h2>
       <button id="reports-refresh" class="ghost small" type="button">Refresh</button>

@@ -42,6 +42,9 @@ let last = null;          // the last TurnResult
 let busy = false;
 let player = null;        // the assistant audio currently playing
 const session = { turns: 0, code: 0, llm: 0, llmMs: [] };   // turns sent from this page (developer view)
+const TAB_KEY = "dev-tab";
+let tab = "chat";                                       // developer view on phones: the panel shown
+let toolsCount = 0, toolsSeen = 0;                       // tool-log entries, and how many were seen
 // "voice" = play each reply (TTS) and show it; "text" = show it only. Chosen when the page opens.
 let replyMode = "voice";
 const MODE_KEY = "reply-mode";
@@ -106,6 +109,7 @@ function render(r) {
   renderForm(r, prev);
   renderLatency(r);
   renderLastTurn(r);
+  updateBadges(r);
   if (r.tool_call || (r.dropped && r.dropped.length)) addTool(r);
   $("view-report").hidden = !(r.state === "submitted" && r.report_id);
   $("menu-report").hidden = $("view-report").hidden;
@@ -425,6 +429,31 @@ function addTool(r) {
     li.appendChild(el("div", "dropped", `dropped ${field} = ${JSON.stringify(d.value)} (${d.reason})`));
   }
   $("tools").prepend(li);
+  toolsCount += 1;
+  if (tab === "tools") toolsSeen = toolsCount;
+  updateBadges(last);
+}
+
+// ---------------------------------------------------------------- developer view on phones: tabs
+// Phone-sized screens show one developer panel at a time (style.css); wider screens show all of them.
+function setTab(t) {
+  tab = ["chat", "report", "turn", "tools", "system"].includes(t) ? t : "chat";
+  document.body.dataset.tab = tab;
+  document.querySelectorAll(".dev-tabs [data-tab]").forEach(b =>
+    b.setAttribute("aria-selected", b.dataset.tab === tab ? "true" : "false"));
+  if (tab === "tools") toolsSeen = toolsCount;
+  if (tab === "system") { loadProof(); loadReports(); }
+  updateBadges(last);
+  try { localStorage.setItem(TAB_KEY, tab); } catch { /* storage blocked: this session only */ }
+}
+
+function updateBadges(r) {
+  const missing = r && r.missing ? r.missing.length : 0;
+  $("tb-report").hidden = !missing;
+  $("tb-report").textContent = String(missing);
+  const fresh = toolsCount - toolsSeen;
+  $("tb-tools").hidden = fresh <= 0;
+  $("tb-tools").textContent = String(fresh);
 }
 
 function showError(msg) {
@@ -551,14 +580,16 @@ async function loadConfig() {
 }
 
 // ---------------------------------------------------------------- proof + reports
+let proofSeq = 0;              // only the newest /api/proof answer is shown (several calls can overlap)
 async function loadProof() {
-  const box = $("proof");
-  box.replaceChildren();
+  const seq = ++proofSeq;
+  const box = document.createElement("div");      // built off-page, swapped in at the end
   let p;
   try { p = await api("GET", "/api/proof"); } catch (e) {
-    box.textContent = `No proof available: ${e.message}`;
+    if (seq === proofSeq) $("proof").textContent = `No proof available: ${e.message}`;
     return;
   }
+  if (seq !== proofSeq) return;
   const llm = p && p.llm;
   if (llm && llm.layers != null) {
     const big = document.createElement("div");
@@ -589,6 +620,7 @@ async function loadProof() {
       box.appendChild(line);
     }
   }
+  $("proof").replaceChildren(...box.childNodes);
 }
 
 async function loadReports() {
@@ -863,6 +895,7 @@ function wire() {
   window.addEventListener("afterprint", () => document.body.classList.remove("print-report"));
   $("reply-mode").addEventListener("click", askReplyMode);
   document.querySelectorAll("[data-view]").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+  document.querySelectorAll(".dev-tabs [data-tab]").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab)));
   $("menu-btn").addEventListener("click", () => {
     const dlg = $("menu-dialog");
     $("menu-hf").hidden = $("handsfree").hidden;                       // only when the server offers it
@@ -887,6 +920,9 @@ function wire() {
 async function init() {
   wire();
   setView(savedView() || "user");
+  let savedTab = null;
+  try { savedTab = localStorage.getItem(TAB_KEY); } catch { /* storage blocked */ }
+  setTab(savedTab || "chat");
   if (onDevice()) {
     $("rv-print").textContent = "Save PDF on device";
     $("rv-download").textContent = "Save JSON on device";
