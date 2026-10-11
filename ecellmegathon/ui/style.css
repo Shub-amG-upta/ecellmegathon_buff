@@ -260,3 +260,19 @@ body.view-user .convo { grid-row: auto; height: calc(100dvh - 62px); min-height:
 .hf-status[data-state="listen"] .hf-dot { background: var(--bad); animation: hf-pulse 1s ease-in-out infinite; }
 @keyframes hf-pulse { 50% { transform: scale(1.5); opacity: .5; } }
 @media (prefers-reduced-motion: reduce) { .hf-status[data-state="listen"] .hf-dot { animation: none; } }
+
+/* ---- developer view on a phone (the QIDK screen in Developer mode): nothing wider than the screen ---- */
+@media (max-width: 700px) {
+  .top { padding: .6rem 12px; gap: .5rem; }
+  .top-right { flex-wrap: wrap; gap: .4rem; width: 100%; }
+  body.view-dev .brand { flex-direction: column; align-items: flex-start; gap: 2px; }
+  body.view-dev .grid { padding: 10px 10px 24px; gap: 10px; }
+  body.view-dev .convo { height: 70dvh; min-height: 420px; }
+  .card { padding: 12px; }
+  .form { grid-template-columns: minmax(88px, 36%) minmax(0, 1fr); gap: .1rem .6rem; }
+  .latency th, .latency td { padding: .3rem .15rem; }
+  .report-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+  .report-card { padding: 16px 14px 6px; }
+  .rv-fields { grid-template-columns: minmax(92px, 36%) minmax(0, 1fr); }
+  .rv-actions { flex-wrap: wrap; }
+}
