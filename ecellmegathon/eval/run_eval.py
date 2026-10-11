@@ -54,14 +54,33 @@ from app.prompt import user_message  # noqa: E402
 
 CASES = ROOT / "eval" / "nlu" / "cases.jsonl"
 TEXT_RECALL, TEXT_PRECISION = 0.8, 0.5     # DESIGN CHOICE: text-field match, see docstring
-ENUMS = ("t", "s")
+ENUMS = ("t", "s", "h")           # h: hazard_status, FORM=15 only
 
 
 def load_cases(path: Path = CASES, split: str = "dev") -> list[dict]:
-    cases = [json.loads(ln) for ln in Path(path).read_text().splitlines() if ln.strip()]
+    cases = [json.loads(ln) for ln in Path(path).read_text(encoding="utf-8").splitlines() if ln.strip()]
     if split == "all":
         return cases
     return [c for c in cases if c["split"] in ({"dev", "demo"} if split == "dev" else {split})]
+
+
+def fit_to_form(cases: list[dict], keys: set[str]) -> list[dict]:
+    """Score a set labelled for more fields than the loaded form has (eval/nlu15 with FORM=10): gold keys
+    outside the form are dropped, and a turn left with no gold args becomes no_op, as it was labelled in the
+    10-field set. A set that fits the form is returned unchanged."""
+    def cut(d):
+        return {k: v for k, v in (d or {}).items() if k in keys}
+    if all(set(t["gold"]["args"]) <= keys for c in cases for t in c["turns"]):
+        return cases
+    out = []
+    for c in cases:
+        turns = []
+        for t in c["turns"]:
+            g = cut(t["gold"]["args"])
+            tool = "no_op" if t["gold"]["tool"] == "update_report" and not g else t["gold"]["tool"]
+            turns.append({**t, "gold": {"tool": tool, "args": g}, "form_before": cut(t["form_before"])})
+        out.append({**c, "turns": turns, "gold_final": cut(c["gold_final"]), "accept": cut(c.get("accept"))})
+    return out
 
 
 # ---- matching -----------------------------------------------------------------
@@ -141,7 +160,7 @@ def gated(call: dict, transcript: str, text: str = "", form_has_severity: bool =
     """The gate, the severity fallback and the v4 post-model fixes, exactly as app/dialog.py applies them."""
     kept, dropped = gate.check(dict(call.get("args") or {}), transcript)
     kept = gate.fill_severity(kept, text, form_has_severity)
-    return postfix.apply(kept, text, form_before or {}), dropped
+    return gate.stated_severity_only(postfix.apply(kept, text, form_before or {}), text), dropped
 
 
 # ---- backends -----------------------------------------------------------------
@@ -486,7 +505,8 @@ def main() -> int:
     ap.add_argument("--cases", default=str(CASES))
     ap.add_argument("--out", default=str(ROOT / "results"))
     a = ap.parse_args()
-    cases = load_cases(Path(a.cases), a.split)
+    from app.form import form_version, keyed_fields, load_schema
+    cases = fit_to_form(load_cases(Path(a.cases), a.split), {f["key"] for f in keyed_fields(load_schema())})
     if a.backend == "oracle":
         backend = Oracle(cases)
     else:
@@ -516,6 +536,8 @@ def main() -> int:
     res = summarise(tf, fr, a.label, backend, a.split)
     res["fast_path"] = fast
     res["postfix"] = postfix.enabled()
+    res["form"] = form_version()
+    res["cases"] = str(a.cases)
     from app.prompt import prompt_version
     res["prompt"] = prompt_version()
     res["answer"] = Dialog(backend).answer

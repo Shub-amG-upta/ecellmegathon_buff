@@ -21,6 +21,11 @@
 #   $ENGINES/android/tts/bin/sherpa-onnx-offline-tts
 #   $ENGINES/android/tts/lib/*.so
 #   $ENGINES/voices/$TTS_VOICE/                   the same Piper voice as on the laptop
+# Optional, "Hey Qualcomm" keyword spotter (port 8085; skipped when the model folder is missing; without it the
+# app detects the wake word with Whisper):
+#   $ENGINES/android/tts/bin/sherpa-onnx-keyword-spotter   from the same sherpa-onnx Android build as the TTS
+#   $ENGINES/kws/$KWS_MODEL/                       e.g. sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01,
+#                                                  with keywords.txt for "HEY QUALCOMM" (voice/kws_server.py)
 # Building whisper-server for the board (Fedora laptop, Android NDK r26+):
 #   cmake -B build-android -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
 #         -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-28 -DWHISPER_BUILD_SERVER=ON \
@@ -52,6 +57,8 @@ STT_THREADS=${STT_THREADS:-4}
 SERIAL=${ANDROID_SERIAL:-}
 STT_DIR=/data/local/tmp/stt
 TTS_DIR=/data/local/tmp/tts
+KWS_DIR=/data/local/tmp/kws
+KWS_MODEL=${KWS_MODEL:-sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01}
 LOGS="$REPO/logs"
 mkdir -p "$LOGS"
 PY="$REPO/.venv/bin/python"
@@ -63,6 +70,7 @@ stamp() { date +%FT%T%z; }   # laptop time; the board's clock is wrong
 if [ "${1:-}" = "stop" ]; then
     adb_ shell "pkill whisper-server" || true
     [ -f "$LOGS/tts_board.pid" ] && kill "$(cat "$LOGS/tts_board.pid")" 2>/dev/null || true
+    [ -f "$LOGS/kws_board.pid" ] && kill "$(cat "$LOGS/kws_board.pid")" 2>/dev/null || true
     rm -f "$LOGS/tts_board.pid"
     echo "[$(stamp)] stopped"
     exit 0
@@ -127,8 +135,27 @@ adb_ shell "chmod 755 $TTS_DIR/bin/sherpa-onnx-offline-tts"
     ${SERIAL:+--serial "$SERIAL"} --warm schema/incident_form.json > "$LOGS/tts_board.log" 2>&1 &
 echo $! > "$LOGS/tts_board.pid"
 
+# ---- "Hey Qualcomm" keyword spotter (optional): engine on the board, thin wrapper on the laptop ----
+KWS_PORT=""
+KWS_BIN="$ENGINES/android/tts/bin/sherpa-onnx-keyword-spotter"
+if [ -d "$ENGINES/kws/$KWS_MODEL" ] && [ -f "$KWS_BIN" ]; then
+    [ -f "$ENGINES/kws/$KWS_MODEL/keywords.txt" ] || { echo "kws: $ENGINES/kws/$KWS_MODEL/keywords.txt missing (voice/kws_server.py says how to make it)" >&2; exit 1; }
+    adb_ shell "mkdir -p $KWS_DIR/bin $KWS_DIR/lib"
+    push "$KWS_BIN" "$KWS_DIR/bin/sherpa-onnx-keyword-spotter"
+    push_dir "$ENGINES/android/tts/lib" "$KWS_DIR/lib"
+    push_dir "$ENGINES/kws/$KWS_MODEL" "$KWS_DIR/$KWS_MODEL"
+    adb_ shell "chmod 755 $KWS_DIR/bin/sherpa-onnx-keyword-spotter"
+    [ -f "$LOGS/kws_board.pid" ] && kill "$(cat "$LOGS/kws_board.pid")" 2>/dev/null || true
+    "$PY" -m voice.kws_server --mode adb --device-dir "$KWS_DIR" --model "$KWS_MODEL" \
+        ${SERIAL:+--serial "$SERIAL"} > "$LOGS/kws_board.log" 2>&1 &
+    echo $! > "$LOGS/kws_board.pid"
+    KWS_PORT=8085
+else
+    echo "[$(stamp)] kws: no $ENGINES/kws/$KWS_MODEL or $KWS_BIN; \"Hey Qualcomm\" will use Whisper (WAKE=stt)"
+fi
+
 # ---- health ----------------------------------------------------------------
-for port in 8082 8083; do
+for port in 8082 8083 $KWS_PORT; do
     for _ in $(seq 1 120); do
         curl -sf "http://127.0.0.1:$port/health" > /dev/null && break
         sleep 1
@@ -143,3 +170,5 @@ done
 echo "export STT_URL=http://localhost:8082 STT_DEVICE=cpu STT_MODEL=$MODEL"
 echo "export HINGLISH=$HINGLISH"
 echo "export TTS_URL=http://localhost:8083"
+[ -n "$KWS_PORT" ] && echo "export KWS_URL=http://127.0.0.1:8085 KWS_DEVICE=cpu"
+true

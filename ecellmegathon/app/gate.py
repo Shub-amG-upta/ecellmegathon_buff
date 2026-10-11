@@ -31,7 +31,8 @@ SEVERITY_ORDER = ["low", "medium", "high", "critical"]
 # gs-02, lb-02.)
 SEVERITY_FLOOR = {"fire": "high", "gas_leak": "high", "chemical": "medium"}
 
-TEXT_KEYS = ("l", "d", "p", "e", "a", "w")
+TEXT_KEYS = ("l", "d", "p", "e", "a", "w",
+             "g", "c", "k", "n")           # FORM=15 context fields (task, cause, damage, reported to)
 
 _STOP = frozenset("""
 a an the and or but of to in on at by for from with near into onto over under
@@ -176,3 +177,14 @@ def fill_severity(kept: dict, text: str, form_has_severity: bool) -> dict:
         return kept
     level = severity_from_words(text)
     return {**kept, "s": level} if level else kept
+
+
+def stated_severity_only(kept: dict, text: str) -> dict:
+    """The model may not pick a severity the user never said ("My" -> high, QIDK 2026-10-11): `s` is kept only
+    when this turn has a severity word (severity_from_words, or fastpath's words and near misses for one-word
+    answers like "medium hai"). Without it the assistant asks again. Every gold severity in eval/nlu,
+    eval/nlu15 and eval/hinglish passes (tests/test_gate.py)."""
+    from app.fastpath import severity_said
+    if "s" in kept and not (severity_from_words(text) or severity_said(text)):
+        return {k: v for k, v in kept.items() if k != "s"}
+    return kept

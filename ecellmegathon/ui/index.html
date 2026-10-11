@@ -20,6 +20,8 @@
       <button type="button" data-view="dev" aria-pressed="true">Developer</button>
     </div>
     <a class="ghost-link dev-only" href="record.html">Record mode</a>
+    <button id="handsfree" class="ghost small dev-only" type="button" aria-pressed="false" hidden
+            title="Say “Hey Qualcomm” instead of holding the button">🎙 Hands-free: off</button>
     <button id="lang" class="ghost small dev-only" type="button" aria-label="Change the language you speak" hidden>🌐 English</button>
     <button id="reply-mode" class="ghost small dev-only" type="button" aria-label="Change how replies are given">🔊 Voice</button>
     <span id="state" class="badge dev-only" data-state="collecting">collecting</span>
@@ -52,6 +54,9 @@
         <span id="ptt-label">Hold to speak</span>
       </button>
       <div class="level" aria-hidden="true"><div id="level-bar"></div></div>
+      <p id="hf-status" class="hf-status" role="status" aria-live="polite" hidden>
+        <span class="hf-dot" aria-hidden="true"></span><span id="hf-text"></span>
+      </p>
       <p id="lang-hint" class="lang-hint" hidden>
         <strong lang="hi">हिंदी या Hinglish में बोलिए.</strong>
         Your speech is translated to English on the device; the assistant replies in English.
@@ -145,6 +150,7 @@
     <summary>Raw JSON (as saved on the device)</summary>
     <pre id="report-json" class="json"></pre>
   </details>
+  <p id="rv-status" class="rv-status no-print" role="status" aria-live="polite"></p>
   <div class="rv-actions no-print">
     <button id="rv-print" type="button">Print / Save as PDF</button>
     <button id="rv-download" class="ghost" type="button">Download JSON</button>
@@ -156,6 +162,7 @@
 <dialog id="menu-dialog" class="menu-dialog" aria-label="Menu">
   <button type="button" data-act="new">New report</button>
   <button type="button" data-act="reply" id="menu-reply">Replies: voice</button>
+  <button type="button" data-act="handsfree" id="menu-hf" hidden>Hands-free: off</button>
   <button type="button" data-act="lang" id="menu-lang" hidden>Language: English</button>
   <button type="button" data-act="report" id="menu-report" hidden>View submitted report</button>
   <button type="button" data-act="record" class="dev-only">Record mode</button>
@@ -164,6 +171,7 @@
 </dialog>
 
 <script src="audio.js"></script>
+<script src="handsfree.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

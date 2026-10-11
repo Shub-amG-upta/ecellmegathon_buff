@@ -5,6 +5,7 @@ Track A's dialog calls exactly two functions:
 
         transcribe(wav, prompt="") -> SttResult
         speak(text)                -> TtsResult
+        spot(wav)                  -> KwsResult   ("Hey Qualcomm", app/wake.py; only when KWS_URL is set)
 
 Neither ever raises. On any network, engine or input problem they return an
 empty result with `error` set, and the dialog carries on (it asks the user to
@@ -16,6 +17,8 @@ Where the engines live is configuration, not code:
                                             (POST /inference, multipart `file`)
   TTS_URL   default http://127.0.0.1:8083   voice/tts_server.py
                                             (POST /tts {"text": ...} -> audio/wav)
+  KWS_URL   no default                      voice/kws_server.py, the wake-word spotter
+                                            (POST /kws audio/wav -> {"detected", "keyword"})
 
 The laptop and the QIDK expose the same API, so moving from one to the other
 only changes the URLs (board/voice_up.sh forwards the board's ports to these).
@@ -63,6 +66,15 @@ class TtsResult:
     wall_ms: float
     device: str
     model: str
+    error: str = ""
+
+
+@dataclass
+class KwsResult:
+    detected: bool            # the keyword was heard in the clip
+    keyword: str              # which one ("" when none)
+    wall_ms: float
+    device: str               # "cpu" (board) | "laptop"
     error: str = ""
 
 
@@ -242,3 +254,33 @@ def speak(text: str) -> TtsResult:
     if raw[:4] != b"RIFF" or raw[8:12] != b"WAVE":
         return result(error=f"tts: reply is not a WAV file: {raw[:80]!r}", headers=headers)
     return result(wav=raw, headers=headers)
+
+
+def spot(wav: bytes) -> KwsResult:
+    """Wake-word check of a short clip (16 kHz mono WAV) with the keyword spotter at KWS_URL. Never raises; on
+    failure detected is False and error is set."""
+    t0 = time.perf_counter()
+    url = _cfg("KWS_URL", "").rstrip("/")
+
+    def result(detected: bool = False, keyword: str = "", error: str = "", headers: dict | None = None) -> KwsResult:
+        return KwsResult(detected=detected, keyword=keyword, wall_ms=round((time.perf_counter() - t0) * 1000, 1),
+                         device=_header(headers or {}, "X-KWS-Device", _cfg("KWS_DEVICE", "unknown")), error=error)
+
+    if not url:
+        return result(error="kws: KWS_URL is not set")
+    if not isinstance(wav, (bytes, bytearray)):
+        return result(error=f"audio must be bytes, got {type(wav).__name__}")
+    bad = check_wav(bytes(wav))
+    if bad:
+        return result(error=bad)
+    req = urllib.request.Request(f"{url}/kws", data=bytes(wav), method="POST", headers={"Content-Type": "audio/wav"})
+    raw, headers, err = _post(req, _timeout("KWS_TIMEOUT_S", 10.0))
+    if err:
+        return result(error=f"kws: {err}")
+    try:
+        data = json.loads(raw.decode("utf-8", "replace"))
+    except ValueError:
+        return result(error=f"kws: reply is not JSON: {raw[:120]!r}", headers=headers)
+    if not isinstance(data, dict) or data.get("error"):
+        return result(error=f"kws: {data.get('error') if isinstance(data, dict) else data}", headers=headers)
+    return result(detected=bool(data.get("detected")), keyword=str(data.get("keyword") or ""), headers=headers)

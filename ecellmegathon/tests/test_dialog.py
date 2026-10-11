@@ -217,7 +217,7 @@ def test_no_stated_severity_leaves_it_blank_and_asks(make):
 def test_saved_report_names_the_model_even_when_submit_was_answered_by_code(make, tmp_path):
     d, b = make({"tool": "update_report", "args": {"t": "water_leak", "l": "near Conference Room 2",
                                                     "d": "around 10 AM", "s": "medium"}})
-    d.turn(EXAMPLE)
+    d.turn(EXAMPLE + " Severity medium.")    # said, so gate.stated_severity_only keeps the model's "s"
     r = d.turn("submit")                                      # fast path: no model on this turn
     saved = report.load(r["report_id"], tmp_path)
     assert saved["models"] == {"llm": "m.gguf", "llm_device": "npu", "type_model": None,

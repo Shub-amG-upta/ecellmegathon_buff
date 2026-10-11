@@ -162,6 +162,9 @@ def transcribe(wav: bytes, prompt: str = "", language: str | None = None,
     # sent only when given (2026-10-11, Hindi / Hinglish; the server passes them only with HINGLISH=1).
     # Must not raise on a network or engine error: return SttResult(text="", error=...).
 
+def spot(wav: bytes) -> KwsResult: ...   # 2026-10-11, optional: "Hey Qualcomm" keyword spotter at KWS_URL
+                                         # (voice/kws_server.py); KwsResult(detected, keyword, wall_ms, device, error)
+
 def speak(text: str) -> TtsResult: ...
     # Must not raise; return TtsResult(wav=b"", error=...) on failure. The dialog continues without audio.
 ```
@@ -187,6 +190,7 @@ Served at `http://localhost:8000`. It also serves `ui/` as static files at `/`.
 | `GET /api/audio/<turn_id>.wav` | — | the TTS audio for that turn (404 if none) |
 | `GET /api/reports` | — | `[{"id","incident_type","location","submitted_at"}, ...]` |
 | `GET /api/reports/<id>` | — | the full report JSON (§4.4) |
+| `POST /api/wake` | body `audio/wav`, a short burst (≤ 3 s) | `{"wake": bool, "engine": "stt"\|"kws", "rest": "words after the phrase" (stt), "ms", "device", "error"}`: "Hey Qualcomm" check on the board (`app/wake.py`, 2026-10-11) |
 | `GET /api/config` | — | `{"languages": [{"code": "en", "name": "English"}, {"code": "hi", "name": "Hindi / Hinglish"}], "voice": true, "replies": "en"}` (`hi` only with `HINGLISH=1`) |
 | `GET /api/proof` | — | `{"llm": {"offloaded": 29, "layers": 29, "htp0_model_mib": 1911.9, "log_lines": [...]}, "stt": {...}, "tts": {...}}` |
 
