@@ -30,7 +30,7 @@ def check_lane_log(lane: str, log: str, model_file: str | None = None) -> list[s
         p.append(f"{lane}: startup log does not name {model_file}")
     if f["offloaded"] is None:
         p.append(f"{lane}: no 'offloaded N/M layers' line (was -lv 4 passed?)")
-    elif lane == "npu" and (f["offloaded"] != f["layers"] or not f["htp0_model_mib"]):
+    elif lane in ("npu", "type") and (f["offloaded"] != f["layers"] or not f["htp0_model_mib"]):
         p.append(f"{lane}: not fully on HTP0 (offloaded {f['offloaded']}/{f['layers']}, "
                  f"HTP0 buffer {f['htp0_model_mib']})")
     elif lane == "cpu" and (f["offloaded"] != 0 or f["htp0_model_mib"] is not None):

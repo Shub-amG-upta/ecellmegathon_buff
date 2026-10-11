@@ -84,3 +84,32 @@ spaces). Llama's own time did not change (first-turn Llama part, median 2,000 ms
 type: `{"t":"` pre-filled (already supported by `LlamaServerBackend.generate(prefix=…)`), a grammar of the 15
 names only, stop as soon as the decoded prefix names one type. ESTIMATE ~1–3 decode tokens + ~130 ms prefill ≈
 0.25–0.4 s per call, which would fit rule 5 (budget: ≤ 0.40 s per router call for +15% mean).
+
+### Override (human decision, 2026-10-11, after seeing the result above)
+
+**Keep the router (v7).** The team lead chose accuracy over the speed rule: +4 incident types (33 → 37/43) and
++1 dialog ended right, for +1.36 s on the first turn of each report (later turns unchanged). Rule 5 stays as
+written and failed; this is recorded as an override, not a pass. Demo configuration: `TYPE_MODEL` set (Gemma 3 4B
+on lane `type`, `--swa-full`). Speed work continues on the router itself (faster type call, running it in
+parallel), each measured as its own version.
+
+## v7.1: making the kept router faster (rules written 2026-10-11, before any board run)
+
+Two switches in `app/router.py`, off by default, measured on top of v7 (router on):
+
+| switch | what | ESTIMATE |
+|---|---|---|
+| `TYPE_PREFILL=on` | `{"t":"` pre-filled, grammar = the 15 names then `"}`: ~2–4 decoded tokens instead of 13.7 | type call 1.35 s → ~0.3–0.45 s |
+| `TYPE_PARALLEL=1` | multi-agent: Gemma starts on the first description **at the same time** as Llama, not after it | saves up to the type call's time, **only if the board runs both at once** |
+
+**Step 0, `board/parallel_probe.py` (~10 min, no eval):** do two llama-servers overlap on the board? Its rule (in the
+script): TYPE_PARALLEL goes to an eval only if both-on-NPU overlap ≥ 0.5 and Llama slows ≤ 15%. With `--cpu` it also
+answers whether agents on NPU + CPU are worth building (CPU decode ≥ 60% of the NPU's tok/s and the NPU call slows
+≤ 15%).
+
+**Rule TYPE_PREFILL (vs v7 run 1), 1 run:** keep if type right ≥ 36/43 (the grammar no longer allows spaces, so
+Gemma's choice may move by one), every other teacher-forced field identical, ended right ≥ 41, and first-turn LLM
+median ≤ v7's − 0.6 s (3,344 → ≤ 2,744 ms).
+
+**Rule TYPE_PARALLEL (vs the kept v7 configuration), 1 run, only if step 0 passed:** keep if every field count, the
+tool count and ended right are identical (the same answers, only sooner) and first-turn LLM median is ≥ 0.2 s lower.

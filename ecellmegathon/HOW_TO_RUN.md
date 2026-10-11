@@ -216,7 +216,11 @@ EVAL_HEAT_PAUSE=90:80 PREFILL=on SPEC=1                        PY benchmarks/run
 PY benchmarks/compare.py
 ```
 
-(The router run is no longer needed: v7 failed its speed rule on the board, `eval/DECISION_v7.md` Result.) If `SPEC=1` stops with "no --spec-type ngram-simple flags", the board's
+The router is kept (human override, `eval/DECISION_v7.md`): the demo runs with `TYPE_MODEL=gemma-3-4b-it-Q4_0-pure-embq8.gguf`, so also run the speed switches with it:
+
+```
+EVAL_HEAT_PAUSE=90:80 TYPE_MODEL=gemma-3-4b-it-Q4_0-pure-embq8.gguf PREFILL=on PY benchmarks/run_bench.py --tag v8-router-prefill --runs 1
+``` If `SPEC=1` stops with "no --spec-type ngram-simple flags", the board's
 llama.cpp is too old for it: skip that run and note it. The eval output records `prefill`; the server command saved by
 run_bench shows the `--spec-…` flags.
 
@@ -243,3 +247,19 @@ EVAL_HEAT_PAUSE=90:80 HINGLISH=1 PY benchmarks/run_bench.py --tag v8-hinglish --
 ```
 
 Compare `v8-hinglish-en` with `v8-baseline` (section 13), and `v8-hinglish` with the README's rule 3.
+
+## 15. v7.1: faster router and the multi-agent probe (rules: `eval/DECISION_v7.md`, "v7.1", written before these runs)
+
+The router is kept (human override). Two switches make it faster; first measure whether the board can run two
+models at the same time at all:
+
+```
+git fetch origin && git checkout v8
+PY -m board.parallel_probe --cpu --reps 3          # ~10 min; starts Llama (NPU), Gemma (NPU), Llama (CPU); prints verdict
+T=gemma-3-4b-it-Q4_0-pure-embq8.gguf
+EVAL_HEAT_PAUSE=90:80 TYPE_MODEL=$T TYPE_PREFILL=on                 PY benchmarks/run_bench.py --tag v7.1-prefill --runs 1
+# only if the probe says "TYPE_PARALLEL worth a board eval": true
+EVAL_HEAT_PAUSE=90:80 TYPE_MODEL=$T TYPE_PREFILL=on TYPE_PARALLEL=1 PY benchmarks/run_bench.py --tag v7.1-parallel --runs 1
+```
+
+Commit the probe JSON and the runs as before. The probe stops if a lane is not fully on HTP0.

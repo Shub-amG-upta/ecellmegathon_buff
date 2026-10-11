@@ -8,7 +8,7 @@ the same board (SM8650). Dropped: the multi-lane campaign helpers.
                                                  (--spec: copy-ahead speculative decoding, to compare)
   python -m board.board start cpu <model.gguf>   same model on the CPU, :8081 (comparison only)
   python -m board.board check npu                prove NPU placement from the startup log
-  python -m board.board speed http://localhost:8080 [prompt_file]
+  python -m board.board speed http://127.0.0.1:8080 [prompt_file]
   python -m board.board temp
   python -m board.board log npu
   python -m board.board stop
@@ -187,7 +187,7 @@ def start_lane(lane: str, model_file: str, threads: int = 6, serial: str = "",
     return {"lane": lane, "started_laptop_time": laptop_time(), "command": cmd, "ctx": ctx, "spec": spec,
             "cool_cpu": cool_cpu, "swa_full": swa_full,
             "model_file": model_file, "model_sha256": sha,
-            "board_log": lane_log_path(lane), "url": f"http://localhost:{port}"}
+            "board_log": lane_log_path(lane), "url": f"http://127.0.0.1:{port}"}
 
 
 def stop_lanes(serial: str = "") -> str:

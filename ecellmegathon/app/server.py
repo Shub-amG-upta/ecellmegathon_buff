@@ -19,6 +19,7 @@ Environment:
   PREFILL    on | off   write the answer's fixed start into the prompt instead of decoding it (default off)
   TYPE_MODEL <gguf>     v7: a second model decides the incident type on the first description (app/router.py);
              TYPE_MODEL_URL default http://127.0.0.1:8084 (board.board lane "type")
+             TYPE_PREFILL=on (short type answer), TYPE_PARALLEL=1 (type call next to the main call): app/router.py
   LLM_CONSTRAINT  schema | gbnf   how the answer is constrained (gbnf: no whitespace; compare on the board)
   HINGLISH   0 | 1      Hindi / Hinglish speech (default 0): the UI may then choose "hi" per turn; STT gets
              language=hi + translate (Whisper must be multilingual: board/voice_up.sh HINGLISH=1), and the
