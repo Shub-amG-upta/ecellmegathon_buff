@@ -43,14 +43,16 @@ def _now() -> datetime:
 
 class Dialog:
     def __init__(self, backend, schema: dict | None = None, catalogue: dict | None = None,
-                 clock=_now, report_dir=None, max_tokens: int = 128, use_fast_path: bool = True,
+                 clock=_now, report_dir=None, max_tokens: int | None = None, use_fast_path: bool = True,
                  constraint: str | None = None, answer: str | None = None):
         self.backend = backend
         self.schema = schema or load_schema()
         self.catalogue = load_catalogue() if catalogue is None else catalogue
         self.clock = clock
         self.report_dir = report_dir or report.REPORT_DIR
-        self.max_tokens = max_tokens
+        # DESIGN CHOICE: 128 tokens fits any 10-field answer; the 15-field form's first answer can hold all
+        # 13 keyed fields, so it gets 192 (a cut-off answer is unparseable)
+        self.max_tokens = max_tokens or (192 if len(self.schema["fields"]) > 12 else 128)
         # how the model writes its answer: "full" tool call, or "compact" (v6: fields object or S/C/N)
         self.answer = answer or answer_mode()
         if self.answer not in ("full", "compact"):
@@ -207,9 +209,13 @@ class Dialog:
                  f"Where: {v['location']}.", f"When: {self._when()}."]
         for name, label in (("persons_involved", "People involved"),
                             ("equipment_involved", "Equipment"),
-                            ("immediate_actions", "Actions taken"), ("witnesses", "Witnesses")):
+                            ("immediate_actions", "Actions taken"), ("witnesses", "Witnesses"),
+                            # FORM=15 context fields (absent in the 10-field form)
+                            ("task", "Task"), ("immediate_cause", "Cause"), ("property_damage", "Damage"),
+                            ("hazard_status", "Hazard"), ("reported_to", "Informed")):
             if v.get(name):
-                parts.append(f"{label}: {', '.join(v[name])}.")
+                val = v[name]
+                parts.append(f"{label}: {', '.join(val) if isinstance(val, list) else val}.")
         floor = gate.severity_floor(v["incident_type"], v["severity"])
         if floor:      # never changed by code: the user confirms or corrects it
             parts.append(f"{_TYPE_SAID[v['incident_type']]} is usually at least {floor} severity; you said "

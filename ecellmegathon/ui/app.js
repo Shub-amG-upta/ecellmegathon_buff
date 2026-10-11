@@ -14,6 +14,12 @@ const FIELDS = [
   { name: "description", key: null, label: "Description", mandatory: true, kind: "derived", hi: "विवरण" },
   { name: "immediate_actions", key: "a", label: "Actions taken", mandatory: false, kind: "list", hi: "उठाए गए कदम" },
   { name: "witnesses", key: "w", label: "Witnesses", mandatory: false, kind: "list", hi: "गवाह" },
+  // FORM=15 context fields (schema/incident_form_15.json): shown only when the server's form has them
+  { name: "task", key: "g", label: "Task at the time", mandatory: false, kind: "text", context: true },
+  { name: "immediate_cause", key: "c", label: "Immediate cause", mandatory: false, kind: "text", context: true },
+  { name: "property_damage", key: "k", label: "Property damage", mandatory: false, kind: "list", context: true },
+  { name: "hazard_status", key: "h", label: "Hazard status", mandatory: false, kind: "enum", context: true },
+  { name: "reported_to", key: "n", label: "Reported to", mandatory: false, kind: "list", context: true },
   { name: "follow_up", key: null, label: "Follow-up", mandatory: false, kind: "list", hi: "आगे की कार्रवाई" },
 ];
 const BY_KEY = Object.fromEntries(FIELDS.filter(f => f.key).map(f => [f.key, f]));
@@ -186,6 +192,7 @@ function renderForm(r, prev) {
     ? "Review: click a value to correct it, or say what to change. <span class=\"req\">*</span> = mandatory."
     : "Fields fill in as you talk. <span class=\"req\">*</span> = mandatory.";
   for (const f of FIELDS) {
+    if (f.context && !(r.form && f.name in r.form)) continue;     // 10-field form: no context fields
     const v = r.form ? r.form[f.name] : null;
     const dt = document.createElement("dt");
     dt.textContent = f.label;

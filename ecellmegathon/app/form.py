@@ -16,6 +16,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = ROOT / "schema" / "incident_form.json"
+# FORM=15 (env) loads the 15-field form instead: the 10 fields above, unchanged, plus 5 optional
+# industry-standard context fields (task, immediate_cause, property_damage, hazard_status, reported_to;
+# eval/nlu15/LABELING_15.md). Opt-in: with FORM unset or 10 nothing changes.
+SCHEMA_PATHS = {"10": SCHEMA_PATH, "15": ROOT / "schema" / "incident_form_15.json"}
 CATALOGUE_PATH = ROOT / "data" / "followup_catalogue.json"
 
 TOOLS = ("update_report", "submit_report", "cancel_report", "no_op")
@@ -54,8 +58,15 @@ def to_compact(call: dict) -> str:
     return json.dumps(code)
 
 
-def load_schema(path: Path = SCHEMA_PATH) -> dict:
-    return json.loads(Path(path).read_text())
+def form_version() -> str:
+    v = os.environ.get("FORM", "10")
+    if v not in SCHEMA_PATHS:
+        raise ValueError(f"FORM must be 10 or 15, not {v!r}")
+    return v
+
+
+def load_schema(path: Path | None = None) -> dict:
+    return json.loads(Path(path or SCHEMA_PATHS[form_version()]).read_text(encoding="utf-8"))
 
 
 def load_catalogue(path: Path = CATALOGUE_PATH) -> dict:
