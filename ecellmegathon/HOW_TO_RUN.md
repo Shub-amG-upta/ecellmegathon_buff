@@ -213,11 +213,10 @@ EVAL_HEAT_PAUSE=90:80                                          PY benchmarks/run
 EVAL_HEAT_PAUSE=90:80 PREFILL=on                               PY benchmarks/run_bench.py --tag v8-prefill --runs 1
 EVAL_HEAT_PAUSE=90:80 SPEC=1                                   PY benchmarks/run_bench.py --tag v8-spec --runs 1
 EVAL_HEAT_PAUSE=90:80 PREFILL=on SPEC=1                        PY benchmarks/run_bench.py --tag v8-prefill-spec --runs 1
-EVAL_HEAT_PAUSE=90:80 TYPE_MODEL=gemma-3-4b-it-Q4_0-pure-embq8.gguf PY benchmarks/run_bench.py --tag v8-router --runs 2
 PY benchmarks/compare.py
 ```
 
-(This baseline also serves section 12's router comparison.) If `SPEC=1` stops with "no --spec-type ngram-simple flags", the board's
+(The router run is no longer needed: v7 failed its speed rule on the board, `eval/DECISION_v7.md` Result.) If `SPEC=1` stops with "no --spec-type ngram-simple flags", the board's
 llama.cpp is too old for it: skip that run and note it. The eval output records `prefill`; the server command saved by
 run_bench shows the `--spec-…` flags.
 
