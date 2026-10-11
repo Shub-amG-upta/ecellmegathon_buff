@@ -85,13 +85,15 @@ def test_fast_path_matches_gold_on_the_hinglish_set():
     assert answered >= 15
 
 
-def test_hinglish_prompt_is_opt_in(monkeypatch):
-    monkeypatch.delenv("HINGLISH", raising=False)
+def test_hinglish_prompt_is_on_by_default_and_can_be_turned_off(monkeypatch):
+    monkeypatch.setenv("HINGLISH", "0")
     off = system_prompt(load_schema())
     assert "Hinglish" not in off
     monkeypatch.setenv("HINGLISH", "1")
     on = system_prompt(load_schema())
     assert "Hinglish" in on and "Example H" in on and on.startswith(off.split("Rules:")[0])
+    monkeypatch.delenv("HINGLISH", raising=False)          # the default (2026-10-11): on
+    assert system_prompt(load_schema()) == on
     monkeypatch.setenv("HINGLISH", "yes")
     with pytest.raises(ValueError):
         system_prompt(load_schema())
@@ -106,7 +108,8 @@ def test_hinglish_cases_regenerate_identically(tmp_path):
 
 @pytest.mark.parametrize("script", ["board/voice_up.sh", "voice/laptop_up.sh"])
 @pytest.mark.parametrize("env, model, flags, ok", [
-    ({}, "ggml-base.en.bin", "-l en", True),
+    ({}, "ggml-base.bin", "-l auto --translate", True),                  # the default (2026-10-11): Hinglish on
+    ({"HINGLISH": "0"}, "ggml-base.en.bin", "-l en", True),
     ({"HINGLISH": "1"}, "ggml-base.bin", "-l auto --translate", True),
     ({"HINGLISH": "1", "STT_MODEL_FILE": "ggml-small-q5_1.bin"}, "ggml-small-q5_1.bin", "-l auto --translate", True),
     ({"HINGLISH": "1", "STT_TRANSLATE": "0"}, "ggml-base.bin", "-l auto", True),

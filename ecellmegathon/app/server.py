@@ -21,7 +21,7 @@ Environment:
              TYPE_MODEL_URL default http://127.0.0.1:8084 (board.board lane "type")
              TYPE_PREFILL=on (short type answer), TYPE_PARALLEL=1 (type call next to the main call): app/router.py
   LLM_CONSTRAINT  schema | gbnf   how the answer is constrained (gbnf: no whitespace; compare on the board)
-  HINGLISH   0 | 1      Hindi / Hinglish speech (default 0): the UI may then choose "hi" per turn; STT gets
+  HINGLISH   0 | 1      Hindi / Hinglish speech (default 1): the UI may then choose "hi" per turn; STT gets
              language=hi + translate (Whisper must be multilingual: board/voice_up.sh HINGLISH=1), and the
              prompt gets the Hinglish rules (app/prompt.py). Replies stay English. eval/hinglish/README.md
   STT_LANGUAGE, STT_TRANSLATE   the Hindi turns' Whisper language (default hi) and translate (default 1)
@@ -50,7 +50,7 @@ from app.audio import trim_silence
 from app.backends import LlamaServerBackend, MockBackend
 from app.dialog import Dialog
 from app.form import ROOT
-from app import wake
+from app import say_hi, wake
 from app.prompt import hinglish
 
 try:                                    # Track B's module; VOICE=off runs text-only
@@ -184,8 +184,18 @@ class App:
         self.audio: dict = {}                          # turn id, or "<turn id>-<k>" for a sentence
         self.lock = threading.Lock()
         self.vocab = VOCAB.read_text() if VOCAB.exists() else ""
+        self._voices = None                            # (when asked, the TTS server's voices)
 
-    def _speak(self, result: dict) -> dict:
+    def hindi_replies(self) -> bool:
+        """Can replies be spoken in Hindi? Only if the TTS server offers a "hi" voice (asked at most every 30 s)."""
+        if self.voice is None or not hasattr(self.voice, "tts_voices"):
+            return False
+        now = time.monotonic()
+        if self._voices is None or now - self._voices[0] > 30:
+            self._voices = (now, self.voice.tts_voices())
+        return "hi" in self._voices[1]
+
+    def _speak(self, result: dict, reply: str = "en") -> dict:
         """Start speech for this turn in the background and return at once: the UI shows the form
         while TTS runs. `audio_url` waits for the whole reply (GET blocks until ready, up to TTS_WAIT_S).
         With TTS_SPLIT=on, a reply of several sentences is also served sentence by sentence
@@ -195,8 +205,15 @@ class App:
         yet), never a guess."""
         if self.voice is None or not result.get("say"):
             return result
+        # Hindi spoken replies (the page's "Spoken replies: हिंदी"): the same reply, said in Hindi with the Hindi
+        # voice. The chat text, the form and the report stay English. Without a Hindi voice: English.
+        hindi = reply == "hi" and self.hindi_replies()
+        spoken = say_hi.to_hindi(result["say"]) if hindi else result["say"]
+        speak = (lambda text: self.voice.speak(text, voice="hi")) if hindi else self.voice.speak
+        if hindi:
+            result["reply_language"] = "hi"
         tid = result["turn_id"]
-        parts = split_sentences(result["say"]) if os.environ.get("TTS_SPLIT", "off") == "on" else []
+        parts = split_sentences(spoken) if os.environ.get("TTS_SPLIT", "off") == "on" else []
         whole = _TtsJob()
         part_jobs = [_TtsJob() for _ in parts] if len(parts) > 1 else []
         self.audio[tid] = whole
@@ -208,12 +225,12 @@ class App:
         if part_jobs:
             result["audio_parts"] = [f"/api/audio/{tid}-{k}.wav" for k in range(len(part_jobs))]
 
-        def run(say=result["say"]):
+        def run(say=spoken):
             t0 = time.perf_counter()
             if part_jobs:
                 done, first_ms = [], None
                 for sentence, job in zip(parts, part_jobs):
-                    t = self.voice.speak(sentence)
+                    t = speak(sentence)
                     job.finish(t)
                     done.append(t)
                     if first_ms is None and t.wav:
@@ -223,7 +240,7 @@ class App:
                 t = SimpleNamespace(wav=wav, wall_ms=(time.perf_counter() - t0) * 1000, error=err,
                                     device=next((x.device for x in done if x.device), None))
             else:
-                t, first_ms = self.voice.speak(say), None
+                t, first_ms = speak(say), None
             whole.finish(t)
             with self.lock:                            # later reads of /api/state see the TTS time
                 last = self.dialog.last
@@ -240,11 +257,11 @@ class App:
         threading.Thread(target=run, daemon=True).start()
         return result
 
-    def turn_text(self, text: str) -> dict:
+    def turn_text(self, text: str, reply: str = "en") -> dict:
         with self.lock:
-            return self._speak(self.dialog.turn(text))
+            return self._speak(self.dialog.turn(text), reply)
 
-    def turn_wav(self, wav: bytes, lang: str | None = None) -> dict:
+    def turn_wav(self, wav: bytes, lang: str | None = None, reply: str = "en") -> dict:
         with self.lock:
             if self.voice is None:
                 r = self.dialog.turn("")
@@ -272,15 +289,15 @@ class App:
             r["devices"]["stt"] = stt.device
             if stt.error:
                 r["error"] = _join(r["error"], stt.error, "stt")
-            return self._speak(r)
+            return self._speak(r, reply)
 
-    def edit(self, field: str, value) -> dict:
+    def edit(self, field: str, value, reply: str = "en") -> dict:
         with self.lock:
-            return self._speak(self.dialog.edit(field, value))
+            return self._speak(self.dialog.edit(field, value), reply)
 
-    def reset(self) -> dict:
+    def reset(self, reply: str = "en") -> dict:
         with self.lock:
-            return self._speak(self.dialog.reset())
+            return self._speak(self.dialog.reset(), reply)
 
     def config(self) -> dict:
         """What the UI may offer: languages (Hindi only with HINGLISH=1), whether speech works, and the
@@ -288,6 +305,7 @@ class App:
         langs = ["en", "hi"] if hinglish() else ["en"]
         return {"languages": [{"code": c, "name": LANGUAGES[c]} for c in langs],
                 "voice": self.voice is not None, "replies": "en",
+                "reply_languages": ["en", "hi"] if self.hindi_replies() else ["en"],
                 "wake": {"engine": wake.engine(self.voice), "phrase": wake.PHRASE}}
 
     def wake_check(self, wav: bytes) -> dict:
@@ -305,7 +323,9 @@ class App:
             out.update(wake=k.detected and not k.error, keyword=k.keyword, ms=k.wall_ms, device=k.device,
                        error=k.error)
             return out
-        stt = self.voice.transcribe(wav, prompt="", **(stt_settings("en") or {}))
+        # The phrase as a hint: the multilingual Whisper (HINGLISH=1) heard a TTS "Hey Qualcomm" as "Hey Quarkum"
+        # 3/3 without it and "Hey Qualcomm" 2/2 with it, same speed; speech, noise and silence gave no false wake.
+        stt = self.voice.transcribe(wav, prompt=f"{wake.PHRASE}.", **(stt_settings("en") or {}))
         hit, rest = wake.find(stt.text)
         out.update(wake=hit and not stt.error, heard=stt.text, rest=rest, ms=stt.wall_ms, device=stt.device,
                    error=stt.error)
@@ -367,20 +387,21 @@ def make_handler(app: App):
             try:
                 body = self._body()
                 ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip()
+                reply = (self.headers.get("X-Reply-Language") or "en").strip().lower()   # spoken replies
                 if self.path.split("?")[0] == "/api/turn":
                     if ctype in ("audio/wav", "audio/x-wav", "audio/wave"):
                         lang = self.headers.get("X-Language") or _query(self.path).get("lang")
-                        return self._json(app.turn_wav(body, lang))
-                    return self._json(app.turn_text(json.loads(body or b"{}").get("text", "")))
+                        return self._json(app.turn_wav(body, lang, reply))
+                    return self._json(app.turn_text(json.loads(body or b"{}").get("text", ""), reply))
                 if self.path == "/api/wake":
                     if ctype not in ("audio/wav", "audio/x-wav", "audio/wave"):
                         return self._json({"error": "POST /api/wake takes audio/wav"}, 400)
                     return self._json(app.wake_check(body))
                 if self.path == "/api/edit":
                     req = json.loads(body)
-                    return self._json(app.edit(req["field"], req["value"]))
+                    return self._json(app.edit(req["field"], req["value"], reply))
                 if self.path == "/api/reset":
-                    return self._json(app.reset())
+                    return self._json(app.reset(reply))
                 return self._json({"error": "not found"}, 404)
             except (ValueError, KeyError) as e:
                 return self._json({"error": f"bad request: {e}"}, 400)

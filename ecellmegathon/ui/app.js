@@ -51,8 +51,21 @@ let languages = ["en"];
 const LANG_KEY = "speak-lang";
 
 // ---------------------------------------------------------------- API
+// Spoken replies in Hindi (⋮ menu, only when the server has a Hindi voice): the server speaks its reply in
+// Hindi; the chat text, the form and the report stay English.
+const REPLY_LANG_KEY = "reply-lang";
+let replyLang = "en";
+let replyLanguages = ["en"];
+
+function setReplyLang(code) {
+  replyLang = code === "hi" && replyLanguages.includes("hi") ? "hi" : "en";
+  $("menu-replylang").textContent = replyLang === "hi" ? "Spoken replies: हिंदी" : "Spoken replies: English";
+  try { localStorage.setItem(REPLY_LANG_KEY, replyLang); } catch { /* storage blocked: this session only */ }
+}
+
 async function api(method, path, body, contentType, headers) {
   const opts = { method, headers: { ...(headers || {}) } };
+  if (method === "POST") opts.headers["X-Reply-Language"] = replyLang;
   if (body !== undefined) {
     opts.body = body;
     opts.headers["Content-Type"] = contentType || "application/json";
@@ -446,6 +459,7 @@ function menuAction(act) {
   if (act === "new") $("reset").click();
   else if (act === "reply") askReplyMode();
   else if (act === "lang") $("lang").click();
+  else if (act === "replylang") setReplyLang(replyLang === "hi" ? "en" : "hi");
   else if (act === "handsfree") HandsFree.toggle();
   else if (act === "report") $("view-report").click();
   else if (act === "dev") setView("dev");
@@ -488,6 +502,11 @@ async function loadConfig() {
   $("menu-lang").hidden = !multi;
   $("lang-pick").hidden = !multi;
   setLanguage(multi ? savedLanguage() || "en" : "en");
+  replyLanguages = c && Array.isArray(c.reply_languages) ? c.reply_languages : ["en"];
+  $("menu-replylang").hidden = !replyLanguages.includes("hi");
+  let savedReply = null;
+  try { savedReply = localStorage.getItem(REPLY_LANG_KEY); } catch { /* storage blocked */ }
+  setReplyLang(savedReply || "en");
 }
 
 // ---------------------------------------------------------------- proof + reports

@@ -23,10 +23,11 @@ import re
 PHRASE = "Hey Qualcomm"
 
 # How Whisper writes the phrase: "Hey Qualcomm", "Hi, Qualcomm.", "Hey Qualcom", "Hey, Qual-comm", "hey call com",
-# "Hey Kwalcomm". Only at the start of the text (after at most one filler word), so "we called Qualcomm support"
-# in the middle of a report is never a wake.
+# "Hey Kwalcomm", "Hey Quarkum" (the multilingual base model without a prompt). Only at the start of the text
+# (after at most one filler word), so "we called Qualcomm support" in the middle of a report is never a wake.
 _GREETING = r"(?:hey|hi|hello|hay|hei|he|a|okay|ok)"
-_NAME = r"(?:qual[\s-]*com+|qualm?com+|kwal[\s-]*com+|qual[\s-]*cam+|call[\s-]*com+|cool[\s-]*com+)"
+_NAME = (r"(?:qual[\s-]*com+|qualm?com+|kwal[\s-]*com+|qual[\s-]*cam+|call[\s-]*com+|cool[\s-]*com+"
+         r"|quar[\s-]*k[ou]m+)")
 _WAKE = re.compile(r"^\W*(?:(?:uh|um|so|okay|ok)\W+)?" + _GREETING + r"\W+" + _NAME + r"\b\W*", re.I)
 
 

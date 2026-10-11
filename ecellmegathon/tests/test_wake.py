@@ -26,6 +26,7 @@ WAV = (b"RIFF" + (36 + 3200).to_bytes(4, "little") + b"WAVEfmt " + (16).to_bytes
     ("Hey Qualcomm.", ""), ("Hi, Qualcomm, there was a fire in the lab", "there was a fire in the lab"),
     ("hey qualcom", ""), ("Hey, Qual-comm!", ""), ("Hey call com", ""), ("Hello Qualcomm", ""),
     ("Okay, hey Qualcomm water leak in the pantry", "water leak in the pantry"), ("Hey Kwalcomm", ""),
+    ("Hey Quarkum.", ""),            # the multilingual base model (HINGLISH=1) without the phrase as a hint
 ])
 def test_the_phrase_and_what_follows(text, rest):
     assert wake.find(text) == (True, rest)
@@ -120,7 +121,10 @@ def test_wake_with_whisper(run, monkeypatch):
     r = post(url, "/api/wake", WAV)[1]
     assert r["wake"] is True and r["rest"] == "fire in the lab"
     assert post(url, "/api/wake", WAV)[1]["wake"] is False
-    assert prompts == ["", "", ""]                       # no vocabulary hint: it could make Whisper "hear" it
+    # The phrase itself as the hint (no other vocabulary): with the multilingual model (HINGLISH=1, the default)
+    # a TTS "Hey Qualcomm" was heard as "Hey Quarkum" 3/3 without it, "Hey Qualcomm" 2/2 with it; ordinary speech,
+    # "the Qualcomm board", noise and silence gave no false wake (BOARD, 2026-10-11).
+    assert prompts == ["Hey Qualcomm."] * 3
     assert post(url, "/api/wake", b'{"x":1}', "application/json")[0] == 400
 
 

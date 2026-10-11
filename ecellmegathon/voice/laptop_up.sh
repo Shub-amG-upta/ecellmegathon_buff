@@ -17,11 +17,11 @@ cd "$(dirname "$0")/.."
 REPO=$(pwd)
 ENGINES=${ENGINES:-$(cd "$REPO/../.." && pwd)/engines}
 MODEL=${STT_MODEL_FILE:-ggml-base.en.bin}
-# Hindi / Hinglish speech (HINGLISH=1, off by default): a multilingual Whisper model (not *.en), the language
+# Hindi / Hinglish speech (HINGLISH=1, on by default; HINGLISH=0 = English-only): a multilingual Whisper model (not *.en), the language
 # detected per clip (-l auto) and the text translated into English (--translate), so the app, the form and the
 # spoken replies stay English. Off: "-l en", whisper-server's own default, so nothing changes.
 # STT_TRANSLATE=0 keeps the words as said (for comparing; eval/hinglish/README.md).
-HINGLISH=${HINGLISH:-0}
+HINGLISH=${HINGLISH:-1}
 if [ "$HINGLISH" = "1" ]; then
     MODEL=${STT_MODEL_FILE:-ggml-base.bin}
     case "$MODEL" in *.en.bin|*.en-*.bin) echo "HINGLISH=1 needs a multilingual Whisper model, not $MODEL" >&2; exit 1;; esac
@@ -31,6 +31,9 @@ else
     STT_LANG_FLAGS="-l ${STT_LANGUAGE:-en}"
 fi
 VOICE=${TTS_VOICE:-vits-piper-en_US-lessac-medium}
+# Hindi spoken replies (the page's "Spoken replies: हिंदी"): used only if this voice folder is in $ENGINES/voices.
+VOICE_HI=${TTS_VOICE_HI:-vits-piper-hi_IN-priyamvada-medium}
+[ -d "$ENGINES/voices/$VOICE_HI" ] || VOICE_HI=""
 LOGS="$REPO/logs"
 mkdir -p "$LOGS"
 
@@ -59,7 +62,7 @@ done
     > "$LOGS/stt_laptop.log" 2>&1 &
 echo $! > "$LOGS/stt_laptop.pid"
 "$PY" -m voice.tts_server --mode local --bin "$TTS_BIN" --model-dir "$ENGINES/voices/$VOICE" \
-    --threads 4 --warm schema/incident_form.json > "$LOGS/tts_laptop.log" 2>&1 &
+    ${VOICE_HI:+--model-dir-hi "$ENGINES/voices/$VOICE_HI"} --threads 4 --warm schema/incident_form.json > "$LOGS/tts_laptop.log" 2>&1 &
 echo $! > "$LOGS/tts_laptop.pid"
 
 for port in 8082 8083; do

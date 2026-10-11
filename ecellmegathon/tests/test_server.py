@@ -244,12 +244,14 @@ def _voice_seeing(seen):
 
 
 def test_config_offers_hindi_only_with_hinglish(run, monkeypatch):
-    monkeypatch.delenv("HINGLISH", raising=False)
+    monkeypatch.setenv("HINGLISH", "0")
     url = run([])
     assert [x["code"] for x in call(url, "/api/config")[1]["languages"]] == ["en"]
     monkeypatch.setenv("HINGLISH", "1")
     cfg = call(url, "/api/config")[1]
     assert [x["code"] for x in cfg["languages"]] == ["en", "hi"] and cfg["replies"] == "en"
+    monkeypatch.delenv("HINGLISH", raising=False)          # the default (2026-10-11): on
+    assert [x["code"] for x in call(url, "/api/config")[1]["languages"]] == ["en", "hi"]
 
 
 def test_hindi_turn_asks_whisper_for_hindi_translated_and_english_for_english(run, monkeypatch):
@@ -268,7 +270,7 @@ def test_hindi_turn_asks_whisper_for_hindi_translated_and_english_for_english(ru
 
 
 def test_without_hinglish_the_stt_request_is_unchanged_and_hindi_is_explained(run, monkeypatch):
-    monkeypatch.delenv("HINGLISH", raising=False)
+    monkeypatch.setenv("HINGLISH", "0")
     seen = []
     url = run([{"tool": "no_op"}], voice_mod=_voice_seeing(seen))
     r = call(url, "/api/turn?lang=hi", b"RIFF....", ctype="audio/wav")[1]

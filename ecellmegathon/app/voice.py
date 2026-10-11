@@ -230,9 +230,10 @@ def transcribe(wav: bytes, prompt: str = "", language: str | None = None,
     return result(text=clean_transcript(data["text"]), stt_ms=stt_ms)
 
 
-def speak(text: str) -> TtsResult:
+def speak(text: str, voice: str | None = None) -> TtsResult:
     """Text to speech: a complete WAV file. Never raises; on failure wav is b""
-    and the dialog continues without audio."""
+    and the dialog continues without audio. `voice`: an extra voice the TTS server offers (e.g. "hi",
+    see tts_voices()); None = its default (English) voice."""
     t0 = time.perf_counter()
     url = _cfg("TTS_URL", "http://127.0.0.1:8083").rstrip("/")
     device, model = _cfg("TTS_DEVICE", "unknown"), _cfg("TTS_MODEL", "unknown")
@@ -246,7 +247,7 @@ def speak(text: str) -> TtsResult:
     if not isinstance(text, str) or not text.strip():
         return result(error="nothing to say")
     req = urllib.request.Request(f"{url}/tts", method="POST",
-                                 data=json.dumps({"text": text.strip()}).encode(),
+                                 data=json.dumps({"text": text.strip(), **({"voice": voice} if voice else {})}).encode(),
                                  headers={"Content-Type": "application/json"})
     raw, headers, err = _post(req, _timeout("TTS_TIMEOUT_S", 60.0))
     if err:
@@ -254,6 +255,19 @@ def speak(text: str) -> TtsResult:
     if raw[:4] != b"RIFF" or raw[8:12] != b"WAVE":
         return result(error=f"tts: reply is not a WAV file: {raw[:80]!r}", headers=headers)
     return result(wav=raw, headers=headers)
+
+
+def tts_voices(timeout_s: float = 3.0) -> list[str]:
+    """The voices the TTS server offers (its GET /health "voices"; ["en"] when it doesn't say). Never raises:
+    [] when the server can't be reached."""
+    url = _cfg("TTS_URL", "http://127.0.0.1:8083").rstrip("/")
+    try:
+        with urllib.request.urlopen(f"{url}/health", timeout=timeout_s) as r:
+            data = json.loads(r.read().decode("utf-8"))
+    except (OSError, ValueError):
+        return []
+    v = data.get("voices") if isinstance(data, dict) else None
+    return [str(x) for x in v] if isinstance(v, list) else ["en"]
 
 
 def spot(wav: bytes) -> KwsResult:

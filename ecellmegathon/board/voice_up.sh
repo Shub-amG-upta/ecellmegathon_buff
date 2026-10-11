@@ -39,11 +39,11 @@ cd "$(dirname "$0")/.."
 REPO=$(pwd)
 ENGINES=${ENGINES:-$(cd "$REPO/../.." && pwd)/engines}
 MODEL=${STT_MODEL_FILE:-ggml-base.en.bin}
-# Hindi / Hinglish speech (HINGLISH=1, off by default): a multilingual Whisper model (not *.en), the language
+# Hindi / Hinglish speech (HINGLISH=1, on by default; HINGLISH=0 = English-only): a multilingual Whisper model (not *.en), the language
 # detected per clip (-l auto) and the text translated into English (--translate), so the app, the form and the
 # spoken replies stay English. Off: "-l en", whisper-server's own default, so nothing changes.
 # STT_TRANSLATE=0 keeps the words as said (for comparing; eval/hinglish/README.md).
-HINGLISH=${HINGLISH:-0}
+HINGLISH=${HINGLISH:-1}
 if [ "$HINGLISH" = "1" ]; then
     MODEL=${STT_MODEL_FILE:-ggml-base.bin}
     case "$MODEL" in *.en.bin|*.en-*.bin) echo "HINGLISH=1 needs a multilingual Whisper model, not $MODEL" >&2; exit 1;; esac
@@ -53,6 +53,10 @@ else
     STT_LANG_FLAGS="-l ${STT_LANGUAGE:-en}"
 fi
 VOICE=${TTS_VOICE:-vits-piper-en_US-lessac-medium}
+# Hindi spoken replies (the page's "Spoken replies: हिंदी"): a Hindi Piper voice, used only if its folder is in
+# $ENGINES/voices; without it replies stay English.
+VOICE_HI=${TTS_VOICE_HI:-vits-piper-hi_IN-priyamvada-medium}
+[ -d "$ENGINES/voices/$VOICE_HI" ] || VOICE_HI=""
 STT_THREADS=${STT_THREADS:-4}
 SERIAL=${ANDROID_SERIAL:-}
 STT_DIR=/data/local/tmp/stt
@@ -129,9 +133,10 @@ adb_ shell "mkdir -p $TTS_DIR/bin $TTS_DIR/lib"
 push "$ENGINES/android/tts/bin/sherpa-onnx-offline-tts" "$TTS_DIR/bin/sherpa-onnx-offline-tts"
 push_dir "$ENGINES/android/tts/lib" "$TTS_DIR/lib"
 push_dir "$ENGINES/voices/$VOICE" "$TTS_DIR/$VOICE"
+[ -n "$VOICE_HI" ] && push_dir "$ENGINES/voices/$VOICE_HI" "$TTS_DIR/$VOICE_HI"
 adb_ shell "chmod 755 $TTS_DIR/bin/sherpa-onnx-offline-tts"
 [ -f "$LOGS/tts_board.pid" ] && kill "$(cat "$LOGS/tts_board.pid")" 2>/dev/null || true
-"$PY" -m voice.tts_server --mode adb --device-dir "$TTS_DIR" --voice "$VOICE" --threads 2 \
+"$PY" -m voice.tts_server --mode adb --device-dir "$TTS_DIR" --voice "$VOICE" ${VOICE_HI:+--voice-hi "$VOICE_HI"} --threads 2 \
     ${SERIAL:+--serial "$SERIAL"} --warm schema/incident_form.json > "$LOGS/tts_board.log" 2>&1 &
 echo $! > "$LOGS/tts_board.pid"
 

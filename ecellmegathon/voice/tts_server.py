@@ -198,8 +198,11 @@ def schema_phrases(schema_path: str) -> list[str]:
     return [" ".join(x["ask"].split()) for x in fields if x.get("ask")]
 
 
-def make_handler(runner, lock: threading.Lock, cache: Cache | None = None):
+def make_handler(runner, lock: threading.Lock, cache: Cache | None = None, voices: dict | None = None):
+    """`voices`: extra voices by name (e.g. {"hi": <runner>}), chosen per request with {"voice": "hi"};
+    anything else uses `runner`, the default voice."""
     cache = cache if cache is not None else Cache(0)
+    voices = voices or {}
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, fmt, *args):
@@ -219,14 +222,16 @@ def make_handler(runner, lock: threading.Lock, cache: Cache | None = None):
             problems = runner.health()
             self._json(200 if not problems else 503,
                        {"status": "ok" if not problems else "error", "problems": problems,
-                        "device": runner.device, "model": runner.model})
+                        "device": runner.device, "model": runner.model,
+                        "voices": ["en"] + [v for v, r in voices.items() if not r.health()]})
 
         def do_POST(self):
             if self.path.rstrip("/") != "/tts":
                 return self._json(404, {"error": "not found"})
             try:
                 n = int(self.headers.get("Content-Length", 0))
-                text = json.loads(self.rfile.read(n).decode("utf-8")).get("text", "")
+                req = json.loads(self.rfile.read(n).decode("utf-8"))
+                text, voice = req.get("text", ""), str(req.get("voice") or "")
             except (ValueError, AttributeError):
                 return self._json(400, {"error": 'body must be JSON {"text": "..."}'})
             text = " ".join(str(text).split())
@@ -236,18 +241,20 @@ def make_handler(runner, lock: threading.Lock, cache: Cache | None = None):
                 return self._json(413, {"error": f"text longer than {MAX_TEXT_CHARS} chars"})
             # X-TTS-No-Cache: 1 forces a fresh synthesis (timing checks); the result is still cached.
             fresh = self.headers.get("X-TTS-No-Cache", "") == "1"
+            r = voices.get(voice, runner)
+            key = f"{voice}|{text}" if voice in voices else text
             with lock:  # one synthesis at a time; the board is shared with the LLM
-                hit = None if fresh else cache.get(text)
-                s = Synth(wav=hit) if hit is not None else runner.synth(text)
+                hit = None if fresh else cache.get(key)
+                s = Synth(wav=hit) if hit is not None else r.synth(text)
                 if hit is None and not s.error:
-                    cache.put(text, s.wav)
+                    cache.put(key, s.wav)
             if s.error:
                 return self._json(500, {"error": s.error})
             self.send_response(200)
             self.send_header("Content-Type", "audio/wav")
             self.send_header("Content-Length", str(len(s.wav)))
-            self.send_header("X-TTS-Device", runner.device)
-            self.send_header("X-TTS-Model", runner.model)
+            self.send_header("X-TTS-Device", r.device)
+            self.send_header("X-TTS-Model", r.model)
             self.send_header("X-TTS-Cache", "hit" if hit is not None else "miss")
             if s.engine_ms is not None:
                 self.send_header("X-TTS-Ms", str(s.engine_ms))
@@ -264,6 +271,8 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--model-dir", help="local: the vits-piper-* folder")
     ap.add_argument("--device-dir", default=DEVICE_DIR, help="adb: folder on the board")
     ap.add_argument("--voice", default=DEFAULT_VOICE, help="adb: voice folder name on the board")
+    ap.add_argument("--model-dir-hi", default="", help="local: a Hindi vits-piper-hi_IN-* folder (optional)")
+    ap.add_argument("--voice-hi", default="", help="adb: Hindi voice folder name on the board (optional)")
     ap.add_argument("--onnx", default="", help="voice .onnx file name if it differs from the folder")
     ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--speed", type=float, default=1.0, help=">1 speaks faster")
@@ -276,8 +285,11 @@ def main(argv: list[str] | None = None) -> None:
         if not (a.bin and a.model_dir):
             ap.error("--mode local needs --bin and --model-dir")
         runner = LocalRunner(a.bin, a.model_dir, a.onnx, a.threads, a.speed)
+        voices = {"hi": LocalRunner(a.bin, a.model_dir_hi, "", a.threads, a.speed)} if a.model_dir_hi else {}
     else:
         runner = AdbRunner(a.device_dir, a.voice, a.onnx, a.threads, a.speed, a.serial)
+        voices = ({"hi": AdbRunner(a.device_dir, a.voice_hi, "", a.threads, a.speed, a.serial)}
+                  if a.voice_hi else {})
     problems = runner.health()
     cache = Cache(a.cache)
     warmed, failed = 0, []
@@ -290,9 +302,10 @@ def main(argv: list[str] | None = None) -> None:
                 cache.put(text, s.wav)
                 warmed += 1
     print(json.dumps({"mode": a.mode, "device": runner.device, "model": runner.model,
+                      "voices": {v: r.health() or "ok" for v, r in voices.items()},
                       "port": a.port, "problems": problems, "warmed": warmed,
                       "warm_failed": failed}), flush=True)
-    srv = ThreadingHTTPServer(("127.0.0.1", a.port), make_handler(runner, threading.Lock(), cache))
+    srv = ThreadingHTTPServer(("127.0.0.1", a.port), make_handler(runner, threading.Lock(), cache, voices))
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
