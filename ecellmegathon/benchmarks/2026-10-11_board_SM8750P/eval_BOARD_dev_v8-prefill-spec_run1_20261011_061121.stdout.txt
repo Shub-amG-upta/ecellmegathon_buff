@@ -1,0 +1,33 @@
+  throttle: pace 0.0 s · heat pause [90.0, 80.0] · 0 pauses, 0.0 s paused · NPU peak 52.3 °C
+
+[BOARD] split dev · model Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf on npu · 2026-10-11T06:13:11+0530
+  teacher-forced  157 turns · tool 0.618 · field 0.194 · turns with extra 0 · dropped by gate 0 · errors 0
+                  answered by code (fast path) 93 · LLM calls 64
+                  by field {'a': '0/27', 'd': '13/42', 'e': '0/20', 'l': '1/44', 'p': '0/18', 's': '33/42', 't': '0/43', 'w': '0/6'}
+                  prefill_ms  {'mean': 116.2, 'median': 105.9, 'n': 64}
+                  decode_ms   {'mean': 51.6, 'median': 51.4, 'n': 64}
+                  wall_ms     {'mean': 193.4, 'median': 184.3, 'n': 64}
+                  tokens {'prefill_tokens': {'mean': 60.4, 'median': 48.5, 'n': 64}, 'decode_tokens': {'mean': 2, 'median': 2.0, 'n': 64}}
+   ✗ ps-01#0 tool no_op (want update_report) wrong {'t': None, 'l': None, 'd': None, 'a': None} extra {}
+   ✗ ps-02#0 tool no_op (want update_report) wrong {'t': None, 'l': None, 'd': None, 'a': None} extra {}
+   ✗ ps-03#0 tool no_op (want update_report) wrong {'t': None, 'l': None} extra {}
+   ✗ el-01#0 tool no_op (want update_report) wrong {'t': None, 's': None, 'l': None, 'd': None, 'p': None, 'e': None, 'a': None} extra {}
+   ✗ el-03#0 tool no_op (want update_report) wrong {'t': None} extra {}
+   ✗ el-03#4 tool no_op (want update_report) wrong {'e': None} extra {}
+   ✗ sl-01#0 tool no_op (want update_report) wrong {'t': None, 'd': None, 'p': None, 'l': None, 's': None} extra {}
+   ✗ sl-03#0 tool no_op (want update_report) wrong {'t': None, 'p': None, 'l': None} extra {}
+   ✗ sl-03#3 tool no_op (want update_report) wrong {'a': None} extra {}
+   ✗ na-01#0 tool no_op (want update_report) wrong {'t': None, 'd': None, 'p': None, 'l': None} extra {}
+   ✗ na-02#0 tool no_op (want update_report) wrong {'t': None, 'l': None, 'd': None, 'a': None} extra {}
+   ✗ fk-01#0 tool no_op (want update_report) wrong {'t': None, 'd': None, 'l': None, 'p': None, 'e': None, 'a': None, 's': None} extra {}
+   ✗ fk-03#0 tool no_op (want update_report) wrong {'t': None, 'l': None, 'e': None} extra {}
+   ✗ lw-01#0 tool no_op (want update_report) wrong {'t': None, 'l': None, 'e': None, 'p': None, 'd': None} extra {}
+   ✗ lw-01#2 tool no_op (want update_report) wrong {'a': None} extra {}
+   ✗ lw-03#0 tool no_op (want update_report) wrong {'t': None, 'l': None, 'p': None, 'e': None, 'w': None} extra {}
+   ✗ ld-01#0 tool no_op (want update_report) wrong {'t': None, 'p': None, 'e': None, 'l': None, 'd': None, 'a': None} extra {}
+   ✗ ld-01#1 tool no_op (want update_report) wrong {'s': None} extra {}
+   ✗ ch-01#0 tool no_op (want update_report) wrong {'t': None, 'l': None, 'd': None, 'p': None, 'a': None, 's': None} extra {}
+   ✗ ch-03#0 tool no_op (want update_report) wrong {'t': None, 'l': None, 'p': None} extra {}
+  free-running    44 dialogs · final field 0.0 · exact 1 · ended right 2/44 · with extra 0
+                  by field {'a': '0/26', 'd': '0/42', 'e': '0/20', 'l': '0/43', 'p': '0/18', 's': '0/42', 't': '0/43', 'w': '0/6'}
+  saved C:\Users\xitsp\Downloads\mega\wt-v8\ecellmegathon\results\eval_BOARD_dev_20261011_061311.json
