@@ -1,0 +1,34 @@
+  type router: gemma-3-4b-it-Q4_0-pure-embq8.gguf · 86 calls · type changed 20 · failures 2
+  throttle: pace 0.0 s · heat pause [90.0, 80.0] · 0 pauses, 0.0 s paused · NPU peak 81.8 °C
+
+[BOARD] split dev · model Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf on npu · 2026-10-11T09:57:50+0530
+  teacher-forced  157 turns · tool 1.0 · field 0.868 · turns with extra 25 · dropped by gate 13 · errors 0
+                  answered by code (fast path) 93 · LLM calls 64
+                  by field {'a': '24/27', 'd': '39/42', 'e': '8/20', 'l': '41/44', 'p': '13/18', 's': '42/42', 't': '37/43', 'w': '6/6'}
+                  prefill_ms  {'mean': 154.1, 'median': 169.9, 'n': 64}
+                  decode_ms   {'mean': 2203.2, 'median': 2412.8, 'n': 64}
+                  wall_ms     {'mean': 2422.4, 'median': 2674.6, 'n': 64}
+                  tokens {'prefill_tokens': {'mean': 85.4, 'median': 56.5, 'n': 64}, 'decode_tokens': {'mean': 43.8, 'median': 46.0, 'n': 64}}
+   ✗ ps-01#0 tool update_report (want update_report) wrong {} extra {'e': ['maintenance has already isolated the']}
+   ✗ ps-02#0 tool update_report (want update_report) wrong {'d': '10 or so'} extra {}
+   ✗ el-01#0 tool update_report (want update_report) wrong {'p': ['coworkers'], 'a': ['called the ambulance', 'taken to hospital']} extra {'p': ['coworkers'], 'a': ['taken to hospital']}
+   ✗ el-03#4 tool update_report (want update_report) wrong {'e': ['the panel cover', 'a live wire']} extra {'e': ['a live wire'], 'a': ['closed the panel cover']}
+   ✗ sl-01#0 tool update_report (want update_report) wrong {} extra {'e': ['a metal cabinet']}
+   ✗ sl-03#0 tool update_report (want update_report) wrong {'t': 'fall_height'} extra {}
+   ✗ na-01#0 tool update_report (want update_report) wrong {'p': ['a nursing aide', 'a resident']} extra {'p': ['a resident'], 'e': ['the metal strip']}
+   ✗ fk-01#0 tool update_report (want update_report) wrong {'e': ['the stacked material']} extra {'e': ['the stacked material']}
+   ✗ fk-03#0 tool update_report (want update_report) wrong {'e': ['the rack', 'the forklift']} extra {'e': ['the rack']}
+   ✗ lw-01#0 tool update_report (want update_report) wrong {'e': ['a valve']} extra {}
+   ✗ ld-01#0 tool update_report (want update_report) wrong {'t': 'struck_by', 'e': ['extension ladder', 'the tie wires'], 'a': ['someone moved the base']} extra {'e': ['extension ladder', 'the tie wires'], 'a': ['someone moved the base']}
+   ✗ ch-01#0 tool update_report (want update_report) wrong {} extra {'e': ['the vapour cleaning', 'the solvent'], 'w': ['the manager']}
+   ✗ ch-03#0 tool update_report (want update_report) wrong {} extra {'e': ['solvent']}
+   ✗ cv-01#0 tool update_report (want update_report) wrong {'p': ['One of the mechanics', 'tyre line staff'], 'd': '1:45'} extra {'p': ['tyre line staff']}
+   ✗ fi-01#2 tool update_report (want update_report) wrong {} extra {'e': ['fire', 'the firefighters']}
+   ✗ fi-04#0 tool update_report (want update_report) wrong {} extra {'e': ['LPG leak'], 'w': ['six staff']}
+   ✗ lf-01#0 tool update_report (want update_report) wrong {'a': ['police broke the lift door']} extra {'p': ['seven people', 'one man']}
+   ✗ lf-03#0 tool update_report (want update_report) wrong {'p': None} extra {}
+   ✗ gs-03#0 tool update_report (want update_report) wrong {} extra {'e': ['the pipeline']}
+   ✗ cl-01#0 tool update_report (want update_report) wrong {'l': None} extra {'e': ['ceiling fans'], 'a': ['shifted to the emergency ward']}
+  free-running    44 dialogs · final field 0.858 · exact 11 · ended right 43/44 · with extra 24
+                  by field {'a': '21/26', 'd': '39/42', 'e': '8/20', 'l': '40/43', 'p': '13/18', 's': '42/42', 't': '37/43', 'w': '6/6'}
+  saved C:\Users\xitsp\Downloads\mega\wt-v10\ecellmegathon\results\eval_BOARD_dev_20261011_095750.json
