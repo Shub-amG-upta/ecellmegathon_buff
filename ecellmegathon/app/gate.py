@@ -31,7 +31,8 @@ SEVERITY_ORDER = ["low", "medium", "high", "critical"]
 # gs-02, lb-02.)
 SEVERITY_FLOOR = {"fire": "high", "gas_leak": "high", "chemical": "medium"}
 
-TEXT_KEYS = ("l", "d", "p", "e", "a", "w")
+TEXT_KEYS = ("l", "d", "p", "e", "a", "w",
+             "g", "c", "k", "n")           # FORM=15 context fields (task, cause, damage, reported to)
 
 _STOP = frozenset("""
 a an the and or but of to in on at by for from with near into onto over under

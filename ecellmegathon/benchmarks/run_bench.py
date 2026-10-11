@@ -229,7 +229,7 @@ def main() -> int:
             shutil.copy2(saved, out / f"{base}.json")
         meta = {"tag": a.tag, "run": i, "label": "BOARD", "split": a.split, "soc": soc, "git": git,
                 "model": a.model, "ctx": ctx, "spec": a.spec, "fast_path": not a.no_fast_path,
-                "cases": a.cases or None, "hinglish": env.get("HINGLISH", "0"),
+                "form": os.environ.get("FORM", "10"), "cases": a.cases or None, "hinglish": env.get("HINGLISH", "0"),
                 "via_monitor": via_monitor, "llm_url": llm_url, "started": stamp, "duration_s": duration,
                 "eval_exit_code": code, "result_file": f"{base}.json" if saved else None,
                 "cool_down": cool, "server": server, "temperature": sampler.summary(),

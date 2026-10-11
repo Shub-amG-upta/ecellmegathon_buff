@@ -14,6 +14,12 @@ const FIELDS = [
   { name: "description", key: null, label: "Description", mandatory: true, kind: "derived", hi: "विवरण" },
   { name: "immediate_actions", key: "a", label: "Actions taken", mandatory: false, kind: "list", hi: "उठाए गए कदम" },
   { name: "witnesses", key: "w", label: "Witnesses", mandatory: false, kind: "list", hi: "गवाह" },
+  // FORM=15 context fields (schema/incident_form_15.json): shown only when the server's form has them
+  { name: "task", key: "g", label: "Task at the time", mandatory: false, kind: "text", context: true },
+  { name: "immediate_cause", key: "c", label: "Immediate cause", mandatory: false, kind: "text", context: true },
+  { name: "property_damage", key: "k", label: "Property damage", mandatory: false, kind: "list", context: true },
+  { name: "hazard_status", key: "h", label: "Hazard status", mandatory: false, kind: "enum", context: true },
+  { name: "reported_to", key: "n", label: "Reported to", mandatory: false, kind: "list", context: true },
   { name: "follow_up", key: null, label: "Follow-up", mandatory: false, kind: "list", hi: "आगे की कार्रवाई" },
 ];
 const BY_KEY = Object.fromEntries(FIELDS.filter(f => f.key).map(f => [f.key, f]));
@@ -59,6 +65,12 @@ async function api(method, path, body, contentType, headers) {
   return data;
 }
 
+// A spoken turn (push-to-talk or hands-free), with the language the user speaks when the server offers a choice.
+function sendSpoken(wav, extra) {
+  const headers = { ...(languages.includes("hi") ? { "X-Language": speakLang } : {}), ...(extra || {}) };
+  return send(wav, "audio/wav", headers);
+}
+
 async function send(body, contentType, headers) {
   if (busy) return;
   setBusy(true);
@@ -97,7 +109,9 @@ function render(r) {
     loadReports();
     if (r.report_id && r.report_id !== shownReport) showReport(r.report_id);   // open it once, on submit
   }
-  if (r.audio_url && replyMode === "voice") play(r.audio_url);
+  const willPlay = Boolean(r.audio_url && replyMode === "voice");
+  if (willPlay) play(r.audio_url);
+  HandsFree.onReply(r, willPlay);              // hands-free: listen for the answer once the reply is done
 }
 
 // One chat message: the bubble, optional choices shown under it (not clickable: answer by voice or text),
@@ -191,6 +205,7 @@ function renderForm(r, prev) {
     ? "Review: click a value to correct it, or say what to change. <span class=\"req\">*</span> = mandatory."
     : "Fields fill in as you talk. <span class=\"req\">*</span> = mandatory.";
   for (const f of FIELDS) {
+    if (f.context && !(r.form && f.name in r.form)) continue;     // 10-field form: no context fields
     const v = r.form ? r.form[f.name] : null;
     const dt = document.createElement("dt");
     dt.textContent = f.label;
@@ -340,7 +355,9 @@ function setBusy(on) {
 function play(url) {
   if (player) player.pause();
   player = new Audio(url);
-  player.play().catch(() => { /* autoplay blocked: the replay button still works */ });
+  player.onended = () => HandsFree.onAudioEnd();
+  player.onerror = () => HandsFree.onAudioEnd();
+  player.play().catch(() => HandsFree.onAudioEnd());   // autoplay blocked: the replay button still works
 }
 
 // ---------------------------------------------------------------- reply mode
@@ -399,6 +416,7 @@ function menuAction(act) {
   if (act === "new") $("reset").click();
   else if (act === "reply") askReplyMode();
   else if (act === "lang") $("lang").click();
+  else if (act === "handsfree") HandsFree.toggle();
   else if (act === "report") $("view-report").click();
   else if (act === "dev") setView("dev");
 }
@@ -429,10 +447,12 @@ function savedLanguage() {
 }
 
 async function loadConfig() {
+  let c = null;
   try {
-    const c = await api("GET", "/api/config");
+    c = await api("GET", "/api/config");
     languages = (c && c.languages ? c.languages : []).map(l => l.code);
   } catch { languages = ["en"]; }        // older server: English only
+  HandsFree.configure(c && c.wake);
   const multi = languages.includes("hi");
   $("lang").hidden = !multi;
   $("menu-lang").hidden = !multi;
@@ -714,7 +734,7 @@ async function stopRecording() {
     showError("That was too short. Hold the button while you speak.");
     return;
   }
-  await send(clip.wav, "audio/wav", languages.includes("hi") ? { "X-Language": speakLang } : undefined);
+  await sendSpoken(clip.wav);
 }
 
 // ---------------------------------------------------------------- wiring
@@ -755,11 +775,14 @@ function wire() {
   document.querySelectorAll("[data-view]").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
   $("menu-btn").addEventListener("click", () => {
     const dlg = $("menu-dialog");
+    $("menu-hf").hidden = $("handsfree").hidden;                       // only when the server offers it
+    $("menu-hf").textContent = $("handsfree").textContent.replace("🎙 ", "") + " (say “Hey Qualcomm”)";
     if (typeof dlg.showModal === "function") dlg.showModal(); else setView("dev");   // no <dialog>: dev view
   });
   $("menu-dialog").querySelectorAll("[data-act]").forEach(b =>
     b.addEventListener("click", () => menuAction(b.dataset.act)));
   $("lang").addEventListener("click", () => setLanguage(speakLang === "hi" ? "en" : "hi"));
+  $("handsfree").addEventListener("click", () => HandsFree.toggle());
   document.querySelectorAll("#lang-pick [data-lang]").forEach(b =>
     b.addEventListener("click", () => setLanguage(b.dataset.lang)));
   const dlg = $("mode-dialog");

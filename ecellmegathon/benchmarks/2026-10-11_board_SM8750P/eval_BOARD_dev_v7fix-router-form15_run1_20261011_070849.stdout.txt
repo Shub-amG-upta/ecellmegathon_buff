@@ -1,0 +1,34 @@
+  type router: gemma-3-4b-it-Q4_0-pure-embq8.gguf · 106 calls · type changed 26 · failures 2
+  throttle: pace 0.0 s · heat pause [90.0, 80.0] · 0 pauses, 0.0 s paused · NPU peak 67.8 °C
+
+[BOARD] split dev · model Llama-3.2-3B-Instruct-Q4_0-pure-embq8.gguf on npu · 2026-10-11T07:30:17+0530
+  teacher-forced  206 turns · tool 0.971 · field 0.666 · turns with extra 48 · dropped by gate 17 · errors 0
+                  answered by code (fast path) 123 · LLM calls 83
+                  by field {'a': '19/35', 'c': '9/23', 'd': '47/52', 'e': '12/29', 'g': '10/20', 'h': '6/23', 'k': '1/5', 'l': '38/54', 'n': '2/12', 'p': '17/28', 's': '52/52', 't': '44/53', 'w': '4/6'}
+                  prefill_ms  {'mean': 221.0, 'median': 239.9, 'n': 83}
+                  decode_ms   {'mean': 2649.8, 'median': 2656.7, 'n': 83}
+                  wall_ms     {'mean': 2942.1, 'median': 3034.6, 'n': 83}
+                  tokens {'prefill_tokens': {'mean': 96.2, 'median': 68, 'n': 83}, 'decode_tokens': {'mean': 47.8, 'median': 46, 'n': 83}}
+   ✗ ps-01#0 tool update_report (want update_report) wrong {'h': None} extra {}
+   ✗ ps-02#0 tool update_report (want update_report) wrong {'d': '10 or so', 'h': None} extra {}
+   ✗ el-01#0 tool update_report (want update_report) wrong {'t': 'medical', 'p': ['coworkers'], 'a': ['called the ambulance', 'taken to hospital'], 'g': None, 'c': None, 'n': None} extra {'p': ['coworkers'], 'a': ['taken to hospital'], 'k': ['the foreman'], 'h': 'ongoing'}
+   ✗ el-03#4 tool update_report (want update_report) wrong {'e': None} extra {'k': ['the panel cover was open', 'a live wire was hanging'], 'h': 'ongoing'}
+   ✗ sl-01#0 tool update_report (want update_report) wrong {'p': ['one of our staff', 'hit his right arm on a metal cabinet']} extra {'p': ['hit his right arm on a metal cabinet'], 'e': ['medical equipment'], 'k': ['elbow', 'wrist', 'fractured'], 'h': 'ongoing'}
+   ✗ sl-03#0 tool update_report (want update_report) wrong {'t': 'fall_height'} extra {'h': 'ongoing'}
+   ✗ na-01#0 tool update_report (want update_report) wrong {'t': 'fall_height', 'd': 'around 8 PM', 'p': ['a nursing aide', 'a resident'], 'g': None, 'c': None} extra {'p': ['a resident'], 'e': ['the metal strip'], 'k': ["nursing aide's ankle", 'the resident']}
+   ✗ na-02#0 tool update_report (want update_report) wrong {'h': None} extra {'k': ['floor']}
+   ✗ fk-01#0 tool update_report (want update_report) wrong {'e': ['the stacked material'], 'g': None, 'c': None, 'n': ['the forklift driver', 'ambulance']} extra {'e': ['the stacked material'], 'k': ['the forklift driver'], 'h': 'ongoing', 'n': ['the forklift driver']}
+   ✗ fk-03#0 tool update_report (want update_report) wrong {'e': ['the rack']} extra {'e': ['the rack']}
+   ✗ lw-01#0 tool update_report (want update_report) wrong {'t': 'medical', 'l': None} extra {'a': ['went up the extension ladder at 11:30 to shut it'], 'k': ["the maintenance mechanic's arms look broken", 'the extension ladder is damaged', 'the valve in the basement parking driveway is still leaking']}
+   ✗ lw-01#2 tool submit_report (want update_report) wrong {'a': None, 'h': None} extra {}
+   ✗ lw-03#0 tool update_report (want update_report) wrong {'l': None, 'e': None} extra {}
+   ✗ ld-01#0 tool update_report (want update_report) wrong {'e': ['extension ladder', 'the thirty foot'], 'l': None, 'a': ['someone moved the base while the top was tied', 'called the ambulance', 'informed the site supervisor'], 'n': None} extra {'e': ['extension ladder', 'the thirty foot'], 'a': ['someone moved the base while the top was tied']}
+   ✗ ld-01#1 tool update_report (want update_report) wrong {} extra {'h': 'ongoing'}
+   ✗ ch-01#0 tool update_report (want update_report) wrong {} extra {'e': ['the vapour cleaning'], 'h': 'ongoing', 'n': ['manager', 'clinic']}
+   ✗ ch-03#0 tool update_report (want update_report) wrong {'l': None, 'c': "got into the operator's eyes"} extra {'e': ['solvent']}
+   ✗ ch-03#3 tool update_report (want update_report) wrong {'n': None} extra {}
+   ✗ cv-01#0 tool update_report (want update_report) wrong {'g': None} extra {'n': ['hospital']}
+   ✗ fi-01#0 tool update_report (want update_report) wrong {'c': None} extra {}
+  free-running    54 dialogs · final field 0.624 · exact 4 · ended right 43/54 · with extra 39
+                  by field {'a': '21/34', 'c': '6/23', 'd': '43/52', 'e': '11/29', 'g': '8/20', 'h': '2/21', 'k': '1/5', 'l': '39/53', 'n': '2/12', 'p': '14/28', 's': '49/52', 't': '42/53', 'w': '4/6'}
+  saved C:\Users\xitsp\Downloads\mega\wt-form15\ecellmegathon\results\eval_BOARD_dev_20261011_073017.json
