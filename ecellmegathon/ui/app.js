@@ -92,6 +92,7 @@ function render(r) {
   renderLatency(r);
   if (r.tool_call || (r.dropped && r.dropped.length)) addTool(r);
   $("view-report").hidden = !(r.state === "submitted" && r.report_id);
+  $("menu-report").hidden = $("view-report").hidden;
   if (r.state === "submitted") {
     loadReports();
     if (r.report_id && r.report_id !== shownReport) showReport(r.report_id);   // open it once, on submit
@@ -349,6 +350,7 @@ function setReplyMode(mode) {
   replyMode = mode === "text" ? "text" : "voice";
   document.body.classList.toggle("text-only", replyMode === "text");
   $("reply-mode").textContent = replyMode === "text" ? "💬 Text only" : "🔊 Voice";
+  $("menu-reply").textContent = replyMode === "text" ? "Replies: text only" : "Replies: voice and text";
   if (replyMode === "text" && player) player.pause();
   try { localStorage.setItem(MODE_KEY, replyMode); } catch { /* storage blocked: still works this session */ }
 }
@@ -369,6 +371,38 @@ function askReplyMode() {
   if (pick) pick.focus();
 }
 
+// ---------------------------------------------------------------- user / developer view
+// "user": the chat only (the QIDK screen); "dev": the chat plus the form, latency, tool calls, NPU proof and
+// reports. Chosen with the header switch or the ⋮ menu, remembered on this device; ?view=dev|user overrides.
+const VIEW_KEY = "ui-view";
+let view = "user";
+
+function setView(v) {
+  view = v === "dev" ? "dev" : "user";
+  document.body.classList.toggle("view-dev", view === "dev");
+  document.body.classList.toggle("view-user", view === "user");
+  document.querySelectorAll("[data-view]").forEach(b =>
+    b.setAttribute("aria-pressed", b.dataset.view === view ? "true" : "false"));
+  try { localStorage.setItem(VIEW_KEY, view); } catch { /* storage blocked: this session only */ }
+  if (view === "dev") { loadProof(); loadReports(); }
+}
+
+function savedView() {
+  const q = new URLSearchParams(location.search).get("view");
+  if (q === "dev" || q === "user") return q;
+  try { return localStorage.getItem(VIEW_KEY); } catch { return null; }
+}
+
+function menuAction(act) {
+  const dlg = $("menu-dialog");
+  dlg.close();
+  if (act === "new") $("reset").click();
+  else if (act === "reply") askReplyMode();
+  else if (act === "lang") $("lang").click();
+  else if (act === "report") $("view-report").click();
+  else if (act === "dev") setView("dev");
+}
+
 // ---------------------------------------------------------------- language
 // Changes what STT is asked for on spoken turns, and adds Hindi labels and hints to the page. Typed text is
 // sent as typed: English or Hinglish in Latin letters (the app understands Hinglish times and short answers).
@@ -380,6 +414,7 @@ function setLanguage(code) {
   speakLang = code === "hi" && languages.includes("hi") ? "hi" : "en";
   const hi = speakLang === "hi";
   $("lang").textContent = hi ? "🌐 हिंदी / Hinglish" : "🌐 English";
+  $("menu-lang").textContent = hi ? "Language: हिंदी / Hinglish" : "Language: English";
   $("lang-hint").hidden = !hi;
   $("text-in").placeholder = hi ? "Type in English or Hinglish (Roman letters)…" : "Type your message…";
   document.querySelectorAll("#lang-pick [data-lang]").forEach(b =>
@@ -400,6 +435,7 @@ async function loadConfig() {
   } catch { languages = ["en"]; }        // older server: English only
   const multi = languages.includes("hi");
   $("lang").hidden = !multi;
+  $("menu-lang").hidden = !multi;
   $("lang-pick").hidden = !multi;
   setLanguage(multi ? savedLanguage() || "en" : "en");
 }
@@ -687,6 +723,13 @@ function wire() {
   $("rv-close").addEventListener("click", () => $("report-dialog").close());
   window.addEventListener("afterprint", () => document.body.classList.remove("print-report"));
   $("reply-mode").addEventListener("click", askReplyMode);
+  document.querySelectorAll("[data-view]").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+  $("menu-btn").addEventListener("click", () => {
+    const dlg = $("menu-dialog");
+    if (typeof dlg.showModal === "function") dlg.showModal(); else setView("dev");   // no <dialog>: dev view
+  });
+  $("menu-dialog").querySelectorAll("[data-act]").forEach(b =>
+    b.addEventListener("click", () => menuAction(b.dataset.act)));
   $("lang").addEventListener("click", () => setLanguage(speakLang === "hi" ? "en" : "hi"));
   document.querySelectorAll("#lang-pick [data-lang]").forEach(b =>
     b.addEventListener("click", () => setLanguage(b.dataset.lang)));
@@ -701,6 +744,7 @@ function wire() {
 
 async function init() {
   wire();
+  setView(savedView() || "user");
   setReplyMode(savedReplyMode() || "voice");
   await loadConfig();                    // before the dialog: it shows the language choice when offered
   askReplyMode();

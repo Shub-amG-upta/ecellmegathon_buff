@@ -217,3 +217,32 @@ body.text-only .replay { display: none; }
   body.print-report .rv-convo { display: none; }
   .rv-sev, .rv-type { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ---- user / developer view (body.view-user | body.view-dev, set by app.js) ---- */
+body.view-user .dev-only, body.view-dev .user-only { display: none !important; }
+.live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #1e9e61; margin-right: 6px;
+            vertical-align: middle; }
+.view-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; background: var(--bg); }
+.view-switch button { border: 0; background: transparent; color: var(--muted); border-radius: 999px; padding: .25rem .8rem;
+                      font-size: .85rem; }
+.view-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.icon-btn { width: 44px; height: 44px; border: 0; background: transparent; color: var(--muted); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; padding: 0; }
+.icon-btn:hover { background: var(--bot-bg); }
+
+/* user view: the chat fills the screen, like a phone app */
+body.view-user .top { flex-wrap: nowrap; padding: .55rem 12px .55rem 18px; }
+body.view-user .brand { flex-direction: column; align-items: flex-start; gap: 2px; }
+body.view-user .brand h1 { font-size: 1.05rem; font-weight: 800; }
+body.view-user .sub { font-size: .78rem; }
+body.view-user .grid { grid-template-columns: minmax(0, 1fr); max-width: 560px; padding: 0; gap: 0; }
+body.view-user .convo { grid-row: auto; height: calc(100dvh - 62px); min-height: 0; border: 0; border-radius: 0; }
+
+.menu-dialog { border: 1px solid var(--line); border-radius: 14px; padding: .5rem; width: 300px; max-width: calc(100vw - 32px);
+               box-shadow: var(--shadow); }
+.menu-dialog::backdrop { background: rgb(0 0 0 / .3); }
+.menu-dialog button { display: block; width: 100%; text-align: left; background: transparent; color: var(--ink); border: 0;
+                      border-radius: 10px; padding: .75rem .9rem; min-height: 44px; }
+.menu-dialog button:hover, .menu-dialog button:focus-visible { background: var(--accent-soft); }
+.menu-dialog button.ghost { color: var(--muted); }
+.menu-dialog button[hidden] { display: none; }

@@ -7,17 +7,27 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!-- Two views of one page: "user" (the chat only, for the QIDK screen) and "dev" (the chat plus the form,
+     latency, tool calls, NPU proof and reports). Elements marked dev-only / user-only show in one view. -->
 <header class="top">
   <div class="brand">
-    <h1>Incident Report Assistant</h1>
-    <span class="sub">On-device · Snapdragon QIDK · no cloud</span>
+    <h1>Incident Assistant</h1>
+    <span class="sub"><span class="live-dot" aria-hidden="true"></span>On-device · QIDK NPU<span class="dev-only"> · no cloud</span></span>
   </div>
   <div class="top-right">
-    <a class="ghost-link" href="record.html">Record mode</a>
-    <button id="lang" class="ghost small" type="button" aria-label="Change the language you speak" hidden>🌐 English</button>
-    <button id="reply-mode" class="ghost small" type="button" aria-label="Change how replies are given">🔊 Voice</button>
-    <span id="state" class="badge" data-state="collecting">collecting</span>
-    <button id="reset" class="ghost" type="button">New report</button>
+    <div class="view-switch dev-only" role="group" aria-label="Screen mode">
+      <button type="button" data-view="user" aria-pressed="false">User</button>
+      <button type="button" data-view="dev" aria-pressed="true">Developer</button>
+    </div>
+    <a class="ghost-link dev-only" href="record.html">Record mode</a>
+    <button id="lang" class="ghost small dev-only" type="button" aria-label="Change the language you speak" hidden>🌐 English</button>
+    <button id="reply-mode" class="ghost small dev-only" type="button" aria-label="Change how replies are given">🔊 Voice</button>
+    <span id="state" class="badge dev-only" data-state="collecting">collecting</span>
+    <button id="reset" class="ghost dev-only" type="button">New report</button>
+    <button id="menu-btn" class="icon-btn user-only" type="button" aria-label="Menu" aria-haspopup="dialog">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"></circle>
+        <circle cx="12" cy="12" r="1.8"></circle><circle cx="12" cy="19" r="1.8"></circle></svg>
+    </button>
   </div>
 </header>
 
@@ -51,7 +61,7 @@
   </section>
 
   <!-- Live form -->
-  <section class="card" aria-label="Incident report form">
+  <section class="card dev-only" aria-label="Incident report form">
     <div class="card-head">
       <h2>Report</h2>
       <span id="report-id" class="muted"></span>
@@ -62,7 +72,7 @@
   </section>
 
   <!-- Latency -->
-  <section class="card" aria-label="Latency">
+  <section class="card dev-only" aria-label="Latency">
     <h2>Latency (last turn)</h2>
     <table class="latency">
       <thead><tr><th>stage</th><th>device</th><th class="num">ms</th></tr></thead>
@@ -72,13 +82,13 @@
   </section>
 
   <!-- Tool calls -->
-  <section class="card" aria-label="Tool calls">
+  <section class="card dev-only" aria-label="Tool calls">
     <h2>Tool calls</h2>
     <ol id="tools" class="tools"></ol>
   </section>
 
   <!-- NPU proof -->
-  <section class="card" aria-label="On-device proof">
+  <section class="card dev-only" aria-label="On-device proof">
     <div class="card-head">
       <h2>On-device proof</h2>
       <button id="proof-refresh" class="ghost small" type="button">Refresh</button>
@@ -87,7 +97,7 @@
   </section>
 
   <!-- Reports -->
-  <section class="card" aria-label="Submitted reports">
+  <section class="card dev-only" aria-label="Submitted reports">
     <div class="card-head">
       <h2>Submitted reports</h2>
       <button id="reports-refresh" class="ghost small" type="button">Refresh</button>
@@ -129,6 +139,16 @@
     <button id="rv-download" class="ghost" type="button">Download JSON</button>
     <button id="rv-close" class="ghost" type="button">Close</button>
   </div>
+</dialog>
+
+<!-- User view: the menu behind the ⋮ button (the dev view has these in its header). -->
+<dialog id="menu-dialog" class="menu-dialog" aria-label="Menu">
+  <button type="button" data-act="new">New report</button>
+  <button type="button" data-act="reply" id="menu-reply">Replies: voice</button>
+  <button type="button" data-act="lang" id="menu-lang" hidden>Language: English</button>
+  <button type="button" data-act="report" id="menu-report" hidden>View submitted report</button>
+  <button type="button" data-act="dev">Developer mode</button>
+  <button type="button" data-act="close" class="ghost">Close</button>
 </dialog>
 
 <script src="audio.js"></script>
