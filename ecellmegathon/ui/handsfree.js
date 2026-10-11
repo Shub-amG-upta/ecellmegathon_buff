@@ -116,7 +116,19 @@ const HandsFree = (() => {
       res = await r.json();
     } catch (e) { res = { wake: false, error: e.message }; }
     if (!W.on) return;
-    if (!res || !res.wake) { W.after = []; to("idle"); return; }
+    if (!res || !res.wake) {
+      // Not the wake word. If the user spoke while this burst was being checked (often "Hey Qualcomm" right
+      // after a noise), check that speech next instead of throwing it away.
+      if (W.afterSpoke && W.after.length) {
+        W.seg = W.after;
+        W.segMs = W.after.reduce((n, c) => n + c.length, 0) / Mic.rate() * 1000;
+        W.quiet = 0;
+        W.after = []; W.afterSpoke = false;
+        to("burst");
+        return;
+      }
+      W.after = []; to("idle"); return;
+    }
     chime();
     // said in one breath ("Hey Qualcomm, there's a fire in the lab"): the burst is part of the turn
     const more = (res.rest && res.rest.trim()) || kept;

@@ -91,7 +91,7 @@ async function send(body, contentType, headers) {
 }
 
 // ---------------------------------------------------------------- rendering
-function render(r) {
+function render(r, opts = {}) {
   if (!r) return;
   const prev = last;
   last = r;
@@ -117,9 +117,39 @@ function render(r) {
     loadReports();
     if (r.report_id && r.report_id !== shownReport) showReport(r.report_id);   // open it once, on submit
   }
-  const willPlay = Boolean(r.audio_url && replyMode === "voice");
+  const willPlay = Boolean(!opts.silent && r.audio_url && replyMode === "voice");
   if (willPlay) play(r.audio_url);
-  HandsFree.onReply(r, willPlay);              // hands-free: listen for the answer once the reply is done
+  // hands-free: listen for the answer once the reply is done (not after a silent auto-reset: that waits for
+  // the wake word again)
+  if (!opts.silent) HandsFree.onReply(r, willPlay);
+  if (HandsFree.isOn() && (r.state === "submitted" || r.state === "cancelled")) scheduleAutoReset(r, willPlay);
+}
+
+// Hands-free: after a report is submitted or cancelled, start a fresh one so the next "Hey Qualcomm" begins
+// on a clean screen. Waits for the confirmation to finish playing, then a few seconds; silent (no greeting:
+// nobody has woken it yet); skipped if the user has already started talking again.
+const AUTO_RESET_MS = { submitted: 5000, cancelled: 2000 };
+function scheduleAutoReset(r, willPlay) {
+  let started = false;
+  const start = () => {
+    if (started) return;
+    started = true;
+    setTimeout(() => autoReset(r), AUTO_RESET_MS[r.state] || 3000);
+  };
+  if (willPlay && player) {
+    player.addEventListener("ended", start, { once: true });
+    player.addEventListener("error", start, { once: true });
+    setTimeout(start, 15000);                  // the audio never ended (blocked, unplugged): reset anyway
+  } else start();
+}
+
+async function autoReset(r) {
+  if (!HandsFree.isOn() || last !== r || busy || HandsFree.state() !== "idle") return;   // moved on already
+  const dlg = $("report-dialog");
+  if (dlg && dlg.open) dlg.close();
+  $("chat").replaceChildren();
+  $("tools").replaceChildren();
+  try { render(await api("POST", "/api/reset"), { silent: true }); } catch (e) { showError(e.message); }
 }
 
 // One chat message: the bubble, optional choices shown under it (not clickable: answer by voice or text),
