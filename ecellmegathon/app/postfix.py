@@ -55,6 +55,26 @@ def drop_repeats(args: dict, form: dict) -> dict:
     return out
 
 
+# DESIGN CHOICE: words that say a thing is damaged. Only then is "<equipment> <part>" the same equipment again.
+_DAMAGE = re.compile(r"\b(?:bent|broken|broke|damaged|cracked|dented|burnt|burned|smashed|torn|shattered)\b", re.I)
+
+
+def drop_parts(args: dict, form: dict, text: str) -> dict:
+    """'the forklift mast is bent' when the form has 'forklift': a damaged part of equipment already in the form
+    is that equipment again, not new equipment (fk-03). Only when the turn talks about damage; a new item that
+    doesn't start with an existing one ('a charger') is kept."""
+    if "e" not in args or not _DAMAGE.search(text):
+        return args
+    have = [str(x).lower() for x in form.get("e") or []]
+    keep = [x for x in args["e"] if not any(str(x).lower().startswith(h + " ") for h in have)]
+    out = dict(args)
+    if keep:
+        out["e"] = keep
+    else:
+        del out["e"]
+    return out
+
+
 def veto(args: dict, location: str | None) -> dict:
     """Equipment must not be a place (or the location itself); persons must not be services."""
     out = dict(args)
@@ -174,6 +194,7 @@ def apply(args: dict, text: str, form: dict) -> dict:
     if not enabled():
         return args
     out = drop_repeats(args, form)
+    out = drop_parts(out, form, text)
     out = veto(out, out.get("l") or form.get("l"))
     out = witnesses(out, text)
     if "l" in out:
