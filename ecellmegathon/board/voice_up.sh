@@ -79,7 +79,7 @@ fi
 adb_ get-state > /dev/null || { echo "no board: adb get-state failed" >&2; exit 1; }
 echo "[$(stamp)] board $(adb_ shell getprop ro.soc.model | tr -d '\r')"
 
-# Push a file only when the board copy differs; then compare sha256 (CLAUDE.md: after any adb push).
+# Push a file only when the board copy differs; then compare sha256 (project rule: after any adb push).
 push() {
     local src=$1 dst=$2 want got
     [ -e "$src" ] || { echo "missing on laptop: $src" >&2; exit 1; }

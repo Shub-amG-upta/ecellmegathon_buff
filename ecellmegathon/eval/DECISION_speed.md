@@ -50,7 +50,7 @@ measurement of either switch. **Cause (found 2026-10-11): the pre-fill ended ins
 `"args":{"t"` as `args | ":{" | t` (read from the model's GGUF vocab); the prefix ended `args | ": | {`, and after a
 lone `{` the model closed an empty object. Fixed in `f514c6d`: the prefix ends after `args` (the model writes
 `":{"`), the Gemma type prefix after `{"t`; a test keeps prefixes ending on a letter. SPEC=1 alone answered
-normally in Sarthak's one-call check. **Re-run all PREFILL / SPEC runs of HOW_TO_RUN §13 on the fixed code.**
+normally in Sarthak's one-call check. **Re-run all PREFILL / SPEC runs on the fixed code.**
 
 Also merged before those re-runs (`fix-tool`, Sarthak): teacher-forced tool = the action the app takes, and
 `postfix.drop_parts`. Projected on saved answers: tool 153 → 155/157, extra 37 → 36; so compare new runs only with

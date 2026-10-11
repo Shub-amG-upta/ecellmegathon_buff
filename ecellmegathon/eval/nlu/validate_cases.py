@@ -15,7 +15,7 @@ CASES = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "cases.jsonl"
 SCHEMA = Path(sys.argv[2]) if len(sys.argv) > 2 else HERE.parents[1] / "schema" / "incident_form.json"
 TOOLS = {"update_report", "submit_report", "cancel_report", "no_op"}
 
-# BOARD screening numbers from PLAN.md §2 (700-token prompt). Grammar-constrained decode may be slower.
+# BOARD screening numbers from the early board screening (700-token prompt). Grammar-constrained decode may be slower.
 MODELS = {"Llama 3.2 3B": (986, 21), "Qwen3 1.7B": (1432, 32)}
 SYSTEM_PROMPT_TOKENS = 600    # ESTIMATE: 8 LLM fields + 15 types + rules + 3 examples (app/prompt.py)
 CALL_OVERHEAD_S = 0.3         # ESTIMATE: HTTP + grammar setup + code

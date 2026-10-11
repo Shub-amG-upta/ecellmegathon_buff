@@ -34,5 +34,5 @@ The builder refuses to write if any of these fail:
 ## Not wired in yet
 
 The app, the prompt and `eval/nlu/run_eval.py` still use the 10-field schema. Scoring the model on this set
-needs Track A changes: the schema path, the grammar and prompt for the new keys, and its decode cost (CLAUDE.md:
+needs Track A changes: the schema path, the grammar and prompt for the new keys, and its decode cost (project rule:
 measure before adding output fields). Whether to adopt it is Track A's call.

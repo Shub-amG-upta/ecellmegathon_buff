@@ -15,7 +15,7 @@ Two modes (both by default; --mode picks one):
 --label is required and goes into every output: a number without its label
 (BOARD / LAPTOP / MOCK / ORACLE) never leaves this script. The test split is
 locked: it runs only with --split test, and only after the decision rules are
-written down (PLAN.md, M4). Run each configuration twice: temperature-0 replies
+written down (milestone M4). Run each configuration twice: temperature-0 replies
 drift between server launches.
 
 --audio DIR scores recordings named <case>_t<turn>_<speaker>.wav (BUILD_PLAN §4.5): each clip goes

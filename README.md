@@ -136,6 +136,7 @@ Useful board commands:
 | Hindi / Hinglish speech | `HINGLISH=1 board/up.sh` (needs `ggml-base.bin`), then start the app with `HINGLISH=1`; choose the language on the page |
 | "Hey Qualcomm" hands-free | on by default when speech-to-text is up (click **Hands-free** on the page); the keyword spotter is used when its model folder exists under `engines/kws/` (`board/voice_up.sh` prints `export KWS_URL=...`) |
 | Text-only page (no voice) | start the app with `VOICE=off` |
+| The page full-screen on the QIDK, with the board's microphone | `.venv/bin/python android/build_apk.py --install` (needs an Android SDK with build-tools and a JDK; `--sdk <path>` or `ANDROID_HOME`), then open **Incident Assistant** on the board |
 
 ### Run without the board (laptop only; numbers are not board numbers)
 ```

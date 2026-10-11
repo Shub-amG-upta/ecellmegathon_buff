@@ -1,7 +1,7 @@
 # BUILD_PLAN: AI Incident Report Assistant (single agent)
 
 Shared build spec for **Track A** (Shubham + Claude) and **Track B** (teammate + Claude).
-Megathon X, Qualcomm PS1. Background and rationale: `PLAN.md`. This file is what both of us build against.
+Megathon X, Qualcomm PS1. The internal build spec: architecture, the API contracts between the parts (§4), the form and the tests. Setup and run: the repository's README.md.
 
 **If you are a Claude Code instance reading this:** read the whole file before you write code. Build only the
 files your track owns (§5). Treat §4 (contracts) as frozen. If a contract has to change, stop and tell your human,

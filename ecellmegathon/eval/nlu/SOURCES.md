@@ -14,7 +14,7 @@ no text is copied from them.
 |---|---|---|
 | OSHA Form 301, Injury and Illness Incident Report | date (#11), time of event (#13), activity before the incident (#14 → `g`), what happened (#15 → `x`, built by code), injury and body part (#16 → `i`, `b`), object or substance that harmed (#17 → `c`), treated in emergency room (#18) / hospitalised (#19) → `m` | https://www.dir.ca.gov/dosh/DoshReg/ApndxC301.pdf |
 | Factories Act 1948, Form 18 (Delhi Factories Rules, rule 96): notice of accident or dangerous occurrence | exact place (`l`), date and hour (`d`), cause or nature (`t`, `c`), machine and part causing it (`e`) | https://labour.delhi.gov.in/sites/default/files/2022-09/form18.pdf |
-| Problem statement (Qualcomm PS1) | type, location, time, action taken (`a`), severity (`s`), mandatory-field check | PLAN.md §1 |
+| Problem statement (Qualcomm PS1) | type, location, time, action taken (`a`), severity (`s`), mandatory-field check | the problem statement |
 
 ## Incident sources
 
