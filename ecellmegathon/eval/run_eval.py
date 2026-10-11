@@ -152,7 +152,7 @@ class Oracle:
         call = {"tool": g["tool"], **({"args": g["args"]} if g["args"] else {})}
         text = json.dumps(call, separators=(",", ":"), ensure_ascii=False)
         if prefix is not None and not text.startswith(prefix):
-            text = prefix + "}}"            # a pre-filled answer can only be an update; nothing = no_op
+            text = prefix + '":{}}'         # a pre-filled answer can only be an update; nothing = no_op
         return LLMReply(text=text, backend="oracle", model="oracle")
 
 

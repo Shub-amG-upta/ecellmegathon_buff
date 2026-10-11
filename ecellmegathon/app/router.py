@@ -17,7 +17,7 @@ on the board instead of ~100 ms).
 
 Speed (board v7 run 1: the type call cost 1,354 ms, 13.7 decoded tokens at ~85 ms, prefill only ~130 ms; both off
 by default, each measured on the board before it is used, eval/DECISION_v7.md):
-  TYPE_PREFILL=on   the answer's start {"t":" is written into the prompt and a grammar allows only the type names,
+  TYPE_PREFILL=on   the answer's start {"t is written into the prompt and a grammar allows only the type names,
                     so the model decodes ~2-4 tokens (the name and "}) instead of ~14
   TYPE_PARALLEL=1   two agents at once: on a first description the type call starts together with the main call
                     instead of after it. Time saved only if the board runs both at once (board/parallel_probe.py
@@ -39,12 +39,14 @@ from app.form import to_tool_call
 _FORM = re.compile(r"^Form: (\{.*\})$", re.M)
 
 
-TYPE_PREFIX = '{"t":"'
+# Ends on a token boundary (see app/grammar.py UPDATE_PREFIX): `":"` is one token in Llama 3, so a prefix
+# ending in `{"t":"` would split it; `{"t` stops before it.
+TYPE_PREFIX = '{"t'
 
 
 def type_gbnf(types: list[str]) -> str:
-    """After the pre-filled {"t":" : one of the type names, then "}."""
-    return "root ::= ( " + " | ".join(f'"{t}"' for t in types) + ' ) "\\"}"\n'
+    """After the pre-filled {"t : '":"', one of the type names, then '"}'."""
+    return 'root ::= "\\":\\"" ( ' + " | ".join(f'"{t}"' for t in types) + ' ) "\\"}"\n'
 
 
 def type_schema(types: list[str]) -> dict:

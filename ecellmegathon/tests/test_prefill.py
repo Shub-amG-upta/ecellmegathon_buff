@@ -33,7 +33,7 @@ class _Server(BaseHTTPRequestHandler):
             msgs = {m["role"]: m["content"] for m in body["messages"]}
             out = {"prompt": TEMPLATE.format(s=msgs.get("system", ""), u=msgs["user"])}
         else:                                         # /completion
-            out = {"content": '"t":"fire","l":"lab"}}', "model": "m.gguf",
+            out = {"content": '":{"t":"fire","l":"lab"}}', "model": "m.gguf",
                    "timings": {"prompt_n": 50, "prompt_ms": 60.0, "predicted_n": 9, "predicted_ms": 430.0}}
         data = json.dumps(out).encode()
         self.send_response(200)
@@ -70,9 +70,9 @@ def test_backend_prefill_uses_the_template_once_and_returns_prefix_plus_rest(ser
 
 def test_grammar_after_the_prefix():
     rx = gbnf_to_regex(incident_gbnf(load_schema(), after_prefix=True))
-    for ok in ['"t":"fire","l":"lab"}}', "}}", '"w":["Ravi","Anil"]}}']:
-        assert rx.fullmatch(ok), ok
-    for bad in ['{"t":"fire"}}', '"t":"flood"}}', '"t":"fire"}', ' "t":"fire"}}']:
+    for ok in [':{"t":"fire","l":"lab"}}', ":{}}", ':{"w":["Ravi","Anil"]}}']:
+        assert rx.fullmatch('"' + ok), ok
+    for bad in ['"t":"fire"}}', '":{"t":"flood"}}', '":{"t":"fire"}', '": {"t":"fire"}}', "}}"]:
         assert not rx.fullmatch(bad), bad
 
 
@@ -88,10 +88,10 @@ class Fake:
 
 def test_dialog_prefills_updates_but_not_submit_or_cancel_turns(tmp_path, monkeypatch):
     monkeypatch.setenv("PREFILL", "on")
-    b = Fake('"t":"fire","l":"store room"}}', '{"tool":"submit_report"}')
+    b = Fake('":{"t":"fire","l":"store room"}}', '{"tool":"submit_report"}')
     d = Dialog(b, report_dir=tmp_path)
     r = d.turn("there is a fire in the store room")
-    assert b.calls[0]["prefix"] == UPDATE_PREFIX and b.calls[0]["grammar"].startswith("root ::= ( member")
+    assert b.calls[0]["prefix"] == UPDATE_PREFIX and b.calls[0]["grammar"].startswith('root ::= "\\":{" ( member')
     assert r["tool_call"] == {"tool": "update_report", "args": {"t": "fire", "l": "store room"}}
     d.turn("okay please submit the whole thing")                              # mentions submit: no pre-fill
     assert b.calls[1]["prefix"] is None and b.calls[1]["json_schema"] is not None
@@ -99,10 +99,10 @@ def test_dialog_prefills_updates_but_not_submit_or_cancel_turns(tmp_path, monkey
 
 def test_an_empty_prefilled_answer_is_nothing_for_the_report(tmp_path, monkeypatch):
     monkeypatch.setenv("PREFILL", "on")
-    d = Dialog(Fake("}}"), report_dir=tmp_path)
+    d = Dialog(Fake('":{}}'), report_dir=tmp_path)
     r = d.turn("hello, can you hear me")
     assert r["tool_call"] == {"tool": "no_op"} and r["form"]["incident_type"] is None
-    assert Dialog._parse(UPDATE_PREFIX + "}}") == ({"tool": "no_op"}, "")
+    assert Dialog._parse(UPDATE_PREFIX + '":{}}') == ({"tool": "no_op"}, "")
 
 
 def test_prefill_off_by_default_and_never_with_compact_answers(tmp_path, monkeypatch):
@@ -125,3 +125,14 @@ def test_spec_from_the_environment_for_the_npu_lane(monkeypatch):
     assert board.start_lane("npu", name)["spec"] is True
     monkeypatch.setenv("SPEC", "0")
     assert board.start_lane("npu", name)["spec"] is False
+
+
+def test_prefixes_end_on_a_token_boundary():
+    """Board v8 run 1: a prefix ending in `"args":{` split Llama 3's token `":{"` and the model wrote `}}` on all
+    64 turns. Llama 3 tokens (from the model's GGUF vocab): `{"tool":"update_report","args":{"t":"fire"}}` =
+    {" | tool | ":" | update | _report | "," | args | ":{" | t | ":" | fire | "}} ; so a prefix may end after
+    `args` or `t`, never after punctuation that the next token would join."""
+    from app.router import TYPE_PREFIX
+    for prefix in (UPDATE_PREFIX, TYPE_PREFIX):
+        assert prefix[-1].isalpha(), prefix
+    assert UPDATE_PREFIX == '{"tool":"update_report","args' and TYPE_PREFIX == '{"t'

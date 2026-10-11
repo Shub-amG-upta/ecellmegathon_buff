@@ -102,7 +102,11 @@ _CHR = r'[^"\\\x7F\x00-\x1F]'
 
 
 # The fixed start of a full update answer, written into the prompt instead of decoded (PREFILL=on).
-UPDATE_PREFIX = '{"tool":"update_report","args":{'
+# It must END ON A TOKEN BOUNDARY of the model's own answer. Llama 3 writes `"args":{"t"` as
+# `args | ":{" | t`; the first version ended with `"args":{`, i.e. `args | ": | {`, a split the model never
+# sees, and after a lone `{` it wrote `}}` (an empty object) on every turn (board, v8 run 1, 64/64 no_op).
+# So the prefix stops after `args` and the model writes `":{"` itself (one token).
+UPDATE_PREFIX = '{"tool":"update_report","args'
 
 
 def incident_gbnf(schema: dict, compact: bool = False, after_prefix: bool = False) -> str:
@@ -124,8 +128,8 @@ def incident_gbnf(schema: dict, compact: bool = False, after_prefix: bool = Fals
             rules[f"s-{k}"] = f'{q('"')} chr{{1,{f["max_chars"]}}} {q('"')}'
             rules[f"m-{k}"] = f'{q(f'"{k}":[')} s-{k} ({q(",")} s-{k}){{0,{f["max_items"] - 1}}} {q("]")}'
     rules["member"] = " | ".join(members)
-    if after_prefix:                  # only what follows UPDATE_PREFIX: the fields, then "}}"; none = nothing
-        rules["root"] = f'( member ({q(",")} member)* )? {q("}}")}'
+    if after_prefix:                  # only what follows UPDATE_PREFIX: ":{", the fields, "}}"; none = nothing
+        rules["root"] = f'{q('":{')} ( member ({q(",")} member)* )? {q("}}")}'
     elif compact:                     # v6: the fields object, or "S" / "C" / "N" (form.COMPACT_CODES)
         rules["root"] = f'{q("{")} member ({q(",")} member)* {q("}")} | ' + " | ".join(
             q(f'"{c}"') for c in ("S", "C", "N"))

@@ -104,12 +104,13 @@ def test_type_prefill_sends_the_start_and_a_names_only_grammar():
     from app.router import TYPE_PREFIX, type_gbnf
     from test_grammar import gbnf_to_regex
     main = Slow(json.dumps({"tool": "update_report", "args": {"t": "fall_height"}}), 0)
-    typ = Slow('struck_by"}', 0, model="gemma")
+    typ = Slow('":"struck_by"}', 0, model="gemma")
     r = TypeRouter(main, typ, TYPES, prefill=True).generate(_msg({}))
     assert typ.calls[0]["prefix"] == TYPE_PREFIX and typ.calls[0]["json_schema"] is None
     assert json.loads(r.text)["args"]["t"] == "struck_by"
     rx = gbnf_to_regex(type_gbnf(TYPES))
-    assert all(rx.fullmatch(f'{t}"}}') for t in TYPES) and not rx.fullmatch('flood"}') and not rx.fullmatch("fire")
+    assert all(rx.fullmatch(f'":"{t}"}}') for t in TYPES)
+    assert not rx.fullmatch('":"flood"}') and not rx.fullmatch('fire"}') and not rx.fullmatch('": "fire"}')
 
 
 def test_parallel_runs_both_agents_at_once_and_counts_the_wall_time_once():
