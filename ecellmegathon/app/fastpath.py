@@ -31,6 +31,7 @@ Stdlib only.
 from __future__ import annotations
 
 import re
+from difflib import SequenceMatcher
 
 from app.timeparse import resolve
 
@@ -96,6 +97,37 @@ _NO_CANCEL = re.compile(r"\b(?:don'?t|do not|not|no need to|never)\s+(?:\w+\s+)?
 FILLER_ONLY = {"um", "uh", "umm", "uhh", "uhm", "hmm", "erm", "er", "ah", "eh", "mm", "..."}
 
 
+# STT slips on one-word answers (QIDK, whisper base.en, 2026-10-11): "Sub-Make" for submit, "critic" for
+# critical. Matched only where that word is expected: submit on the review screen, a severity right after
+# the severity question. DESIGN CHOICE: 0.6 for submit (and it must start like submit, so "Smith" is not),
+# 0.7 for a severity of 5+ letters; short words ("my", "hi") never match by similarity.
+def _close(a: str, b: str) -> float:
+    return SequenceMatcher(None, a, b).ratio()
+
+
+def fuzzy_severity(word: str) -> str | None:
+    w = word.strip("-'")
+    if w in SEVERITY_WORDS:
+        return SEVERITY_WORDS[w]
+    if len(w) < 5:
+        return None
+    best = max((k for k in SEVERITY_WORDS if len(k) >= 5), key=lambda k: _close(w, k))
+    return SEVERITY_WORDS[best] if _close(w, best) >= 0.7 else None
+
+
+def severity_said(text: str) -> bool:
+    """Does this turn say a severity at all (exact word, or a near miss of a long one)?"""
+    return any(fuzzy_severity(w) for w in _norm(text).split())
+
+
+def sounds_like_submit(t: str) -> bool:
+    words = [w for w in t.split() if w not in FILLERS and w not in {"yes", "now", "the", "report"}]
+    if len(words) not in (1, 2):
+        return False
+    j = "".join(words).replace("-", "")
+    return j.startswith(("sub", "sum", "sab", "sap")) and _close(j, "submit") >= 0.6
+
+
 def _norm(text: str) -> str:
     t = text.lower().strip()
     t = re.sub(r"[“”\"!?,.;]+(?=\s|$)", " ", t)          # punctuation at word ends (keeps 10:30, a.m.)
@@ -112,6 +144,8 @@ def answer(text: str, asked: str | None, state: str, type_values: list[str]) -> 
         return {"tool": "cancel_report"}
     if (state == "review" and t in SUBMIT) or (t in SUBMIT and "submit" in t):
         return {"tool": "submit_report"}         # an early "submit": code then refuses and asks what's missing
+    if state == "review" and sounds_like_submit(t):
+        return {"tool": "submit_report"}         # "Sub-Make", "summit": STT slips on the review screen
     if all(w in FILLER_ONLY for w in words):
         return {"tool": "no_op"}                 # "um... uh...": nothing for the report
     if state != "collecting":
@@ -121,6 +155,9 @@ def answer(text: str, asked: str | None, state: str, type_values: list[str]) -> 
         rest = [w for w in words if w not in SEVERITY_WORDS and w not in FILLERS]
         if len(sev) == 1 and not rest:
             return {"tool": "update_report", "args": {"s": sev[0]}}
+        near = [fuzzy_severity(w) for w in words if w not in FILLERS]
+        if len(near) == 1 and near[0]:
+            return {"tool": "update_report", "args": {"s": near[0]}}     # "critic" -> critical
     if asked == "t":
         spoken = {v.replace("_", " "): v for v in type_values if v != "other"}
         if t in spoken:

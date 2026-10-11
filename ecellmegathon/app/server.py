@@ -148,6 +148,16 @@ def join_wavs(wavs: list[bytes]) -> bytes:
     return out.getvalue()
 
 
+
+# Words Whisper should expect on this turn, after the vocabulary list (the end of a prompt weighs most).
+# One-word answers are where base.en slips ("My" for high, "Sub-Make" for submit; QIDK 2026-10-11).
+def stt_hint(dialog) -> str:
+    if dialog.state == "review":
+        return "Submit. Cancel. Yes, submit it."
+    if dialog.asked == "s":
+        return "Low. Medium. High. Critical."
+    return ""
+
 class _TtsJob:
     """One turn's speech, being made in the background."""
 
@@ -241,7 +251,8 @@ class App:
             if os.environ.get("STT_TRIM", "on") != "off":
                 wav, trim = trim_silence(wav)
             asked = stt_settings(lang)
-            stt = self.voice.transcribe(wav, prompt=self.vocab, **(asked or {}))
+            prompt = "\n".join(x for x in (self.vocab, stt_hint(self.dialog)) if x)
+            stt = self.voice.transcribe(wav, prompt=prompt, **(asked or {}))
             r = self.dialog.turn(stt.text)
             if asked:                                  # the UI shows "translated from Hindi"
                 r["stt_language"] = {"lang": lang, **asked}

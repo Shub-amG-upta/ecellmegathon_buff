@@ -132,6 +132,7 @@ class Dialog:
             kept, dropped = gate.check(args, " ".join(self.heard))
             kept = gate.fill_severity(kept, text, bool(self.form.values.get("severity")))
             kept = postfix.apply(kept, text, self.form.compact())      # v4 fixes (POSTFIX=off: none)
+            kept = gate.stated_severity_only(kept, text)
             if kept:
                 if self.asked is None or not self.form.transcripts:
                     self.form.add_transcript(text)     # narration → description

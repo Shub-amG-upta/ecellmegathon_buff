@@ -141,7 +141,7 @@ def gated(call: dict, transcript: str, text: str = "", form_has_severity: bool =
     """The gate, the severity fallback and the v4 post-model fixes, exactly as app/dialog.py applies them."""
     kept, dropped = gate.check(dict(call.get("args") or {}), transcript)
     kept = gate.fill_severity(kept, text, form_has_severity)
-    return postfix.apply(kept, text, form_before or {}), dropped
+    return gate.stated_severity_only(postfix.apply(kept, text, form_before or {}), text), dropped
 
 
 # ---- backends -----------------------------------------------------------------

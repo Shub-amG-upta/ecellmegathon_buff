@@ -533,6 +533,7 @@ async function showReport(id) {
     return;
   }
   reportData = rep;
+  saveStatus("");
   renderReportCard(rep);
   $("report-json").textContent = JSON.stringify(rep, null, 2);
   const dlg = $("report-dialog");
@@ -639,13 +640,41 @@ function renderReportCard(rep) {
   card.appendChild(el("footer", "rv-foot", bits.join(" · ")));
 }
 
+// In the QIDK app (android/: window.IncidentApp) both buttons save into Download/IncidentReports on the board;
+// a WebView ignores window.print() and blob downloads. In a browser they print and download as before.
+const onDevice = () => !!(window.IncidentApp && window.IncidentApp.savePdf);
+
+function reportHtml() {
+  return `<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="${location.origin}/style.css">
+<style>body{background:#fff;margin:28px}.rv-convo,.no-print{display:none!important}</style></head>
+<body>${$("report-card").outerHTML}</body></html>`;
+}
+
+function saveStatus(msg, ok) {
+  const p = $("rv-status");
+  p.textContent = msg || "";
+  p.classList.toggle("bad", ok === false);
+}
+window.appSaved = (msg, ok) => saveStatus(msg, ok);      // called by the app when a file is written
+
 function printReport() {
+  if (onDevice() && reportData) {
+    saveStatus("Saving the PDF on the device…");
+    window.IncidentApp.savePdf(`${reportData.id}.pdf`, reportHtml());
+    return;
+  }
   document.body.classList.add("print-report");
   window.print();
 }
 
 function downloadReport() {
   if (!reportData) return;
+  if (onDevice()) {
+    saveStatus("Saving the JSON on the device…");
+    window.IncidentApp.saveText(`${reportData.id}.json`, JSON.stringify(reportData, null, 2));
+    return;
+  }
   const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -745,6 +774,10 @@ function wire() {
 async function init() {
   wire();
   setView(savedView() || "user");
+  if (onDevice()) {
+    $("rv-print").textContent = "Save PDF on device";
+    $("rv-download").textContent = "Save JSON on device";
+  }
   setReplyMode(savedReplyMode() || "voice");
   await loadConfig();                    // before the dialog: it shows the language choice when offered
   askReplyMode();

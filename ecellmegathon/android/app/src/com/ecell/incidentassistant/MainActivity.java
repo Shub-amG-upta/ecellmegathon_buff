@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
         String extra = getIntent().getStringExtra("url");
         if (extra != null && !extra.isEmpty()) url = extra;
 
+        WebView.enableSlowWholeDocumentDraw();          // the PDF draws a whole off-screen page (SaveBridge)
         web = new WebView(this);
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
@@ -84,6 +85,9 @@ public class MainActivity extends Activity {
             return WindowInsets.CONSUMED;
         });
         setContentView(root);
+        // Save PDF / Save JSON from the report view, into Download/IncidentReports on the board. Only our own
+        // pages are ever loaded (shouldOverrideUrlLoading above), so only they see this bridge.
+        web.addJavascriptInterface(new SaveBridge(this, web, root, url), "IncidentApp");
         if (!hasMic()) requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, MIC_REQUEST);
         web.loadUrl(url);
     }

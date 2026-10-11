@@ -66,3 +66,21 @@ def test_what_goes_to_the_llm():
         ("", "s", "collecting"),
     ]:
         assert answer(text, asked, state, TYPES) is None, text
+
+
+def test_stt_slips_on_one_word_answers():
+    """QIDK 2026-10-11: whisper heard "Sub-Make" for submit and "My" for a severity."""
+    from app.fastpath import answer
+    assert answer("Sub-Make", None, "review", []) == {"tool": "submit_report"}
+    assert answer("summit", None, "review", []) == {"tool": "submit_report"}
+    assert answer("Smith", None, "review", []) is None                       # doesn't start like submit
+    assert answer("Sub-Make", None, "collecting", []) is None                # only on the review screen
+    assert answer("critic", "s", "collecting", [])["args"] == {"s": "critical"}
+    assert answer("My", "s", "collecting", []) is None                       # too short to guess
+
+
+def test_severity_guard():
+    from app import gate
+    assert gate.stated_severity_only({"s": "high"}, "My") == {}
+    assert gate.stated_severity_only({"s": "high", "l": "lab"}, "it's serious, in the lab") == {"s": "high", "l": "lab"}
+    assert gate.stated_severity_only({"s": "medium"}, "medium hai") == {"s": "medium"}

@@ -246,3 +246,5 @@ body.view-user .convo { grid-row: auto; height: calc(100dvh - 62px); min-height:
 .menu-dialog button:hover, .menu-dialog button:focus-visible { background: var(--accent-soft); }
 .menu-dialog button.ghost { color: var(--muted); }
 .menu-dialog button[hidden] { display: none; }
+.rv-status { margin: .6rem 0 0; font-size: .85rem; color: var(--ok); min-height: 1.2em; overflow-wrap: anywhere; }
+.rv-status.bad { color: var(--bad); }
